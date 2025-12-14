@@ -1,0 +1,26 @@
+# Quartus compilation databases and temp folders
+/db/
+/incremental_db/
+/output_files/
+/simulation/
+/greybox_tmp/
+/hc_output/
+/.qsys_edit/
+/hps_isw_handoff/
+
+# Quartus Settings and Log Files to Ignore
+*.qws
+*.bak
+*.done
+*.rpt
+*.summary
+*.smsg
+*.pin
+*.jdi
+*.txt
+
+# Build Artifacts
+*.sof
+*.pof
+*.jam
+*.jbc
