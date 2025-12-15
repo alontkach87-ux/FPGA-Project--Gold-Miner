@@ -581,7 +581,7 @@ agreement for further details.
 		(pt 264 32)
 		(output)
 		(text "RGBOut[7..0]" (rect 0 0 139 22)(font "Arial" ))
-		(text "RGBOut[7..0]" (rect 126 27 243 49)(font "Arial" ))
+		(text "RGBOut[7..0]" (rect 126 27 265 49)(font "Arial" ))
 		(line (pt 264 32)(pt 248 32)(line_width 3))
 	)
 	(drawing
@@ -798,3 +798,4 @@ agreement for further details.
 (rectangle (rect 808 128 1512 304)(color 0 0 0)(line_width 3))
 (rectangle (rect 216 128 792 552)(color 0 0 0)(line_width 3))
 (rectangle (rect 216 568 1520 984)(color 0 0 0)(line_width 3))
+(rectangle (rect 216 1000 1520 1416)(color 0 0 0)(line_width 3))

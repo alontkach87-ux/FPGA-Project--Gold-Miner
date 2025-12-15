@@ -13,8 +13,8 @@ module bomb_move #(
     input  logic resetN,
     input  logic startOfFrame,      
     input  logic Y_direction_key,   
-    input  logic Rotate_Left_Key,   
-    input  logic Rotate_Right_Key,  
+    //input  logic Rotate_Left_Key,   //for now we won't rely on user input for angular aiming
+    //input  logic Rotate_Right_Key,  
     input  logic collision,         
     input  logic [2:0] HitEdgeCode, 
     input  logic [7:0] random_fuse_time, 
@@ -41,9 +41,11 @@ module bomb_move #(
     localparam int ANGLE_START = 0; // Starts pointing DOWN
     
     // Physics Constants
-    localparam int ANGLE_ACCEL = 10;
-    localparam int MAX_ANGLE_SPEED = 200;
-    localparam int ANGLE_FRICTION = 10;
+    //localparam int ANGLE_ACCEL = 10;
+    //localparam int MAX_ANGLE_SPEED = 200;
+    //localparam int ANGLE_FRICTION = 10;
+	 // 30 deg/sec at 30Hz frame rate = 1 deg/frame
+    localparam int SWING_SPEED = 1 * FIXED_POINT_MULTIPLIER;
     localparam int MAX_Y_SPEED = 500;
     localparam int Y_ACCEL = -10;
     
@@ -88,7 +90,7 @@ module bomb_move #(
 				Yspeed <= 0; 
             Xposition <= 0;
 				Yposition <= 0; 
-            AngleSpeed <= 0;
+            AngleSpeed <= SWING_SPEED;
 				AnglePosition <= ANGLE_START; 
             hit_reg <= 0;
 				ExplosionState <= 2'b00;
@@ -100,7 +102,7 @@ module bomb_move #(
                     Xposition <= INITIAL_X * FIXED_POINT_MULTIPLIER;
                     Yposition <= INITIAL_Y * FIXED_POINT_MULTIPLIER; 
                     AnglePosition <= ANGLE_START; 
-                    AngleSpeed <= 0;
+                    AngleSpeed <= SWING_SPEED;
 						  Xspeed <= 0;
 						  Yspeed <= 0;
                     ExplosionState <= 2'b00;
@@ -110,26 +112,16 @@ module bomb_move #(
                 end
 
                 AIMING_ST: begin 
-                    // Rotation Logic (Right = +Angle, Left = -Angle)
-                    if (Rotate_Right_Key && AnglePosition < ANGLE_MAX && AngleSpeed < MAX_ANGLE_SPEED)
-                        AngleSpeed <= AngleSpeed + ANGLE_ACCEL;
-                    else if (Rotate_Left_Key && AnglePosition > ANGLE_MIN && AngleSpeed > -MAX_ANGLE_SPEED)
-                        AngleSpeed <= AngleSpeed - ANGLE_ACCEL;
-                    else begin 
-                        if (AngleSpeed > ANGLE_FRICTION)
-									AngleSpeed <= AngleSpeed - ANGLE_FRICTION;
-                        else if (AngleSpeed < -ANGLE_FRICTION)
-									AngleSpeed <= AngleSpeed + ANGLE_FRICTION;
-                        else
-									AngleSpeed <= 0;
-                    end
+                    // Rotation Logic 
                     AnglePosition <= AnglePosition + AngleSpeed;
                     
-                    if (AnglePosition > ANGLE_MAX) begin 
-								AnglePosition <= ANGLE_MAX; AngleSpeed <= 0; 
+                    if (AnglePosition >= ANGLE_MAX) begin 
+								AnglePosition <= ANGLE_MAX;
+								AngleSpeed <= -SWING_SPEED; 
 						  end
                     if (AnglePosition < ANGLE_MIN) begin 
-								AnglePosition <= ANGLE_MIN; AngleSpeed <= 0; 
+								AnglePosition <= ANGLE_MIN; 
+								AngleSpeed <= SWING_SPEED; 
 						  end
 
                     if (Y_direction_key) begin
@@ -137,7 +129,8 @@ module bomb_move #(
                         FuseCounter <= {24'b0, random_fuse_time} + 30; 
                         SM_Motion <= MOVING_ST;
                     end
-                    if (startOfFrame) SM_Motion <= AIMING_ST;
+                    if (startOfFrame) 
+						  SM_Motion <= AIMING_ST;
                 end
 
                 MOVING_ST: begin 
@@ -197,12 +190,18 @@ module bomb_move #(
                 end
 
                 POSITION_LIMITS_ST: begin 
-                    if (Xposition < x_FRAME_LEFT) Xposition <= x_FRAME_LEFT;
-                    if (Xposition > x_FRAME_RIGHT) Xposition <= x_FRAME_RIGHT; 
-                    if (Yposition < y_FRAME_TOP) Yposition <= y_FRAME_TOP;
-                    if (Yposition > y_FRAME_BOTTOM) Yposition <= y_FRAME_BOTTOM; 
-                    if (SM_Motion == AIMING_ST) SM_Motion <= AIMING_ST;
-                    else SM_Motion <= MOVING_ST;
+                    if (Xposition < x_FRAME_LEFT) 
+								Xposition <= x_FRAME_LEFT;
+                    if (Xposition > x_FRAME_RIGHT) 
+								Xposition <= x_FRAME_RIGHT; 
+                    if (Yposition < y_FRAME_TOP) 
+								Yposition <= y_FRAME_TOP;
+                    if (Yposition > y_FRAME_BOTTOM) 
+								Yposition <= y_FRAME_BOTTOM; 
+                    if (SM_Motion == AIMING_ST) 
+								SM_Motion <= AIMING_ST;
+                    else 
+								SM_Motion <= MOVING_ST;
                 end
             endcase
         end 
