@@ -198,10 +198,7 @@ module bomb_move #(
 								Yposition <= y_FRAME_TOP;
                     if (Yposition > y_FRAME_BOTTOM) 
 								Yposition <= y_FRAME_BOTTOM; 
-                    if (SM_Motion == AIMING_ST) 
-								SM_Motion <= AIMING_ST;
-                    else 
-								SM_Motion <= MOVING_ST;
+                    SM_Motion <= MOVING_ST;
                 end
             endcase
         end 
