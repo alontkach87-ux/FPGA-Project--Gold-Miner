@@ -16,7 +16,8 @@ module keyPad_decoder
 	
 		
 	output  logic [3:0]	key,
-   output  logic 	keyIsValid	// valid while key [0..A] is pressed
+   output  logic 	keyIsValid,	// valid while key [0..A] is pressed
+	output  logic brake
   	 
   ) ;
   
@@ -35,6 +36,7 @@ always_ff @(posedge clk or negedge resetN) begin
  	if (resetN == 1'b0) begin 
 			key <= 4'b0000 ; 	
 			keyIsValid	<= 0 ; 
+			brake <= 0;
 		end 
 		else begin 
 		// this is an example of how to use a for loop and generate 9 parallel circuits, one per digit 
@@ -47,6 +49,7 @@ always_ff @(posedge clk or negedge resetN) begin
 									key <= i	; 
 							end ; 
 							if (brakee == 1'b1) begin // turn off after key is released 
+								brake <= 1;
 								keyIsPressed[i] <=1'b0;
 								keyIsValid <= 1'b0 ;  
 							end 
@@ -63,6 +66,7 @@ always_ff @(posedge clk or negedge resetN) begin
 							end ; 
 							if (brakee == 1'b1) begin // turn off after key is released 
 								keyIsPressed[i] <=1'b0;
+								brake <= 1;
 							end 
 					end 
 

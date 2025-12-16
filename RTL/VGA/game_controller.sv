@@ -10,6 +10,9 @@ module	game_controller	(
 			input	logic	drawing_request_smiley,
 			input	logic	drawing_request_boarders,
 			input	logic	drawing_request_number,
+			input	logic	drawing_request_explosion,
+			input	logic	drawing_request_maze,
+			
 
 //---------------------#1-add input drawing request of number/box
 		
@@ -45,16 +48,23 @@ module	game_controller	(
 );
 
 logic flag ; // a semaphore to set the output only once per frame regardless of number of collisions 
-logic collision_smiley_number;
+logic collision_explosion_maze;
+//logic	score,
+//logic timer,
+logic required_score;
+
 
 always_comb begin
-	if(drawing_request_smiley && drawing_request_number) begin
-		collision_smiley_number = 1'b1;
+	if(drawing_request_explosion && drawing_request_maze) begin
+		collision_explosion_maze = 1'b1;
 	end	
 	else begin
-		collision_smiley_number = 1'b0;
+		collision_explosion_maze = 1'b0;
 	end
 end
+
+
+
 // collision between Smiley and number - is not output
 
 assign collision_before = (drawing_request_smiley && drawing_request_boarders || drawing_request_smiley && drawing_request_number);// any collision --> comment after updating with #4 or #5 
@@ -99,12 +109,12 @@ begin
 				
 //	----#7 - change the collision condition below to collision_smiley_number ---------
 
-if ( collision_smiley_number  && (flag == 1'b0)) begin 
-			flag	<= 1'b1; // to enter only once 
-			SingleHitPulse <= 1'b1 ; 
-		end ; 
+//if ( collision_smiley_number  && (flag == 1'b0)) begin 
+//			flag	<= 1'b1; // to enter only once 
+	//		SingleHitPulse <= 1'b1 ; 
+		//end ; 
  
-	end 
+		end 
 end
 
 endmodule
