@@ -32,8 +32,8 @@ module bomb_move #(
     // =============================================================
     // LOCAL PARAMETERS (Calculated internally)
     // =============================================================
-    localparam int INITIAL_X = 280;
-    localparam int INITIAL_Y = 50; 
+    localparam int INITIAL_X = 288;
+    localparam int INITIAL_Y = 136; 
     localparam int FIXED_POINT_MULTIPLIER = 64; 
     localparam int SafetyMargin = 2;            
 
@@ -133,7 +133,7 @@ module bomb_move #(
 
                     if (Y_direction_key) begin
                         Yspeed <= 200; 
-                        FuseCounter <= {24'b0, random_fuse_time} + 30; 
+                        FuseCounter <= {24'b0, random_fuse_time} + 5; 
 								radius <= random_radius;
                         SM_Motion <= MOVING_ST;
                     end

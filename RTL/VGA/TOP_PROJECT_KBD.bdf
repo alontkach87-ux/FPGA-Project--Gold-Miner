@@ -742,32 +742,6 @@ agreement for further details.
 	)
 )
 (symbol
-	(rect 504 1256 664 1336)
-	(text "MyConstant" (rect 5 0 124 22)(font "Arial" ))
-	(text "inst20" (rect 8 64 71 89)(font "Intel Clear" ))
-	(port
-		(pt 160 32)
-		(output)
-		(text "value[size-1..0]" (rect 0 0 148 22)(font "Arial" ))
-		(text "value[size-1..0]" (rect 76 27 224 49)(font "Arial" ))
-		(line (pt 160 32)(pt 144 32)(line_width 3))
-	)
-	(parameter
-		"size"
-		"11"
-		""
-		(type "PARAMETER_SIGNED_DEC")	)
-	(parameter
-		"MyValue"
-		"16"
-		""
-		(type "PARAMETER_SIGNED_DEC")	)
-	(drawing
-		(rectangle (rect 16 16 144 64))
-	)
-	(annotation_block (parameter)(rect 240 1256 485 1325))
-)
-(symbol
 	(rect 488 1040 648 1120)
 	(text "MyConstant" (rect 5 0 124 22)(font "Arial" ))
 	(text "inst21" (rect 8 64 62 87)(font "Intel Clear" (font_size 6)))
@@ -1255,6 +1229,32 @@ agreement for further details.
 	(drawing
 		(rectangle (rect 16 16 304 176))
 	)
+)
+(symbol
+	(rect 504 1256 664 1336)
+	(text "MyConstant" (rect 5 0 124 22)(font "Arial" ))
+	(text "inst20" (rect 8 64 71 89)(font "Intel Clear" ))
+	(port
+		(pt 160 32)
+		(output)
+		(text "value[size-1..0]" (rect 0 0 148 22)(font "Arial" ))
+		(text "value[size-1..0]" (rect 76 27 224 49)(font "Arial" ))
+		(line (pt 160 32)(pt 144 32)(line_width 3))
+	)
+	(parameter
+		"size"
+		"11"
+		""
+		(type "PARAMETER_SIGNED_DEC")	)
+	(parameter
+		"MyValue"
+		"88"
+		""
+		(type "PARAMETER_SIGNED_DEC")	)
+	(drawing
+		(rectangle (rect 16 16 144 64))
+	)
+	(annotation_block (parameter)(rect 240 1256 485 1325))
 )
 (connector
 	(text "pixelX[10..0]" (rect 1250 624 1375 646)(font "Arial" ))
