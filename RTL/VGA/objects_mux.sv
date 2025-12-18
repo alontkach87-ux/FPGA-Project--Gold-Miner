@@ -11,9 +11,6 @@ module	objects_mux	(
 //		--------	Clock Input	 	
 					input		logic	clk,
 					input		logic	resetN,
-		   // smiley 
-					input		logic	smileyDrawingRequest, // two set of inputs per unit
-					input		logic	[7:0] smileyRGB, 
 					     
 		  // add the box for numbers here 
 			
@@ -22,9 +19,7 @@ module	objects_mux	(
 		  ////////////////////////
 		  // background 
 					input    logic bombDrawingRequest, 
-					input		logic	[7:0] bombRGB,   
-					input		logic	BGDrawingRequest,
-					input		logic	[7:0] backGroundRGB, 	
+					input		logic	[7:0] bombRGB,	
 					input		logic	[7:0] RGB_MIF, 
 					input    logic characterDrawingRequest,
 					input    logic [7:0] characterRGB,
@@ -51,8 +46,6 @@ begin
 				RGBOut <= lootRGB;
 		else if(gameDataDrawingRequest == 1'b1)
 				RGBOut <= gameDataRGB;
-		else if (BGDrawingRequest == 1'b1)
-				RGBOut <= backGroundRGB ;
 		else RGBOut <= RGB_MIF ;
 		end ; 
 	end

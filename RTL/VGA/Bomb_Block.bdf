@@ -118,7 +118,7 @@ agreement for further details.
 )
 (pin
 	(input)
-	(rect 32 344 264 360)
+	(rect -16 344 216 360)
 	(text "INPUT" (rect 189 0 248 18)(font "Arial" (font_size 6)))
 	(text "Y_direction_key" (rect 5 0 141 23)(font "Intel Clear" (font_size 6)))
 	(pt 232 8)
@@ -661,11 +661,6 @@ agreement for further details.
 	(pt 1832 344)
 )
 (connector
-	(text "keypadValid" (rect 424 408 529 431)(font "Intel Clear" (font_size 6)))
-	(pt 520 424)
-	(pt 552 424)
-)
-(connector
 	(text "dout[7..0]" (rect 792 368 874 391)(font "Intel Clear" (font_size 6)))
 	(pt 768 392)
 	(pt 808 392)
@@ -774,11 +769,6 @@ agreement for further details.
 	(pt 288 320)
 )
 (connector
-	(text "Y_direction" (rect 272 336 387 361)(font "Intel Clear" ))
-	(pt 264 352)
-	(pt 288 352)
-)
-(connector
 	(text "brake" (rect 416 160 464 183)(font "Intel Clear" (font_size 6)))
 	(pt 528 176)
 	(pt 552 176)
@@ -882,6 +872,16 @@ agreement for further details.
 	(pt 1144 152)
 	(pt 1184 152)
 	(bus)
+)
+(connector
+	(text "Y_direction_key" (rect 224 336 386 361)(font "Intel Clear" ))
+	(pt 216 352)
+	(pt 240 352)
+)
+(connector
+	(text "Y_direction_key" (rect 392 408 528 431)(font "Intel Clear" (font_size 6)))
+	(pt 520 424)
+	(pt 552 424)
 )
 (text "Bomb bitmap and move logic" (rect 512 312 841 342)(font "Intel Clear" (font_size 8)))
 (text "TO DO LIST:" (rect 696 792 835 822)(font "Intel Clear" (font_size 8)))
