@@ -23,7 +23,8 @@ module bomb_move #(
     output logic signed [10:0] topLeftY, 
     output logic [8:0] Angle,            // 0-360 (Converted from internal -90 to +90)
     output logic [1:0] ExplosionState,
-	 output logic explosionFlag
+	 output logic explosionFlag,
+	 output logic aimingFlag				//will be raised to display arrow instead of bomb
 );
 
     // =============================================================
@@ -95,6 +96,7 @@ module bomb_move #(
             hit_reg <= 0;
 				ExplosionState <= 2'b00;
 				explosionFlag <= 0;
+				aimingFlag <= 0;
         end 
         else begin
             case(SM_Motion)
@@ -106,13 +108,15 @@ module bomb_move #(
 						  Xspeed <= 0;
 						  Yspeed <= 0;
                     ExplosionState <= 2'b00;
-						  explosionFlag <= 0; 
+						  explosionFlag <= 0;
+						  aimingFlag <= 0;
                     if (startOfFrame)
 								SM_Motion <= AIMING_ST;
                 end
 
                 AIMING_ST: begin 
                     // Rotation Logic 
+						  aimingFlag <= 1;
                     AnglePosition <= AnglePosition + AngleSpeed;
                     
                     if (AnglePosition >= ANGLE_MAX) begin 
@@ -134,6 +138,7 @@ module bomb_move #(
                 end
 
                 MOVING_ST: begin 
+						  aimingFlag <= 0;
                     if (collision) 
 								hit_reg[HitEdgeCode] <= 1'b1;
                     if (startOfFrame) begin
