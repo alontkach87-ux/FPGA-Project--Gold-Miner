@@ -17,14 +17,16 @@ module bomb_move #(
     //input  logic Rotate_Right_Key,  
     input  logic collision,         
     input  logic [2:0] HitEdgeCode, 
-    input  logic [7:0] random_fuse_time, 
+    input  logic [7:0] random_fuse_time,
+	 input  logic [7:0] random_radius, 
 	 
     output logic signed [10:0] topLeftX, 
     output logic signed [10:0] topLeftY, 
     output logic [8:0] Angle,            // 0-360 (Converted from internal -90 to +90)
     output logic [1:0] ExplosionState,
 	 output logic explosionFlag,
-	 output logic aimingFlag				//will be raised to display arrow instead of bomb
+	 output logic aimingFlag,				//will be raised to display arrow instead of bomb
+	 output logic [7:0] explosionRadius
 );
 
     // =============================================================
@@ -78,6 +80,7 @@ module bomb_move #(
     int Xspeed, Yspeed, Xposition, Yposition;  
     int AngleSpeed, AnglePosition; 
     logic [4:0] hit_reg;
+	 logic [7:0] radius;
     int FuseCounter;    
     int AnimCounter;   
 
@@ -131,6 +134,7 @@ module bomb_move #(
                     if (Y_direction_key) begin
                         Yspeed <= 200; 
                         FuseCounter <= {24'b0, random_fuse_time} + 30; 
+								radius <= random_radius;
                         SM_Motion <= MOVING_ST;
                     end
                     if (startOfFrame) 
@@ -211,6 +215,7 @@ module bomb_move #(
 
     assign topLeftX = Xposition / FIXED_POINT_MULTIPLIER;
     assign topLeftY = Yposition / FIXED_POINT_MULTIPLIER;
+	 assign explosionRadius = radius;
     
     // OUTPUT CONVERSION:
     // Convert signed internal angle (-90 to +90) to standard 0-360 unsigned
