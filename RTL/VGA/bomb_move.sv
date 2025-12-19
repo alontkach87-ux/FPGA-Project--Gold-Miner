@@ -119,26 +119,19 @@ module bomb_move #(
 
                 AIMING_ST: begin 
                     // Rotation Logic 
-						  aimingFlag <= 1;
-                    AnglePosition <= AnglePosition + AngleSpeed;
-                    
-                    if (AnglePosition >= ANGLE_MAX) begin 
-								AnglePosition <= ANGLE_MAX;
-								AngleSpeed <= -SWING_SPEED; 
+						  aimingFlag <= 1;                
+						  if (startOfFrame) begin
+							  if (Y_direction_key) begin
+									Yspeed <= 200;
+									AngleSpeed <= 0;
+									FuseCounter <= {24'b0, random_fuse_time} + 5; 
+									radius <= random_radius;
+									SM_Motion <= MOVING_ST;
+							  end
+							  else begin
+									SM_Motion <= START_OF_FRAME_ST;
+								end
 						  end
-                    if (AnglePosition < ANGLE_MIN) begin 
-								AnglePosition <= ANGLE_MIN; 
-								AngleSpeed <= SWING_SPEED; 
-						  end
-
-                    if (Y_direction_key) begin
-                        Yspeed <= 200; 
-                        FuseCounter <= {24'b0, random_fuse_time} + 5; 
-								radius <= random_radius;
-                        SM_Motion <= MOVING_ST;
-                    end
-                    if (startOfFrame) 
-						  SM_Motion <= AIMING_ST;
                 end
 
                 MOVING_ST: begin 
@@ -191,6 +184,7 @@ module bomb_move #(
                 end 
 
                 POSITION_CHANGE_ST: begin 
+						  AnglePosition <= AnglePosition + AngleSpeed;
                     Xposition <= Xposition + Xspeed; 
                     Yposition <= Yposition + Yspeed;
                     if (Yspeed < MAX_Y_SPEED) 
@@ -199,6 +193,14 @@ module bomb_move #(
                 end
 
                 POSITION_LIMITS_ST: begin 
+						  if (AnglePosition >= ANGLE_MAX) begin 
+								AnglePosition <= ANGLE_MAX;
+								AngleSpeed <= -SWING_SPEED; 
+						  end
+                    if (AnglePosition < ANGLE_MIN) begin 
+								AnglePosition <= ANGLE_MIN; 
+								AngleSpeed <= SWING_SPEED; 
+						  end
                     if (Xposition < x_FRAME_LEFT) 
 								Xposition <= x_FRAME_LEFT;
                     if (Xposition > x_FRAME_RIGHT) 
@@ -207,7 +209,10 @@ module bomb_move #(
 								Yposition <= y_FRAME_TOP;
                     if (Yposition > y_FRAME_BOTTOM) 
 								Yposition <= y_FRAME_BOTTOM; 
-                    SM_Motion <= MOVING_ST;
+                    if(!aimingFlag)
+								SM_Motion <= MOVING_ST;
+						  else
+								SM_Motion <= AIMING_ST;
                 end
             endcase
         end 
