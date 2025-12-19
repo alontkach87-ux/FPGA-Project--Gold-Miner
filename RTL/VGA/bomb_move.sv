@@ -147,8 +147,16 @@ module bomb_move #(
                             ExplosionState <= 2'b01;
 									 explosionFlag <= 1;
                         end
-                        if (FuseCounter > 0) 
+                        if (FuseCounter > 0) begin
+									Xspeed <= AnglePosition / 20;  
+								  // 2. Y Speed: Pythagoras approximation (Diamond shape)
+								  //    We subtract the ABSOLUTE value of the angle contribution.
+								  if (AnglePosition < 0)
+										Yspeed <= 400 - (-AnglePosition / 20); // Negate negative angle to make it positive
+								  else
+										Yspeed <= 400 - (AnglePosition / 20);  // Subtract positive angle
 									SM_Motion <= START_OF_FRAME_ST; 
+								end
                     end
                 end 
 
@@ -187,8 +195,8 @@ module bomb_move #(
 						  AnglePosition <= AnglePosition + AngleSpeed;
                     Xposition <= Xposition + Xspeed; 
                     Yposition <= Yposition + Yspeed;
-                    if (Yspeed < MAX_Y_SPEED) 
-								Yspeed <= Yspeed - Y_ACCEL;
+                    //if (Yspeed < MAX_Y_SPEED) 
+								//Yspeed <= Yspeed - Y_ACCEL;
                     SM_Motion <= POSITION_LIMITS_ST;
                 end
 
@@ -227,8 +235,8 @@ module bomb_move #(
     // -90 (Left) becomes 270
     //   0 (Down) becomes 0
     // +90 (Right) becomes 90
-    assign Angle = (AnglePosition < 0) ? 
-                   (AnglePosition / FIXED_POINT_MULTIPLIER + 360) : 
-                   (AnglePosition / FIXED_POINT_MULTIPLIER);
+    assign Angle = (AnglePosition > 0) ?
+                   (360 - AnglePosition / FIXED_POINT_MULTIPLIER) : 
+                   (0 - AnglePosition / FIXED_POINT_MULTIPLIER);
 
 endmodule
