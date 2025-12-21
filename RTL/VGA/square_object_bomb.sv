@@ -1,4 +1,4 @@
-module square_object (
+module square_object_bomb (
     input  logic        clk,
     input  logic        resetN,
     input  logic signed [10:0] pixelX,

@@ -7,6 +7,8 @@ module smallBombBitMap (
     input   logic   [8:0] Angle,    // Connected to smallBomb_move
 	 input   logic [1:0] ExplosionState,
 	 input   logic aimingFlag,
+	 input logic enableScale,
+	 input logic [15:0] scale_factor,
  
     output	logic	drawingRequest,
     output	logic	[7:0] RGBout,
@@ -19,10 +21,24 @@ module smallBombBitMap (
 	 localparam int CENTER_Y = 16;
 	 localparam int CENTER_X = 16;
     localparam logic [7:0] TRANSPARENT = 8'hFF;
+	 localparam int FIX_FRAC = 64;
+
+
 
     // --- Coordinate Calculations ---
     logic [10:0] HitCodeX;
     logic [10:0] HitCodeY;
+	 logic [4:0] bmpX, bmpY;   
+	 logic [12:0] bmpX_tmp;
+    logic [12:0] bmpY_tmp;
+	 assign bmpX_tmp = offsetX * FIX_FRAC;          
+    assign bmpX     = bmpX_tmp / scale_factor;   
+    assign bmpY_tmp = offsetY * FIX_FRAC;
+    assign bmpY     = bmpY_tmp / scale_factor;
+
+	 
+	 
+	 
     assign HitCodeX = offsetX >> 1; 
     assign HitCodeY = offsetY >> 1;
 
@@ -272,11 +288,13 @@ module smallBombBitMap (
 		  
 		  if (InsideRectangle) begin
 				if (ExplosionState == 2'b01) begin
-					 selected_RGB = explosion_fire[offsetY][offsetX];
-				end
-				else if (ExplosionState == 2'b10) begin
-					 selected_RGB = explosion_smoke[offsetY][offsetX];
-				end
+					 if (bmpX < 32 && bmpY < 32)
+						  selected_RGB = explosion_fire[bmpY][bmpX];
+        end
+        else if (ExplosionState == 2'b10) begin
+            if (bmpX < 32 && bmpY < 32)
+                selected_RGB = explosion_smoke[bmpY][bmpX];
+        end
 				else begin
 					 // ROTATION RENDERING
 					 // 1. Check Bounds: If rotation pushes pixel outside 32x32 area, make transparent

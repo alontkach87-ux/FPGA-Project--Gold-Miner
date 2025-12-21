@@ -82,7 +82,9 @@ module bomb_move #(
     logic [4:0] hit_reg;
 	 logic [7:0] radius;
     int FuseCounter;    
-    int AnimCounter;   
+    int AnimCounter;
+	
+	 
 
     // =============================================================
     // LOGIC
@@ -238,5 +240,6 @@ module bomb_move #(
     assign Angle = (AnglePosition > 0) ?
                    (360 - AnglePosition / FIXED_POINT_MULTIPLIER) : 
                    (0 - AnglePosition / FIXED_POINT_MULTIPLIER);
+						    			
 
 endmodule
