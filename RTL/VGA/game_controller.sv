@@ -34,7 +34,8 @@ module	game_controller	(
 			
 			output logic collision, // active in case of collision between two objects
 			
-			output logic SingleHitPulse // critical code, generating A single pulse in a frame 
+			output logic SingleHitPulse,
+		   output logic collision_explosion_maze// critical code, generating A single pulse in a frame 
 			
 			
 
@@ -47,7 +48,7 @@ module	game_controller	(
 );
 
 logic flag ; // a semaphore to set the output only once per frame regardless of number of collisions 
-logic collision_explosion_maze;
+
 //logic	score,
 //logic timer,
 logic required_score;

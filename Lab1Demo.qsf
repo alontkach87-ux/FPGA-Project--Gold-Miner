@@ -165,38 +165,14 @@ set_global_assignment -name PHYSICAL_SYNTHESIS_REGISTER_DUPLICATION OFF
 set_global_assignment -name PHYSICAL_SYNTHESIS_ASYNCHRONOUS_SIGNAL_PIPELINING OFF
 set_global_assignment -name PHYSICAL_SYNTHESIS_EFFORT FAST
 set_global_assignment -name OPTIMIZE_HOLD_TIMING OFF
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to resetN
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to CLOCK_50
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to PS2_CLK
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to PS2_DAT
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to back
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to brake
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to del
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to enter
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to keyIsPressed[0]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to keyIsPressed[1]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to keyIsPressed[2]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to keyIsPressed[3]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to keyIsPressed[4]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to keyIsPressed[5]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to keyIsPressed[6]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to keyIsPressed[7]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to keyIsPressed[8]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to keyIsPressed[9]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to keyPad[0]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to keyPad[1]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to keyPad[2]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to keyPad[3]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to keyPadValid
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to minus
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to num
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to Plus
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to slash
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to star
 set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
 set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
 set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
-set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
+set_global_assignment -name MIN_CORE_JUNCTION_TEMP 0
+set_global_assignment -name MAX_CORE_JUNCTION_TEMP 85
+set_global_assignment -name POWER_PRESET_COOLING_SOLUTION "23 MM HEAT SINK WITH 200 LFPM AIRFLOW"
+set_global_assignment -name POWER_BOARD_THERMAL_MODEL "NONE (CONSERVATIVE)"
+set_global_assignment -name MIF_FILE RTL/background.mif
 set_global_assignment -name SYSTEMVERILOG_FILE RTL/VGA/bigBombBitMap.SV
 set_global_assignment -name BDF_FILE RTL/VGA/TOP_VGA_DEMO_KBD.bdf
 set_global_assignment -name SYSTEMVERILOG_FILE RTL/VGA/game_controller.sv
@@ -251,3 +227,7 @@ set_global_assignment -name SYSTEMVERILOG_FILE arrowBitMap.sv
 set_global_assignment -name BDF_FILE RTL/VGA/Character_Top.bdf
 set_global_assignment -name SYSTEMVERILOG_FILE CharacterBitMap.sv
 set_global_assignment -name SYSTEMVERILOG_FILE RTL/VGA/CharacterBitMap.sv
+set_global_assignment -name SYSTEMVERILOG_FILE RTL/VGA/square_object1.sv
+set_global_assignment -name SYSTEMVERILOG_FILE RTL/VGA/square_object_bomb.sv
+set_global_assignment -name BDF_FILE RTL/VGA/OBJECT_DISPLAY.bdf
+set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top

@@ -1,0 +1,100 @@
+/*
+WARNING: Do NOT edit the input and output ports in this file in a text
+editor if you plan to continue editing the block that represents it in
+the Block Editor! File corruption is VERY likely to occur.
+*/
+/*
+Copyright (C) 2017  Intel Corporation. All rights reserved.
+Your use of Intel Corporation's design tools, logic functions 
+and other software and tools, and its AMPP partner logic 
+functions, and any output files from any of the foregoing 
+(including device programming or simulation files), and any 
+associated documentation or information are expressly subject 
+to the terms and conditions of the Intel Program License 
+Subscription Agreement, the Intel Quartus Prime License Agreement,
+the Intel MegaCore Function License Agreement, or other 
+applicable license agreement, including, without limitation, 
+that your use is for the sole purpose of programming logic 
+devices manufactured by Intel and sold by Intel or its 
+authorized distributors.  Please refer to the applicable 
+agreement for further details.
+*/
+(header "symbol" (version "1.2"))
+(symbol
+	(rect 16 16 568 208)
+	(text "OBJECT_DISPLAY" (rect 5 0 210 30)(font "Intel Clear" (font_size 8)))
+	(text "inst" (rect 8 163 45 188)(font "Intel Clear" ))
+	(port
+		(pt 0 32)
+		(input)
+		(text "clk" (rect 0 0 31 30)(font "Intel Clear" (font_size 8)))
+		(text "clk" (rect 21 27 52 57)(font "Intel Clear" (font_size 8)))
+		(line (pt 0 32)(pt 16 32))
+	)
+	(port
+		(pt 0 48)
+		(input)
+		(text "resetN" (rect 0 0 73 30)(font "Intel Clear" (font_size 8)))
+		(text "resetN" (rect 21 43 94 73)(font "Intel Clear" (font_size 8)))
+		(line (pt 0 48)(pt 16 48))
+	)
+	(port
+		(pt 0 64)
+		(input)
+		(text "pixelX[10..0]" (rect 0 0 139 30)(font "Intel Clear" (font_size 8)))
+		(text "pixelX[10..0]" (rect 21 59 160 89)(font "Intel Clear" (font_size 8)))
+		(line (pt 0 64)(pt 16 64)(line_width 3))
+	)
+	(port
+		(pt 0 80)
+		(input)
+		(text "pixelY[10..0]" (rect 0 0 139 30)(font "Intel Clear" (font_size 8)))
+		(text "pixelY[10..0]" (rect 21 75 160 105)(font "Intel Clear" (font_size 8)))
+		(line (pt 0 80)(pt 16 80)(line_width 3))
+	)
+	(port
+		(pt 0 96)
+		(input)
+		(text "topLeftX[10..0]" (rect 0 0 166 30)(font "Intel Clear" (font_size 8)))
+		(text "topLeftX[10..0]" (rect 21 91 187 121)(font "Intel Clear" (font_size 8)))
+		(line (pt 0 96)(pt 16 96)(line_width 3))
+	)
+	(port
+		(pt 0 112)
+		(input)
+		(text "topLeftY[10..0]" (rect 0 0 166 30)(font "Intel Clear" (font_size 8)))
+		(text "topLeftY[10..0]" (rect 21 107 187 137)(font "Intel Clear" (font_size 8)))
+		(line (pt 0 112)(pt 16 112)(line_width 3))
+	)
+	(port
+		(pt 0 128)
+		(input)
+		(text "HART_SELECT" (rect 0 0 165 30)(font "Intel Clear" (font_size 8)))
+		(text "HART_SELECT" (rect 21 123 186 153)(font "Intel Clear" (font_size 8)))
+		(line (pt 0 128)(pt 16 128))
+	)
+	(port
+		(pt 0 144)
+		(input)
+		(text "collision_bomb_object" (rect 0 0 253 30)(font "Intel Clear" (font_size 8)))
+		(text "collision_bomb_object" (rect 21 139 274 169)(font "Intel Clear" (font_size 8)))
+		(line (pt 0 144)(pt 16 144))
+	)
+	(port
+		(pt 552 32)
+		(output)
+		(text "MazeDrawingRequest" (rect 0 0 243 30)(font "Intel Clear" (font_size 8)))
+		(text "MazeDrawingRequest" (rect 288 27 531 57)(font "Intel Clear" (font_size 8)))
+		(line (pt 552 32)(pt 536 32))
+	)
+	(port
+		(pt 552 48)
+		(output)
+		(text "MazeRGB[7..0]" (rect 0 0 162 30)(font "Intel Clear" (font_size 8)))
+		(text "MazeRGB[7..0]" (rect 369 43 531 73)(font "Intel Clear" (font_size 8)))
+		(line (pt 552 48)(pt 536 48)(line_width 3))
+	)
+	(drawing
+		(rectangle (rect 16 16 536 176))
+	)
+)
