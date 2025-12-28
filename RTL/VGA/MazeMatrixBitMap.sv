@@ -14,7 +14,7 @@ module MazeMatrixBitMap (
 
     output logic        drawingRequest, // output that the pixel should be displayed 
     output logic [7:0]  RGBout,          // rgb value from the bitmap 
-	 output logic [7:0]  counter_Score
+	 output logic [9:0]  counter_Score
 );
 
     localparam logic [7:0] TRANSPARENT_ENCODING = 8'hFF; // RGB value representing transparency 
@@ -221,7 +221,8 @@ module MazeMatrixBitMap (
     always_ff @(posedge clk or negedge resetN) begin
         if (!resetN) begin
             RGBout <= 8'h00;
-            MazeBitMapMask <= MazeDefaultBitMapMask; 
+            MazeBitMapMask <= MazeDefaultBitMapMask;
+				counter_Score <= 0;
         end
         else begin
             RGBout <= TRANSPARENT_ENCODING; // Default

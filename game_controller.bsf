@@ -62,23 +62,16 @@ agreement for further details.
 	(port
 		(pt 0 112)
 		(input)
-		(text "drawing_request_explosion" (rect 0 0 106 12)(font "Arial" ))
-		(text "drawing_request_explosion" (rect 21 107 127 119)(font "Arial" ))
+		(text "drawing_request_maze" (rect 0 0 92 12)(font "Arial" ))
+		(text "drawing_request_maze" (rect 21 107 113 119)(font "Arial" ))
 		(line (pt 0 112)(pt 16 112)(line_width 1))
 	)
 	(port
 		(pt 0 128)
 		(input)
-		(text "drawing_request_maze" (rect 0 0 92 12)(font "Arial" ))
-		(text "drawing_request_maze" (rect 21 123 113 135)(font "Arial" ))
-		(line (pt 0 128)(pt 16 128)(line_width 1))
-	)
-	(port
-		(pt 0 144)
-		(input)
-		(text "drawing_request_hart" (rect 0 0 86 12)(font "Arial" ))
-		(text "drawing_request_hart" (rect 21 139 107 151)(font "Arial" ))
-		(line (pt 0 144)(pt 16 144)(line_width 1))
+		(text "ExplosionState[1..0]" (rect 0 0 76 12)(font "Arial" ))
+		(text "ExplosionState[1..0]" (rect 21 123 97 135)(font "Arial" ))
+		(line (pt 0 128)(pt 16 128)(line_width 3))
 	)
 	(port
 		(pt 304 32)

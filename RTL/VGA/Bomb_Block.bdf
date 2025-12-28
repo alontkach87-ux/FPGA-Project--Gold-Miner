@@ -657,7 +657,7 @@ agreement for further details.
 		(type "PARAMETER_UNKNOWN")	)
 	(parameter
 		"MAX_VAL"
-		"120"
+		"100"
 		""
 		(type "PARAMETER_UNKNOWN")	)
 	(drawing

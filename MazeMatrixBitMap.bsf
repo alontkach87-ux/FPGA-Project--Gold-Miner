@@ -90,8 +90,8 @@ agreement for further details.
 	(port
 		(pt 264 64)
 		(output)
-		(text "counter_Score[7..0]" (rect 0 0 79 12)(font "Arial" ))
-		(text "counter_Score[7..0]" (rect 164 59 243 71)(font "Arial" ))
+		(text "counter_Score[9..0]" (rect 0 0 79 12)(font "Arial" ))
+		(text "counter_Score[9..0]" (rect 164 59 243 71)(font "Arial" ))
 		(line (pt 264 64)(pt 248 64)(line_width 3))
 	)
 	(drawing
