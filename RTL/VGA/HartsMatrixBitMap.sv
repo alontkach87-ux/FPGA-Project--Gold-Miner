@@ -227,15 +227,15 @@ module MazeMatrixBitMap (
             RGBout <= TRANSPARENT_ENCODING; // Default
             
         if (collision_bomb_object) begin
-            MazeBitMapMask[offsetY_MSB][offsetX_MSB] <= 4'h0;
             
             case (MazeBitMapMask[offsetY_MSB][offsetX_MSB])
                 4'd1: counter_Score <= counter_Score + GOLD_VALUE;       
                 4'd2: counter_Score <= counter_Score + STONE_VALUE; 
                 4'd3: counter_Score <= counter_Score + REDDIAMOND_VALUE; 
                 4'd4: counter_Score <= counter_Score + BLUEDIAMOND_VALUE; 
-                default: ;
+                default: counter_Score <= counter_Score;
             endcase
+				MazeBitMapMask[offsetY_MSB][offsetX_MSB] <= 4'h0;
         end
 					 
 					 

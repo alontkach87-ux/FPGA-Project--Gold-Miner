@@ -9,10 +9,8 @@ module	game_controller	(
 			input	logic	startOfFrame,  // short pulse every start of frame 30Hz 
 			input	logic	drawing_request_character,
 			input	logic	drawing_request_bomb,
-			input	logic	drawing_request_explosion,
 			input	logic	drawing_request_maze,
-			input	logic	drawing_request_hart,
-			
+			input logic [1:0] ExplosionState,
 
 //---------------------#1-add input drawing request of number/box
 		
@@ -55,7 +53,7 @@ logic required_score;
 
 
 always_comb begin
-	if(drawing_request_explosion && drawing_request_maze) begin
+	if(drawing_request_bomb && drawing_request_maze && (ExplosionState != 2'b00)) begin
 		collision_explosion_maze = 1'b1;
 	end	
 	else begin
