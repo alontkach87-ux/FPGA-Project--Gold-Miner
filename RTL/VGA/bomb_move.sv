@@ -47,7 +47,7 @@ module bomb_move #(
     //localparam int ANGLE_ACCEL = 10;
     //localparam int MAX_ANGLE_SPEED = 200;
     //localparam int ANGLE_FRICTION = 10;
-	 // 30 deg/sec at 30Hz frame rate = 1 deg/frame
+	 // 64 deg/sec at 60Hz frame rate = 1 deg/frame
     localparam int SWING_SPEED = 1 * FIXED_POINT_MULTIPLIER;
     localparam int MAX_Y_SPEED = 500;
     localparam int Y_ACCEL = -10;
@@ -207,22 +207,44 @@ module bomb_move #(
 								AnglePosition <= ANGLE_MAX;
 								AngleSpeed <= -SWING_SPEED; 
 						  end
-                    if (AnglePosition < ANGLE_MIN) begin 
+                    else if (AnglePosition < ANGLE_MIN) begin 
 								AnglePosition <= ANGLE_MIN; 
 								AngleSpeed <= SWING_SPEED; 
 						  end
-                    if (Xposition < x_FRAME_LEFT) 
+                    if (Xposition < x_FRAME_LEFT) begin
 								Xposition <= x_FRAME_LEFT;
-                    if (Xposition > x_FRAME_RIGHT) 
+								SM_Motion <= EXPLOSION_FIRE_ST;
+								AnimCounter <= EXPLOSION_DURATION;
+								ExplosionState <= 2'b01;
+								explosionFlag <= 1;
+							end
+                    else if (Xposition > x_FRAME_RIGHT) begin
 								Xposition <= x_FRAME_RIGHT; 
-                    if (Yposition < y_FRAME_TOP) 
+								SM_Motion <= EXPLOSION_FIRE_ST;
+								AnimCounter <= EXPLOSION_DURATION;
+								ExplosionState <= 2'b01;
+								explosionFlag <= 1;
+							end
+                    else if (Yposition < y_FRAME_TOP) begin
 								Yposition <= y_FRAME_TOP;
-                    if (Yposition > y_FRAME_BOTTOM) 
+								SM_Motion <= EXPLOSION_FIRE_ST;
+								AnimCounter <= EXPLOSION_DURATION;
+								ExplosionState <= 2'b01;
+								explosionFlag <= 1;
+							end
+                    else if (Yposition > y_FRAME_BOTTOM) begin
 								Yposition <= y_FRAME_BOTTOM; 
-                    if(!aimingFlag)
-								SM_Motion <= MOVING_ST;
-						  else
-								SM_Motion <= AIMING_ST;
+								SM_Motion <= EXPLOSION_FIRE_ST;
+								AnimCounter <= EXPLOSION_DURATION;
+								ExplosionState <= 2'b01;
+								explosionFlag <= 1;
+							end
+                    else begin
+							  if(!aimingFlag)
+									SM_Motion <= MOVING_ST;
+							  else
+									SM_Motion <= AIMING_ST;
+							end
                 end
             endcase
         end 

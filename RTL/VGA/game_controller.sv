@@ -33,8 +33,8 @@ module	game_controller	(
 			output logic collision, // active in case of collision between two objects
 			
 			output logic SingleHitPulse,
-		   output logic collision_explosion_maze// critical code, generating A single pulse in a frame 
-			
+		   output logic collision_explosion_maze,// critical code, generating A single pulse in a frame 
+			output logic [9:0] timePassed
 			
 
 //---------------------#3-add collision  smiley and hart   -------------------------------------
@@ -46,9 +46,9 @@ module	game_controller	(
 );
 
 logic flag ; // a semaphore to set the output only once per frame regardless of number of collisions 
-
+logic [6:0] frame_counter;
 //logic	score,
-//logic timer,
+logic [9:0] timer;
 logic required_score;
 
 
@@ -90,6 +90,7 @@ end
 //---------------------------#6-end colision betweenand Smiley and hart-----------------
 
 
+assign timePassed = timer;
 
 always_ff@(posedge clk or negedge resetN)
 begin
@@ -97,16 +98,24 @@ begin
 	begin 
 		flag	<= 1'b0;
 		SingleHitPulse <= 1'b0 ; 
+		frame_counter <= 0;
+		timer <= 0;
 		
 	end 
 	else begin 
 	
 			SingleHitPulse <= 1'b0 ; // default 
-			if(startOfFrame) 
+			if(startOfFrame) begin
 				flag <= 1'b0 ; // reset for next time 
+				frame_counter <= frame_counter + 1;
+				if(frame_counter >= 72) begin //if 72 frames passed, one second passed
+					frame_counter <= 0;
+					timer <= timer + 1;
+					if(timer == 59)
+						timer <= 0;
+				end
+			end
 				
-//	----#7 - change the collision condition below to collision_smiley_number ---------
-
   if ( collision_explosion_maze  && (flag == 1'b0)) begin 
 			flag	<= 1'b1; // to enter only once 
 			SingleHitPulse <= 1'b1 ; 

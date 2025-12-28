@@ -94,6 +94,13 @@ agreement for further details.
 		(text "collision_explosion_maze" (rect 187 59 283 71)(font "Arial" ))
 		(line (pt 304 64)(pt 288 64)(line_width 1))
 	)
+	(port
+		(pt 304 80)
+		(output)
+		(text "timePassed[9..0]" (rect 0 0 66 12)(font "Arial" ))
+		(text "timePassed[9..0]" (rect 217 75 283 87)(font "Arial" ))
+		(line (pt 304 80)(pt 288 80)(line_width 3))
+	)
 	(drawing
 		(rectangle (rect 16 16 288 160)(line_width 1))
 	)
