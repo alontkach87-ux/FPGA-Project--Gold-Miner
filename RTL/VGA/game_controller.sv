@@ -172,12 +172,12 @@ begin
 							timer <= timer - 1;
 							if(timer == 0) begin
 								if(level == 2) begin
-									timer <= 40;
+									timer <= 45;
 									SM_Game <= LEVEL_TWO_ST;
 									shopFlag <= 0;
 								end
 								else if(level == 3) begin
-									timer <= 30;
+									timer <= 40;
 									SM_Game <= LEVEL_THREE_ST;
 									shopFlag <= 0;
 								end
