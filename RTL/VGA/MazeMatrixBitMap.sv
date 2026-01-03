@@ -10,6 +10,7 @@ module MazeMatrixBitMap (
     input  logic        InsideRectangle, // input that the pixel is within a bracket 
     input  logic        random_hart,     // for levle change
     input  logic        collision_bomb_object,
+	 input  logic        newLevel,
 	 
 
     output logic        drawingRequest, // output that the pixel should be displayed 
@@ -298,6 +299,11 @@ module MazeMatrixBitMap (
             MazeBitMapMask <= MazeDefaultBitMapMask;
 				counter_Score <= 0;
         end
+		  
+		  else if(newLevel) begin
+				MazeBitMapMask <= MazeDefaultBitMapMask;
+				counter_Score <= 0;
+		  end
         else begin
             RGBout <= TRANSPARENT_ENCODING; // Default
             

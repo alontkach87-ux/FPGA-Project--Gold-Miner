@@ -29,6 +29,9 @@ module	objects_mux	(
 					input		logic [7:0] scoreRGB,
 					input    logic timerDrawingRequest,
 					input    logic [7:0] timerRGB,
+					input    logic victoryDrawingRequest,
+					input    logic gameOverDrawingRequest,
+					input    logic shopDrawingRequest,
 			  
 				   output	logic	[7:0] RGBOut
 );
@@ -38,7 +41,13 @@ begin
 	if(!resetN) begin
 			RGBOut	<= 8'b0;
 	end
-	
+	else if(victoryDrawingRequest == 1'b1 || gameOverDrawingRequest == 1'b1 || shopDrawingRequest == 1'b1)
+		if(scoreDrawingRequest == 1'b1)
+				RGBOut <= scoreRGB;
+		else if(timerDrawingRequest == 1'b1)
+				RGBOut <= timerRGB;
+		else
+			RGBOut <= RGB_MIF;
 	else begin
 		if (bombDrawingRequest == 1'b1 )   
 			RGBOut <= bombRGB;   
@@ -50,7 +59,8 @@ begin
 				RGBOut <= scoreRGB;
 		else if(timerDrawingRequest == 1'b1)
 				RGBOut <= timerRGB;
-		else RGBOut <= RGB_MIF ;
+		else 
+			RGBOut <= RGB_MIF;
 		end ; 
 	end
 

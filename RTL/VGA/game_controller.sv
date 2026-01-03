@@ -11,22 +11,46 @@ module	game_controller	(
 			input	logic	drawing_request_bomb,
 			input	logic	drawing_request_maze,
 			input logic [1:0] ExplosionState,
+			input logic [9:0] score,
 
 			
 			output logic collision, // active in case of collision between two objects
 			
 			output logic SingleHitPulse,
 		   output logic collision_explosion_maze,// critical code, generating A single pulse in a frame 
-			output logic [9:0] timePassed
+			output logic [9:0] timePassed,
+			output logic [1:0] currentLevel,
+			output logic gameOver,
+			output logic shop,
+			output logic victory
 			
 
 );
+
+localparam int REQUIRED_SCORE_LEVEL_ONE = 300;
+localparam int REQUIRED_SCORE_LEVEL_TWO = 400;
+localparam int REQUIRED_SCORE_LEVEL_THREE = 500;
+
+
 
 logic flag ; // a semaphore to set the output only once per frame regardless of number of collisions 
 logic [6:0] frame_counter;
 //logic	score,
 logic [9:0] timer;
+logic [1:0] level;
 logic required_score;
+logic gameOverFlag;
+logic shopFlag;
+logic victoryFlag;
+
+enum logic [2:0] {
+        LEVEL_ONE_ST, 
+        LEVEL_TWO_ST, 
+        LEVEL_THREE_ST, 
+        GAME_OVER_ST, 
+        SHOP_ST,
+		  VICTORY_ST
+    } SM_Game;
 
 
 always_comb begin
@@ -43,6 +67,10 @@ end
 
 
 assign timePassed = timer;
+assign currentLevel = level;
+assign victory = victoryFlag;
+assign gameOver = gameOverFlag;
+assign shop = shopFlag;
 
 always_ff@(posedge clk or negedge resetN)
 begin
@@ -51,29 +79,119 @@ begin
 		flag	<= 1'b0;
 		SingleHitPulse <= 1'b0 ; 
 		frame_counter <= 0;
-		timer <= 59;
-		
+		level <= 1;
+		timer <= 50;
+		gameOverFlag <= 0;
+		victoryFlag <= 0;
+		shopFlag <= 0;
+		SM_Game <= LEVEL_ONE_ST;
 	end 
 	else begin 
-	
-			SingleHitPulse <= 1'b0 ; // default 
-			if(startOfFrame) begin
-				flag <= 1'b0 ; // reset for next time 
-				frame_counter <= frame_counter + 1;
-				if(frame_counter >= 72) begin //if 72 frames passed, one second passed
-					frame_counter <= 0;
-					timer <= timer - 1;
-					if(timer == 0)
-						timer <= 59;
+		case (SM_Game)
+				LEVEL_ONE_ST: begin
+					if(startOfFrame) begin
+						flag <= 1'b0 ; // reset for next time 
+						frame_counter <= frame_counter + 1;
+						if(frame_counter >= 72) begin //if 72 frames passed, one second passed
+							frame_counter <= 0;
+							timer <= timer - 1;
+							if(timer == 0) begin			
+								if(score >= REQUIRED_SCORE_LEVEL_ONE) begin
+									timer <= 10;
+									SM_Game <= SHOP_ST;
+									shopFlag <= 1;
+									level <= 2;
+								end
+								else begin
+									timer <= 0;
+									SM_Game <= GAME_OVER_ST;
+									gameOverFlag <= 1;
+								end
+							end
+						end
+					end
 				end
+				LEVEL_TWO_ST: begin
+					if(startOfFrame) begin
+						flag <= 1'b0 ; // reset for next time 
+						frame_counter <= frame_counter + 1;
+						if(frame_counter >= 72) begin //if 72 frames passed, one second passed
+							frame_counter <= 0;
+							timer <= timer - 1;
+							if(timer == 0) begin			
+								if(score >= REQUIRED_SCORE_LEVEL_TWO) begin
+									timer <= 10;
+									SM_Game <= SHOP_ST;
+									shopFlag <= 1;
+									level <= 3;
+								end
+								else begin
+									timer <= 0;
+									SM_Game <= GAME_OVER_ST;
+									gameOverFlag <= 1;
+								end
+							end
+						end
+					end
+				end
+				LEVEL_THREE_ST: begin
+					if(startOfFrame) begin
+						flag <= 1'b0 ; // reset for next time 
+						frame_counter <= frame_counter + 1;
+						if(frame_counter >= 72) begin //if 72 frames passed, one second passed
+							frame_counter <= 0;
+							timer <= timer - 1;
+							if(timer == 0) begin			
+								if(score >= REQUIRED_SCORE_LEVEL_THREE) begin
+									timer <= 0;
+									SM_Game <= VICTORY_ST;
+									victoryFlag <= 1;
+								end
+								else begin
+									timer <= 0;
+									SM_Game <= GAME_OVER_ST;
+									gameOverFlag <= 1;
+								end
+							end
+						end
+					end
+				end
+				SHOP_ST: begin
+					if(startOfFrame) begin
+						flag <= 1'b0 ; // reset for next time 
+						frame_counter <= frame_counter + 1;
+						if(frame_counter >= 72) begin //if 72 frames passed, one second passed
+							frame_counter <= 0;
+							timer <= timer - 1;
+							if(timer == 0) begin
+								if(level == 2) begin
+									timer <= 40;
+									SM_Game <= LEVEL_TWO_ST;
+									shopFlag <= 0;
+								end
+								else if(level == 3) begin
+									timer <= 30;
+									SM_Game <= LEVEL_THREE_ST;
+									shopFlag <= 0;
+								end
+							end
+						end
+					end
+				end
+				VICTORY_ST: begin
+					victoryFlag <= 1;
+				end
+				GAME_OVER_ST: begin
+					gameOverFlag <= 1;
+				end
+			endcase
+			if ( collision_explosion_maze  && (flag == 1'b0)) begin 
+				flag	<= 1'b1; // to enter only once 
+				SingleHitPulse <= 1'b1 ; 
 			end
-				
-  if ( collision_explosion_maze  && (flag == 1'b0)) begin 
-			flag	<= 1'b1; // to enter only once 
-			SingleHitPulse <= 1'b1 ; 
-		 end  
+		end
+		  
  
-		end 
 end
 
 endmodule
