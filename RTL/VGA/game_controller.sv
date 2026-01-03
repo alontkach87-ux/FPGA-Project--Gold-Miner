@@ -22,14 +22,15 @@ module	game_controller	(
 			output logic [1:0] currentLevel,
 			output logic gameOver,
 			output logic shop,
-			output logic victory
+			output logic victory,
+			output logic newLevel
 			
 
 );
 
 localparam int REQUIRED_SCORE_LEVEL_ONE = 300;
-localparam int REQUIRED_SCORE_LEVEL_TWO = 400;
-localparam int REQUIRED_SCORE_LEVEL_THREE = 500;
+localparam int REQUIRED_SCORE_LEVEL_TWO = 350;
+localparam int REQUIRED_SCORE_LEVEL_THREE = 400;
 
 
 
@@ -42,6 +43,7 @@ logic required_score;
 logic gameOverFlag;
 logic shopFlag;
 logic victoryFlag;
+logic newLevelFlag;
 
 enum logic [2:0] {
         LEVEL_ONE_ST, 
@@ -71,6 +73,7 @@ assign currentLevel = level;
 assign victory = victoryFlag;
 assign gameOver = gameOverFlag;
 assign shop = shopFlag;
+assign newLevel = newLevelFlag;
 
 always_ff@(posedge clk or negedge resetN)
 begin
@@ -84,6 +87,7 @@ begin
 		gameOverFlag <= 0;
 		victoryFlag <= 0;
 		shopFlag <= 0;
+		newLevelFlag <= 0;
 		SM_Game <= LEVEL_ONE_ST;
 	end 
 	else begin 
@@ -101,6 +105,7 @@ begin
 									SM_Game <= SHOP_ST;
 									shopFlag <= 1;
 									level <= 2;
+									newLevelFlag <= 1;
 								end
 								else begin
 									timer <= 0;
@@ -124,6 +129,7 @@ begin
 									SM_Game <= SHOP_ST;
 									shopFlag <= 1;
 									level <= 3;
+									newLevelFlag <= 1;
 								end
 								else begin
 									timer <= 0;
@@ -161,6 +167,7 @@ begin
 						flag <= 1'b0 ; // reset for next time 
 						frame_counter <= frame_counter + 1;
 						if(frame_counter >= 72) begin //if 72 frames passed, one second passed
+							newLevelFlag <= 0;
 							frame_counter <= 0;
 							timer <= timer - 1;
 							if(timer == 0) begin

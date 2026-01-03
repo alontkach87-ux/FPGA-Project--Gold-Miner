@@ -70,7 +70,7 @@ agreement for further details.
 )
 (pin
 	(input)
-	(rect 1016 456 1192 472)
+	(rect 1016 448 1192 464)
 	(text "INPUT" (rect 133 0 192 18)(font "Arial" (font_size 6)))
 	(text "HART_SELECT" (rect 5 0 180 22)(font "Arial" ))
 	(pt 176 8)
@@ -134,7 +134,7 @@ agreement for further details.
 )
 (pin
 	(input)
-	(rect 872 520 1192 536)
+	(rect 904 480 1224 496)
 	(text "INPUT" (rect 277 0 336 18)(font "Arial" (font_size 6)))
 	(text "collision_bomb_object" (rect 5 0 230 22)(font "Arial" ))
 	(pt 320 8)
@@ -147,6 +147,22 @@ agreement for further details.
 		(line (pt 261 12)(pt 265 8))
 	)
 	(text "VCC" (rect 280 7 324 25)(font "Arial" (font_size 6)))
+)
+(pin
+	(input)
+	(rect 1032 520 1224 536)
+	(text "INPUT" (rect 149 0 208 18)(font "Arial" (font_size 6)))
+	(text "newLevel" (rect 5 0 100 22)(font "Arial" ))
+	(pt 192 8)
+	(drawing
+		(line (pt 108 12)(pt 133 12))
+		(line (pt 108 4)(pt 133 4))
+		(line (pt 137 8)(pt 192 8))
+		(line (pt 108 12)(pt 108 4))
+		(line (pt 133 4)(pt 137 8))
+		(line (pt 133 12)(pt 137 8))
+	)
+	(text "VCC" (rect 152 7 196 25)(font "Arial" (font_size 6)))
 )
 (pin
 	(output)
@@ -344,24 +360,31 @@ agreement for further details.
 		(line (pt 0 128)(pt 16 128))
 	)
 	(port
+		(pt 0 144)
+		(input)
+		(text "newLevel" (rect 0 0 95 22)(font "Arial" ))
+		(text "newLevel" (rect 21 139 116 161)(font "Arial" ))
+		(line (pt 0 144)(pt 16 144))
+	)
+	(port
 		(pt 264 32)
 		(output)
 		(text "drawingRequest" (rect 0 0 162 22)(font "Arial" ))
-		(text "drawingRequest" (rect 106 27 243 49)(font "Arial" ))
+		(text "drawingRequest" (rect 106 27 268 49)(font "Arial" ))
 		(line (pt 264 32)(pt 248 32))
 	)
 	(port
 		(pt 264 48)
 		(output)
 		(text "RGBout[7..0]" (rect 0 0 133 22)(font "Arial" ))
-		(text "RGBout[7..0]" (rect 131 43 243 65)(font "Arial" ))
+		(text "RGBout[7..0]" (rect 131 43 264 65)(font "Arial" ))
 		(line (pt 264 48)(pt 248 48)(line_width 3))
 	)
 	(port
 		(pt 264 64)
 		(output)
 		(text "counter_Score[9..0]" (rect 0 0 198 22)(font "Arial" ))
-		(text "counter_Score[9..0]" (rect 76 59 243 81)(font "Arial" ))
+		(text "counter_Score[9..0]" (rect 76 59 274 81)(font "Arial" ))
 		(line (pt 264 64)(pt 248 64)(line_width 3))
 	)
 	(drawing
@@ -372,10 +395,6 @@ agreement for further details.
 	(text "resetN" (rect 1242 328 1308 353)(font "Intel Clear" ))
 	(pt 1216 344)
 	(pt 1304 344)
-)
-(connector
-	(pt 1208 408)
-	(pt 1304 408)
 )
 (connector
 	(text "BoxHartTopLeftX[10..0]" (rect 1016 344 1253 369)(font "Intel Clear" ))
@@ -412,15 +431,6 @@ agreement for further details.
 	(bus)
 )
 (connector
-	(pt 1208 408)
-	(pt 1208 464)
-)
-(connector
-	(text "HART_SELECT" (rect 1224 392 1372 417)(font "Intel Clear" ))
-	(pt 1208 464)
-	(pt 1192 464)
-)
-(connector
 	(text "clk" (rect 634 344 662 369)(font "Intel Clear" ))
 	(pt 776 360)
 	(pt 624 360)
@@ -439,18 +449,6 @@ agreement for further details.
 	(text "clk" (rect 1242 312 1270 337)(font "Intel Clear" ))
 	(pt 1304 328)
 	(pt 1216 328)
-)
-(connector
-	(pt 1192 528)
-	(pt 1240 528)
-)
-(connector
-	(pt 1240 528)
-	(pt 1240 424)
-)
-(connector
-	(pt 1240 424)
-	(pt 1304 424)
 )
 (connector
 	(pt 1720 360)
@@ -486,6 +484,39 @@ agreement for further details.
 	(pt 1648 392)
 	(pt 1648 360)
 	(bus)
+)
+(connector
+	(pt 1304 424)
+	(pt 1224 424)
+)
+(connector
+	(pt 1224 424)
+	(pt 1224 488)
+)
+(connector
+	(pt 1224 528)
+	(pt 1256 528)
+)
+(connector
+	(pt 1256 528)
+	(pt 1256 440)
+)
+(connector
+	(pt 1256 440)
+	(pt 1304 440)
+)
+(connector
+	(pt 1200 408)
+	(pt 1200 456)
+)
+(connector
+	(pt 1304 408)
+	(pt 1200 408)
+)
+(connector
+	(text "HART_SELECT" (rect 1064 400 1212 425)(font "Intel Clear" ))
+	(pt 1200 456)
+	(pt 1192 456)
 )
 (text "// (c) Technion IIT, Department of Electrical Engineering 2025" (rect 632 24 1309 54)(font "Intel Clear" (font_size 8)))
 (rectangle (rect 344 184 1824 568)(color 0 0 0)(line_width 3))
