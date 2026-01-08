@@ -44,48 +44,51 @@ module	objects_mux	(
 					input    logic [7:0] currLevelRGB,
 					input    logic reqScoreDrawingRequest,
 					input    logic [7:0] reqScoreRGB,
+					input    logic startDrawingRequest,
 			  
 				   output	logic	[7:0] RGBOut
 );
 
-always_ff@(posedge clk or negedge resetN)
-begin
+always_ff@(posedge clk or negedge resetN) begin
 	if(!resetN) begin
 			RGBOut	<= 8'b0;
 	end
-	else if(victoryDrawingRequest == 1'b1 || gameOverDrawingRequest == 1'b1 || shopDrawingRequest == 1'b1)
+	else if(startDrawingRequest == 1'b1 || victoryDrawingRequest == 1'b1 || gameOverDrawingRequest == 1'b1)
+		RGBOut <= RGB_MIF;
+	else if(shopDrawingRequest == 1'b1) begin
 		if(scoreDrawingRequest == 1'b1)
-				RGBOut <= scoreRGB;
+			RGBOut <= scoreRGB;
 		else if(timerDrawingRequest == 1'b1)
-				RGBOut <= timerRGB;
+			RGBOut <= timerRGB;
 		else
 			RGBOut <= RGB_MIF;
+	end
 	else begin
 		if (bombDrawingRequest == 1'b1 )   
 			RGBOut <= bombRGB;   
 		else if(characterDrawingRequest == 1'b1)
 			RGBOut <= characterRGB;  
- 		else if (lootDrawingRequest == 1'b1)
-				RGBOut <= lootRGB;
+		else if (lootDrawingRequest == 1'b1)
+			RGBOut <= lootRGB;
 		else if(scoreDrawingRequest == 1'b1)
-				RGBOut <= scoreRGB;
+			RGBOut <= scoreRGB;
 		else if(timerDrawingRequest == 1'b1)
-				RGBOut <= timerRGB;
+			RGBOut <= timerRGB;
 		else if(scoreWordDrawingRequest == 1'b1)
-				RGBOut <= scoreWordRGB;
+			RGBOut <= scoreWordRGB;
 		else if(timeWordDrawingRequest == 1'b1)
-				RGBOut <= timeWordRGB;
+			RGBOut <= timeWordRGB;
 		else if(levelWordDrawingRequest == 1'b1)
-				RGBOut <= levelWordRGB;
+			RGBOut <= levelWordRGB;
 		else if(slashDrawingRequest == 1'b1)
-				RGBOut <= slashRGB;
+			RGBOut <= slashRGB;
 		else if(currLevelDrawingRequest == 1'b1)
-				RGBOut <= currLevelRGB;
+			RGBOut <= currLevelRGB;
 		else if(reqScoreDrawingRequest == 1'b1)
-				RGBOut <= reqScoreRGB;
+			RGBOut <= reqScoreRGB;
 		else 
 			RGBOut <= RGB_MIF;
-		end ; 
+		end ;	
 	end
 
 endmodule

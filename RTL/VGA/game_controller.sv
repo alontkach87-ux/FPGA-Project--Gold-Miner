@@ -12,6 +12,7 @@ module	game_controller	(
 			input	logic	drawing_request_maze,
 			input logic [1:0] ExplosionState,
 			input logic [9:0] score,
+			input logic [9:0] keys,
 
 			
 			output logic collision, // active in case of collision between two objects
@@ -23,7 +24,9 @@ module	game_controller	(
 			output logic gameOver,
 			output logic shop,
 			output logic victory,
-			output logic newLevel
+			output logic newLevel,
+			output logic start,
+			output logic genderSwap
 			
 
 );
@@ -44,8 +47,11 @@ logic gameOverFlag;
 logic shopFlag;
 logic victoryFlag;
 logic newLevelFlag;
+logic startFlag;
+logic genderSwapFlag;
 
 enum logic [2:0] {
+		  START_ST,
         LEVEL_ONE_ST, 
         LEVEL_TWO_ST, 
         LEVEL_THREE_ST, 
@@ -74,25 +80,38 @@ assign victory = victoryFlag;
 assign gameOver = gameOverFlag;
 assign shop = shopFlag;
 assign newLevel = newLevelFlag;
+assign start = startFlag;
+assign genderSwap = genderSwapFlag;
 
 always_ff@(posedge clk or negedge resetN)
 begin
 	if(!resetN)
 	begin 
-		flag	<= 1'b0;
-		SingleHitPulse <= 1'b0 ; 
-		frame_counter <= 0;
-		level <= 1;
-		timer <= 50;
-		gameOverFlag <= 0;
-		victoryFlag <= 0;
-		shopFlag <= 0;
-		newLevelFlag <= 0;
-		SM_Game <= LEVEL_ONE_ST;
+		SM_Game <= START_ST;
 	end 
 	else begin 
 		case (SM_Game)
+				START_ST: begin
+					flag	<= 1'b0;
+					SingleHitPulse <= 1'b0 ; 
+					frame_counter <= 0;
+					level <= 1;
+					timer <= 50;
+					gameOverFlag <= 0;
+					victoryFlag <= 0;
+					shopFlag <= 0;
+					newLevelFlag <= 0;
+					startFlag <= 1;
+					if(keys[1] == 1'b1)
+						SM_Game <= LEVEL_ONE_ST;
+					if(keys[5] == 1'b1)
+						genderSwapFlag <= 1;
+				end
 				LEVEL_ONE_ST: begin
+					startFlag <= 0;
+					genderSwapFlag <= 0;
+					if(keys[9] == 1'b1)
+						SM_Game <= START_ST;
 					if(startOfFrame) begin
 						flag <= 1'b0 ; // reset for next time 
 						frame_counter <= frame_counter + 1;
@@ -117,6 +136,8 @@ begin
 					end
 				end
 				LEVEL_TWO_ST: begin
+					if(keys[9] == 1'b1)
+						SM_Game <= START_ST;
 					if(startOfFrame) begin
 						flag <= 1'b0 ; // reset for next time 
 						frame_counter <= frame_counter + 1;
@@ -141,6 +162,8 @@ begin
 					end
 				end
 				LEVEL_THREE_ST: begin
+					if(keys[9] == 1'b1)
+						SM_Game <= START_ST;
 					if(startOfFrame) begin
 						flag <= 1'b0 ; // reset for next time 
 						frame_counter <= frame_counter + 1;
@@ -163,6 +186,8 @@ begin
 					end
 				end
 				SHOP_ST: begin
+					if(keys[9] == 1'b1)
+						SM_Game <= START_ST;
 					if(startOfFrame) begin
 						flag <= 1'b0 ; // reset for next time 
 						frame_counter <= frame_counter + 1;
@@ -186,9 +211,13 @@ begin
 					end
 				end
 				VICTORY_ST: begin
+					if(keys[9] == 1'b1)
+						SM_Game <= START_ST;
 					victoryFlag <= 1;
 				end
 				GAME_OVER_ST: begin
+					if(keys[9] == 1'b1)
+						SM_Game <= START_ST;
 					gameOverFlag <= 1;
 				end
 			endcase
