@@ -1,10 +1,6 @@
 module DigitsBitMap (
     input logic clk,
     input logic resetN,
-    // input logic [10:0] pixelX, // REMOVED: Handled by square_object
-    // input logic [10:0] pixelY, // REMOVED: Handled by square_object
-    
-    // NEW INTERFACE (Matches CharacterBitMap):
     input logic [10:0] offsetX,      // Provided by square_object
     input logic [10:0] offsetY,      // Provided by square_object
     input logic InsideRectangle,     // Provided by square_object

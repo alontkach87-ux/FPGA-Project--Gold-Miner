@@ -32,6 +32,18 @@ module	objects_mux	(
 					input    logic victoryDrawingRequest,
 					input    logic gameOverDrawingRequest,
 					input    logic shopDrawingRequest,
+					input    logic scoreWordDrawingRequest,
+					input    logic [7:0] scoreWordRGB,
+					input    logic timeWordDrawingRequest,
+					input    logic [7:0] timeWordRGB,
+					input    logic levelWordDrawingRequest,
+					input    logic [7:0] levelWordRGB,
+					input    logic slashDrawingRequest,
+					input    logic [7:0] slashRGB,
+					input    logic currLevelDrawingRequest,
+					input    logic [7:0] currLevelRGB,
+					input    logic reqScoreDrawingRequest,
+					input    logic [7:0] reqScoreRGB,
 			  
 				   output	logic	[7:0] RGBOut
 );
@@ -59,6 +71,18 @@ begin
 				RGBOut <= scoreRGB;
 		else if(timerDrawingRequest == 1'b1)
 				RGBOut <= timerRGB;
+		else if(scoreWordDrawingRequest == 1'b1)
+				RGBOut <= scoreWordRGB;
+		else if(timeWordDrawingRequest == 1'b1)
+				RGBOut <= timeWordRGB;
+		else if(levelWordDrawingRequest == 1'b1)
+				RGBOut <= levelWordRGB;
+		else if(slashDrawingRequest == 1'b1)
+				RGBOut <= slashRGB;
+		else if(currLevelDrawingRequest == 1'b1)
+				RGBOut <= currLevelRGB;
+		else if(reqScoreDrawingRequest == 1'b1)
+				RGBOut <= reqScoreRGB;
 		else 
 			RGBOut <= RGB_MIF;
 		end ; 

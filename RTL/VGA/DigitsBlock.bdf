@@ -259,7 +259,7 @@ agreement for further details.
 	(annotation_block (parameter)(rect 472 248 834 340))
 )
 (symbol
-	(rect 1080 400 1312 544)
+	(rect 1080 408 1312 552)
 	(text "DigitsBitMap" (rect 5 0 133 22)(font "Arial" ))
 	(text "inst" (rect 8 128 42 150)(font "Arial" ))
 	(port
@@ -367,59 +367,8 @@ agreement for further details.
 	(pt 904 416)
 )
 (connector
-	(text "clk" (rect 1008 416 1031 439)(font "Intel Clear" (font_size 6)))
-	(pt 1040 432)
-	(pt 1080 432)
-)
-(connector
-	(text "resetN" (rect 984 432 1040 455)(font "Intel Clear" (font_size 6)))
-	(pt 1040 448)
-	(pt 1080 448)
-)
-(connector
-	(pt 936 384)
-	(pt 936 464)
-	(bus)
-)
-(connector
-	(pt 936 464)
-	(pt 1080 464)
-	(bus)
-)
-(connector
-	(pt 920 400)
-	(pt 920 480)
-	(bus)
-)
-(connector
-	(pt 920 480)
-	(pt 1080 480)
-	(bus)
-)
-(connector
-	(pt 904 416)
-	(pt 904 496)
-)
-(connector
-	(pt 904 496)
-	(pt 1080 496)
-)
-(connector
-	(pt 1320 376)
-	(pt 1320 432)
-)
-(connector
 	(pt 1400 376)
 	(pt 1320 376)
-)
-(connector
-	(pt 1320 432)
-	(pt 1312 432)
-)
-(connector
-	(pt 1328 392)
-	(pt 1328 448)
-	(bus)
 )
 (connector
 	(pt 1400 392)
@@ -427,22 +376,63 @@ agreement for further details.
 	(bus)
 )
 (connector
-	(pt 1328 448)
-	(pt 1312 448)
+	(text "clk" (rect 1008 424 1031 447)(font "Intel Clear" (font_size 6)))
+	(pt 1040 440)
+	(pt 1080 440)
+)
+(connector
+	(text "resetN" (rect 984 440 1040 463)(font "Intel Clear" (font_size 6)))
+	(pt 1040 456)
+	(pt 1080 456)
+)
+(connector
+	(pt 936 384)
+	(pt 936 472)
 	(bus)
 )
 (connector
-	(pt 1072 512)
-	(pt 1080 512)
+	(pt 936 472)
+	(pt 1080 472)
 	(bus)
 )
 (connector
-	(pt 1072 512)
-	(pt 1072 520)
+	(pt 920 400)
+	(pt 920 488)
 	(bus)
 )
 (connector
-	(pt 1072 520)
+	(pt 920 488)
+	(pt 1080 488)
+	(bus)
+)
+(connector
+	(pt 904 416)
+	(pt 904 504)
+)
+(connector
+	(pt 904 504)
+	(pt 1080 504)
+)
+(connector
+	(pt 1320 376)
+	(pt 1320 440)
+)
+(connector
+	(pt 1320 440)
+	(pt 1312 440)
+)
+(connector
+	(pt 1328 392)
+	(pt 1328 456)
+	(bus)
+)
+(connector
+	(pt 1328 456)
+	(pt 1312 456)
+	(bus)
+)
+(connector
 	(pt 1000 520)
+	(pt 1080 520)
 	(bus)
 )
