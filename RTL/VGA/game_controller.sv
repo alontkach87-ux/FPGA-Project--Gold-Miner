@@ -176,7 +176,6 @@ begin
 					end
 				end
 				LEVEL_THREE_ST: begin
-					aimResetFlag <= 0;
 					if(keys[9] == 1'b1)
 						SM_Game <= START_ST;
 					if(startOfFrame) begin
