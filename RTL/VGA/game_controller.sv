@@ -26,7 +26,8 @@ module	game_controller	(
 			output logic victory,
 			output logic newLevel,
 			output logic start,
-			output logic genderSwap
+			output logic genderSwap,
+			output logic [9:0] money
 			
 
 );
@@ -49,6 +50,7 @@ logic victoryFlag;
 logic newLevelFlag;
 logic startFlag;
 logic genderSwapFlag;
+logic [9:0] currentMoney;
 
 enum logic [2:0] {
 		  START_ST,
@@ -82,6 +84,7 @@ assign shop = shopFlag;
 assign newLevel = newLevelFlag;
 assign start = startFlag;
 assign genderSwap = genderSwapFlag;
+assign money = currentMoney;
 
 always_ff@(posedge clk or negedge resetN)
 begin
@@ -101,6 +104,7 @@ begin
 					victoryFlag <= 0;
 					shopFlag <= 0;
 					newLevelFlag <= 0;
+					currentMoney <= 0;
 					startFlag <= 1;
 					if(keys[1] == 1'b1)
 						SM_Game <= LEVEL_ONE_ST;
@@ -120,7 +124,8 @@ begin
 							timer <= timer - 1;
 							if(timer == 0) begin			
 								if(score >= REQUIRED_SCORE_LEVEL_ONE) begin
-									timer <= 10;
+									timer <= 20;
+									currentMoney <= score - REQUIRED_SCORE_LEVEL_ONE;
 									SM_Game <= SHOP_ST;
 									shopFlag <= 1;
 									level <= 2;
@@ -146,7 +151,8 @@ begin
 							timer <= timer - 1;
 							if(timer == 0) begin			
 								if(score >= REQUIRED_SCORE_LEVEL_TWO) begin
-									timer <= 10;
+									timer <= 20;
+									currentMoney <= score - REQUIRED_SCORE_LEVEL_TWO;
 									SM_Game <= SHOP_ST;
 									shopFlag <= 1;
 									level <= 3;

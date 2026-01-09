@@ -43,12 +43,13 @@ module DigitsBitMap (
     assign ones     = NumValue % 10;
 
     always_comb begin
-        drawingRequest = 1'b0;
-        RGBout = 8'h00;
-        bitOffset = 0;
+        // Defaults
+        drawingRequest = 0;
+        RGBout = 0;
+        
         currentDigitToDraw = 0;
+        bitOffset = 0;
 
-        // ONLY draw if square_object says we are inside
         if (InsideRectangle) begin
             
             // Check Vertical Bounds (0 to 15)
@@ -56,21 +57,28 @@ module DigitsBitMap (
                 
                 // --- Hundreds Place (0 to 15) ---
                 if (offsetX >= 0 && offsetX < DIGIT_WIDTH) begin
-                    currentDigitToDraw = hundreds;
-                    bitOffset = offsetX;
-                    // Pixel Doubling Logic: Read index >> 1
-                    drawingRequest = font[currentDigitToDraw][offsetY >> 1][bitOffset >> 1];
+                    // ONLY draw if we have a hundreds value (NumValue >= 100)
+                    if (NumValue >= 100) begin
+                        currentDigitToDraw = hundreds;
+                        bitOffset = offsetX;
+                        // Pixel Doubling Logic: Read index >> 1
+                        drawingRequest = font[currentDigitToDraw][offsetY >> 1][bitOffset >> 1];
+                    end
                 end
                 
                 // --- Tens Place (20 to 35) ---
                 else if (offsetX >= (DIGIT_WIDTH + SPACING) && offsetX < (2*DIGIT_WIDTH + SPACING)) begin
-                    currentDigitToDraw = tens;
-                    bitOffset = offsetX - (DIGIT_WIDTH + SPACING);
-                    drawingRequest = font[currentDigitToDraw][offsetY >> 1][bitOffset >> 1];
+                    // ONLY draw if we have a tens value (NumValue >= 10)
+                    if (NumValue >= 10) begin
+                        currentDigitToDraw = tens;
+                        bitOffset = offsetX - (DIGIT_WIDTH + SPACING);
+                        drawingRequest = font[currentDigitToDraw][offsetY >> 1][bitOffset >> 1];
+                    end
                 end
                 
                 // --- Ones Place (40 to 55) ---
                 else if (offsetX >= (2*DIGIT_WIDTH + 2*SPACING) && offsetX < (3*DIGIT_WIDTH + 2*SPACING)) begin
+                    // ALWAYS draw the ones place (so 0 appears as "0")
                     currentDigitToDraw = ones;
                     bitOffset = offsetX - (2*DIGIT_WIDTH + 2*SPACING);
                     drawingRequest = font[currentDigitToDraw][offsetY >> 1][bitOffset >> 1];
@@ -78,7 +86,7 @@ module DigitsBitMap (
             end
         end
         
-        if (drawingRequest) 
+        if (drawingRequest)
             RGBout = TEXT_COLOR;
     end
 

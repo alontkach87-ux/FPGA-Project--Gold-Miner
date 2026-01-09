@@ -45,6 +45,10 @@ module	objects_mux	(
 					input    logic reqScoreDrawingRequest,
 					input    logic [7:0] reqScoreRGB,
 					input    logic startDrawingRequest,
+					input    logic [7:0] moneyWordRGB,
+					input    logic moneyWordDrawingRequest,
+					input    logic [7:0] moneyRGB,
+					input    logic moneyDrawingRequest,
 			  
 				   output	logic	[7:0] RGBOut
 );
@@ -60,6 +64,10 @@ always_ff@(posedge clk or negedge resetN) begin
 			RGBOut <= scoreRGB;
 		else if(timerDrawingRequest == 1'b1)
 			RGBOut <= timerRGB;
+		else if(moneyWordDrawingRequest == 1'b1)
+			RGBOut <= moneyWordRGB;
+		else if(moneyDrawingRequest == 1'b1)
+			RGBOut <= moneyRGB;
 		else
 			RGBOut <= RGB_MIF;
 	end

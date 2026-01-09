@@ -164,6 +164,13 @@ agreement for further details.
 		(text "genderSwap" (rect 235 187 283 199)(font "Arial" ))
 		(line (pt 304 192)(pt 288 192)(line_width 1))
 	)
+	(port
+		(pt 304 208)
+		(output)
+		(text "money[9..0]" (rect 0 0 48 12)(font "Arial" ))
+		(text "money[9..0]" (rect 235 203 283 215)(font "Arial" ))
+		(line (pt 304 208)(pt 288 208)(line_width 3))
+	)
 	(drawing
 		(rectangle (rect 16 16 288 224)(line_width 1))
 	)
