@@ -19,6 +19,7 @@ module bomb_move #(
     input  logic [2:0] HitEdgeCode, 
     input  logic [7:0] random_fuse_time,
 	 input  logic [7:0] random_radius, 
+	 input  logic aimReset,
 	 
     output logic signed [10:0] topLeftX, 
     output logic signed [10:0] topLeftY, 
@@ -121,6 +122,8 @@ module bomb_move #(
 
                 AIMING_ST: begin 
                     // Rotation Logic 
+						  if(aimReset == 1'b1)
+								SM_Motion <= IDLE_ST;
 						  aimingFlag <= 1;                
 						  if (startOfFrame) begin
 							  if (Y_direction_key) begin
@@ -138,6 +141,8 @@ module bomb_move #(
 
                 MOVING_ST: begin 
 						  aimingFlag <= 0;
+						  if(aimReset == 1'b1)
+								SM_Motion <= IDLE_ST;
                     if (collision) 
 								hit_reg[HitEdgeCode] <= 1'b1;
                     if (startOfFrame) begin

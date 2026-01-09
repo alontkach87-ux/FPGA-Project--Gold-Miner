@@ -149,6 +149,22 @@ agreement for further details.
 	(text "VCC" (rect 128 7 172 25)(font "Arial" (font_size 6)))
 )
 (pin
+	(input)
+	(rect -16 792 176 808)
+	(text "INPUT" (rect 149 0 208 18)(font "Arial" (font_size 6)))
+	(text "aimReset" (rect 5 0 102 22)(font "Arial" ))
+	(pt 192 8)
+	(drawing
+		(line (pt 108 12)(pt 133 12))
+		(line (pt 108 4)(pt 133 4))
+		(line (pt 137 8)(pt 192 8))
+		(line (pt 108 12)(pt 108 4))
+		(line (pt 133 4)(pt 137 8))
+		(line (pt 133 12)(pt 137 8))
+	)
+	(text "VCC" (rect 152 7 196 25)(font "Arial" (font_size 6)))
+)
+(pin
 	(output)
 	(rect 1832 336 2008 352)
 	(text "OUTPUT" (rect 1 0 82 18)(font "Arial" (font_size 6)))
@@ -438,130 +454,6 @@ agreement for further details.
 	)
 )
 (symbol
-	(rect 224 640 504 816)
-	(text "bomb_move" (rect 5 0 131 22)(font "Arial" ))
-	(text "inst2" (rect 8 160 55 182)(font "Arial" ))
-	(port
-		(pt 0 32)
-		(input)
-		(text "clk" (rect 0 0 27 22)(font "Arial" ))
-		(text "clk" (rect 21 27 48 49)(font "Arial" ))
-		(line (pt 0 32)(pt 16 32))
-	)
-	(port
-		(pt 0 48)
-		(input)
-		(text "resetN" (rect 0 0 67 22)(font "Arial" ))
-		(text "resetN" (rect 21 43 88 65)(font "Arial" ))
-		(line (pt 0 48)(pt 16 48))
-	)
-	(port
-		(pt 0 64)
-		(input)
-		(text "startOfFrame" (rect 0 0 134 22)(font "Arial" ))
-		(text "startOfFrame" (rect 21 59 155 81)(font "Arial" ))
-		(line (pt 0 64)(pt 16 64))
-	)
-	(port
-		(pt 0 80)
-		(input)
-		(text "Y_direction_key" (rect 0 0 160 22)(font "Arial" ))
-		(text "Y_direction_key" (rect 21 75 181 97)(font "Arial" ))
-		(line (pt 0 80)(pt 16 80))
-	)
-	(port
-		(pt 0 96)
-		(input)
-		(text "collision" (rect 0 0 80 22)(font "Arial" ))
-		(text "collision" (rect 21 91 101 113)(font "Arial" ))
-		(line (pt 0 96)(pt 16 96))
-	)
-	(port
-		(pt 0 112)
-		(input)
-		(text "HitEdgeCode[2..0]" (rect 0 0 188 22)(font "Arial" ))
-		(text "HitEdgeCode[2..0]" (rect 21 107 209 129)(font "Arial" ))
-		(line (pt 0 112)(pt 16 112)(line_width 3))
-	)
-	(port
-		(pt 0 128)
-		(input)
-		(text "random_fuse_time[7..0]" (rect 0 0 237 22)(font "Arial" ))
-		(text "random_fuse_time[7..0]" (rect 21 123 258 145)(font "Arial" ))
-		(line (pt 0 128)(pt 16 128)(line_width 3))
-	)
-	(port
-		(pt 0 144)
-		(input)
-		(text "random_radius[7..0]" (rect 0 0 198 22)(font "Arial" ))
-		(text "random_radius[7..0]" (rect 21 139 219 161)(font "Arial" ))
-		(line (pt 0 144)(pt 16 144)(line_width 3))
-	)
-	(port
-		(pt 280 32)
-		(output)
-		(text "topLeftX[10..0]" (rect 0 0 151 22)(font "Arial" ))
-		(text "topLeftX[10..0]" (rect 132 27 283 49)(font "Arial" ))
-		(line (pt 280 32)(pt 264 32)(line_width 3))
-	)
-	(port
-		(pt 280 48)
-		(output)
-		(text "topLeftY[10..0]" (rect 0 0 149 22)(font "Arial" ))
-		(text "topLeftY[10..0]" (rect 133 43 282 65)(font "Arial" ))
-		(line (pt 280 48)(pt 264 48)(line_width 3))
-	)
-	(port
-		(pt 280 64)
-		(output)
-		(text "Angle[8..0]" (rect 0 0 108 22)(font "Arial" ))
-		(text "Angle[8..0]" (rect 168 59 276 81)(font "Arial" ))
-		(line (pt 280 64)(pt 264 64)(line_width 3))
-	)
-	(port
-		(pt 280 80)
-		(output)
-		(text "ExplosionState[1..0]" (rect 0 0 201 22)(font "Arial" ))
-		(text "ExplosionState[1..0]" (rect 89 75 290 97)(font "Arial" ))
-		(line (pt 280 80)(pt 264 80)(line_width 3))
-	)
-	(port
-		(pt 280 96)
-		(output)
-		(text "explosionFlag" (rect 0 0 140 22)(font "Arial" ))
-		(text "explosionFlag" (rect 141 91 281 113)(font "Arial" ))
-		(line (pt 280 96)(pt 264 96))
-	)
-	(port
-		(pt 280 112)
-		(output)
-		(text "aimingFlag" (rect 0 0 109 22)(font "Arial" ))
-		(text "aimingFlag" (rect 167 107 276 129)(font "Arial" ))
-		(line (pt 280 112)(pt 264 112))
-	)
-	(port
-		(pt 280 128)
-		(output)
-		(text "explosionRadius[7..0]" (rect 0 0 215 22)(font "Arial" ))
-		(text "explosionRadius[7..0]" (rect 77 123 292 145)(font "Arial" ))
-		(line (pt 280 128)(pt 264 128)(line_width 3))
-	)
-	(parameter
-		"OBJECT_WIDTH_X"
-		"32"
-		""
-		(type "PARAMETER_SIGNED_DEC")	)
-	(parameter
-		"OBJECT_HEIGHT_Y"
-		"32"
-		""
-		(type "PARAMETER_SIGNED_DEC")	)
-	(drawing
-		(rectangle (rect 16 16 264 160))
-	)
-	(annotation_block (parameter)(rect 496 568 898 655))
-)
-(symbol
 	(rect 552 120 768 232)
 	(text "random" (rect 5 0 80 22)(font "Arial" ))
 	(text "inst1" (rect 8 96 50 119)(font "Intel Clear" (font_size 6)))
@@ -664,6 +556,137 @@ agreement for further details.
 		(rectangle (rect 16 16 200 96))
 	)
 	(annotation_block (parameter)(rect 360 264 532 356))
+)
+(symbol
+	(rect 224 640 504 848)
+	(text "bomb_move" (rect 5 0 131 22)(font "Arial" ))
+	(text "inst2" (rect 8 192 55 214)(font "Arial" ))
+	(port
+		(pt 0 32)
+		(input)
+		(text "clk" (rect 0 0 27 22)(font "Arial" ))
+		(text "clk" (rect 21 27 48 49)(font "Arial" ))
+		(line (pt 0 32)(pt 16 32))
+	)
+	(port
+		(pt 0 48)
+		(input)
+		(text "resetN" (rect 0 0 67 22)(font "Arial" ))
+		(text "resetN" (rect 21 43 88 65)(font "Arial" ))
+		(line (pt 0 48)(pt 16 48))
+	)
+	(port
+		(pt 0 64)
+		(input)
+		(text "startOfFrame" (rect 0 0 134 22)(font "Arial" ))
+		(text "startOfFrame" (rect 21 59 155 81)(font "Arial" ))
+		(line (pt 0 64)(pt 16 64))
+	)
+	(port
+		(pt 0 80)
+		(input)
+		(text "Y_direction_key" (rect 0 0 160 22)(font "Arial" ))
+		(text "Y_direction_key" (rect 21 75 181 97)(font "Arial" ))
+		(line (pt 0 80)(pt 16 80))
+	)
+	(port
+		(pt 0 96)
+		(input)
+		(text "collision" (rect 0 0 80 22)(font "Arial" ))
+		(text "collision" (rect 21 91 101 113)(font "Arial" ))
+		(line (pt 0 96)(pt 16 96))
+	)
+	(port
+		(pt 0 112)
+		(input)
+		(text "HitEdgeCode[2..0]" (rect 0 0 188 22)(font "Arial" ))
+		(text "HitEdgeCode[2..0]" (rect 21 107 209 129)(font "Arial" ))
+		(line (pt 0 112)(pt 16 112)(line_width 3))
+	)
+	(port
+		(pt 0 128)
+		(input)
+		(text "random_fuse_time[7..0]" (rect 0 0 237 22)(font "Arial" ))
+		(text "random_fuse_time[7..0]" (rect 21 123 258 145)(font "Arial" ))
+		(line (pt 0 128)(pt 16 128)(line_width 3))
+	)
+	(port
+		(pt 0 144)
+		(input)
+		(text "random_radius[7..0]" (rect 0 0 198 22)(font "Arial" ))
+		(text "random_radius[7..0]" (rect 21 139 219 161)(font "Arial" ))
+		(line (pt 0 144)(pt 16 144)(line_width 3))
+	)
+	(port
+		(pt 0 160)
+		(input)
+		(text "aimReset" (rect 0 0 96 22)(font "Arial" ))
+		(text "aimReset" (rect 21 155 117 177)(font "Arial" ))
+		(line (pt 0 160)(pt 16 160))
+	)
+	(port
+		(pt 280 32)
+		(output)
+		(text "topLeftX[10..0]" (rect 0 0 151 22)(font "Arial" ))
+		(text "topLeftX[10..0]" (rect 132 27 259 49)(font "Arial" ))
+		(line (pt 280 32)(pt 264 32)(line_width 3))
+	)
+	(port
+		(pt 280 48)
+		(output)
+		(text "topLeftY[10..0]" (rect 0 0 149 22)(font "Arial" ))
+		(text "topLeftY[10..0]" (rect 133 43 259 65)(font "Arial" ))
+		(line (pt 280 48)(pt 264 48)(line_width 3))
+	)
+	(port
+		(pt 280 64)
+		(output)
+		(text "Angle[8..0]" (rect 0 0 108 22)(font "Arial" ))
+		(text "Angle[8..0]" (rect 168 59 259 81)(font "Arial" ))
+		(line (pt 280 64)(pt 264 64)(line_width 3))
+	)
+	(port
+		(pt 280 80)
+		(output)
+		(text "ExplosionState[1..0]" (rect 0 0 201 22)(font "Arial" ))
+		(text "ExplosionState[1..0]" (rect 89 75 259 97)(font "Arial" ))
+		(line (pt 280 80)(pt 264 80)(line_width 3))
+	)
+	(port
+		(pt 280 96)
+		(output)
+		(text "explosionFlag" (rect 0 0 140 22)(font "Arial" ))
+		(text "explosionFlag" (rect 141 91 259 113)(font "Arial" ))
+		(line (pt 280 96)(pt 264 96))
+	)
+	(port
+		(pt 280 112)
+		(output)
+		(text "aimingFlag" (rect 0 0 109 22)(font "Arial" ))
+		(text "aimingFlag" (rect 167 107 259 129)(font "Arial" ))
+		(line (pt 280 112)(pt 264 112))
+	)
+	(port
+		(pt 280 128)
+		(output)
+		(text "explosionRadius[7..0]" (rect 0 0 215 22)(font "Arial" ))
+		(text "explosionRadius[7..0]" (rect 77 123 259 145)(font "Arial" ))
+		(line (pt 280 128)(pt 264 128)(line_width 3))
+	)
+	(parameter
+		"OBJECT_WIDTH_X"
+		"32"
+		""
+		(type "PARAMETER_SIGNED_DEC")	)
+	(parameter
+		"OBJECT_HEIGHT_Y"
+		"32"
+		""
+		(type "PARAMETER_SIGNED_DEC")	)
+	(drawing
+		(rectangle (rect 16 16 264 192))
+	)
+	(annotation_block (parameter)(rect 496 568 898 655))
 )
 (connector
 	(text "resetN" (rect 464 392 520 415)(font "Intel Clear" (font_size 6)))
@@ -1003,6 +1026,10 @@ agreement for further details.
 	(pt 1144 192)
 	(pt 1184 192)
 	(bus)
+)
+(connector
+	(pt 176 800)
+	(pt 224 800)
 )
 (text "Bomb bitmap and move logic" (rect 512 312 841 342)(font "Intel Clear" (font_size 8)))
 (text "TO DO LIST:" (rect 696 792 835 822)(font "Intel Clear" (font_size 8)))

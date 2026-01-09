@@ -27,7 +27,8 @@ module	game_controller	(
 			output logic newLevel,
 			output logic start,
 			output logic genderSwap,
-			output logic [9:0] money
+			output logic [9:0] money,
+			output logic aimReset
 			
 
 );
@@ -51,6 +52,7 @@ logic newLevelFlag;
 logic startFlag;
 logic genderSwapFlag;
 logic [9:0] currentMoney;
+logic aimResetFlag;
 
 enum logic [2:0] {
 		  START_ST,
@@ -85,6 +87,7 @@ assign newLevel = newLevelFlag;
 assign start = startFlag;
 assign genderSwap = genderSwapFlag;
 assign money = currentMoney;
+assign aimReset = aimResetFlag;
 
 always_ff@(posedge clk or negedge resetN)
 begin
@@ -106,8 +109,11 @@ begin
 					newLevelFlag <= 0;
 					currentMoney <= 0;
 					startFlag <= 1;
-					if(keys[1] == 1'b1)
+					aimResetFlag <= 0;
+					if(keys[1] == 1'b1) begin
 						SM_Game <= LEVEL_ONE_ST;
+						aimResetFlag <= 1;
+					end
 					if(keys[5] == 1'b1)
 						genderSwapFlag <= 1;
 				end
@@ -117,6 +123,7 @@ begin
 					if(keys[9] == 1'b1)
 						SM_Game <= START_ST;
 					if(startOfFrame) begin
+						aimResetFlag <= 0;
 						flag <= 1'b0 ; // reset for next time 
 						frame_counter <= frame_counter + 1;
 						if(frame_counter >= 72) begin //if 72 frames passed, one second passed
@@ -144,6 +151,7 @@ begin
 					if(keys[9] == 1'b1)
 						SM_Game <= START_ST;
 					if(startOfFrame) begin
+						aimResetFlag <= 0;
 						flag <= 1'b0 ; // reset for next time 
 						frame_counter <= frame_counter + 1;
 						if(frame_counter >= 72) begin //if 72 frames passed, one second passed
@@ -168,9 +176,11 @@ begin
 					end
 				end
 				LEVEL_THREE_ST: begin
+					aimResetFlag <= 0;
 					if(keys[9] == 1'b1)
 						SM_Game <= START_ST;
 					if(startOfFrame) begin
+						aimResetFlag <= 0;
 						flag <= 1'b0 ; // reset for next time 
 						frame_counter <= frame_counter + 1;
 						if(frame_counter >= 72) begin //if 72 frames passed, one second passed
@@ -206,11 +216,13 @@ begin
 									timer <= 45;
 									SM_Game <= LEVEL_TWO_ST;
 									shopFlag <= 0;
+									aimResetFlag <= 1;
 								end
 								else if(level == 3) begin
 									timer <= 40;
 									SM_Game <= LEVEL_THREE_ST;
 									shopFlag <= 0;
+									aimResetFlag <= 1;
 								end
 							end
 						end
