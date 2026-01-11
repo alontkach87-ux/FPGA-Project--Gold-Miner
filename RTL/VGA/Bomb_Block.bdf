@@ -574,7 +574,7 @@ agreement for further details.
 	(annotation_block (parameter)(rect 360 264 532 356))
 )
 (symbol
-	(rect 224 640 504 848)
+	(rect 224 632 504 840)
 	(text "bomb_move" (rect 5 0 131 22)(font "Arial" ))
 	(text "inst2" (rect 8 192 55 214)(font "Arial" ))
 	(port
@@ -709,7 +709,7 @@ agreement for further details.
 	(drawing
 		(rectangle (rect 16 16 264 192))
 	)
-	(annotation_block (parameter)(rect 496 568 898 655))
+	(annotation_block (parameter)(rect 496 560 898 647))
 )
 (connector
 	(text "resetN" (rect 464 392 520 415)(font "Intel Clear" (font_size 6)))
@@ -758,89 +758,6 @@ agreement for further details.
 	(text "collision" (rect 272 304 355 329)(font "Intel Clear" ))
 	(pt 264 320)
 	(pt 288 320)
-)
-(connector
-	(text "clk" (rect 168 648 191 671)(font "Intel Clear" (font_size 6)))
-	(pt 192 672)
-	(pt 224 672)
-)
-(connector
-	(text "resetN" (rect 136 672 192 695)(font "Intel Clear" (font_size 6)))
-	(pt 192 688)
-	(pt 224 688)
-)
-(connector
-	(text "startOfFrame" (rect 96 688 209 711)(font "Intel Clear" (font_size 6)))
-	(pt 192 704)
-	(pt 224 704)
-)
-(connector
-	(text "Y_direction_key" (rect 72 704 208 727)(font "Intel Clear" (font_size 6)))
-	(pt 192 720)
-	(pt 224 720)
-)
-(connector
-	(text "collision" (rect 128 720 196 743)(font "Intel Clear" (font_size 6)))
-	(pt 192 736)
-	(pt 224 736)
-)
-(connector
-	(text "HitEdgeCode[2..0]" (rect 56 736 211 759)(font "Intel Clear" (font_size 6)))
-	(pt 192 752)
-	(pt 224 752)
-	(bus)
-)
-(connector
-	(text "dout[7..0]" (rect 112 752 194 775)(font "Intel Clear" (font_size 6)))
-	(pt 192 768)
-	(pt 224 768)
-	(bus)
-)
-(connector
-	(text "bombTLX[10..0]" (rect 504 648 643 671)(font "Intel Clear" (font_size 6)))
-	(pt 504 672)
-	(pt 544 672)
-	(bus)
-)
-(connector
-	(text "bombTLY[10..0]" (rect 504 664 643 687)(font "Intel Clear" (font_size 6)))
-	(pt 504 688)
-	(pt 544 688)
-	(bus)
-)
-(connector
-	(text "Angle[8..0]" (rect 504 680 594 703)(font "Intel Clear" (font_size 6)))
-	(pt 504 704)
-	(pt 544 704)
-	(bus)
-)
-(connector
-	(text "ExplosionState[1..0]" (rect 504 696 673 719)(font "Intel Clear" (font_size 6)))
-	(pt 504 720)
-	(pt 544 720)
-	(bus)
-)
-(connector
-	(text "explosionFlag" (rect 504 712 620 735)(font "Intel Clear" (font_size 6)))
-	(pt 504 736)
-	(pt 544 736)
-)
-(connector
-	(text "aimingFlag" (rect 504 728 596 751)(font "Intel Clear" (font_size 6)))
-	(pt 504 752)
-	(pt 544 752)
-)
-(connector
-	(text "random_radius[7..0]" (rect 40 768 209 791)(font "Intel Clear" (font_size 6)))
-	(pt 224 784)
-	(pt 192 784)
-	(bus)
-)
-(connector
-	(text "explosionRadius[7..0]" (rect 512 744 692 767)(font "Intel Clear" (font_size 6)))
-	(pt 504 768)
-	(pt 544 768)
-	(bus)
 )
 (connector
 	(text "explosionRadius[7..0]" (rect 1024 120 1204 143)(font "Intel Clear" (font_size 6)))
@@ -1051,16 +968,107 @@ agreement for further details.
 	(bus)
 )
 (connector
+	(text "clk" (rect 168 640 191 663)(font "Intel Clear" (font_size 6)))
+	(pt 192 664)
+	(pt 224 664)
+)
+(connector
+	(text "resetN" (rect 136 664 192 687)(font "Intel Clear" (font_size 6)))
+	(pt 192 680)
+	(pt 224 680)
+)
+(connector
+	(text "startOfFrame" (rect 96 680 209 703)(font "Intel Clear" (font_size 6)))
+	(pt 192 696)
+	(pt 224 696)
+)
+(connector
+	(text "Y_direction_key" (rect 72 696 208 719)(font "Intel Clear" (font_size 6)))
+	(pt 192 712)
+	(pt 224 712)
+)
+(connector
+	(text "collision" (rect 128 712 196 735)(font "Intel Clear" (font_size 6)))
+	(pt 192 728)
+	(pt 224 728)
+)
+(connector
+	(text "HitEdgeCode[2..0]" (rect 56 728 211 751)(font "Intel Clear" (font_size 6)))
+	(pt 192 744)
+	(pt 224 744)
+	(bus)
+)
+(connector
+	(text "dout[7..0]" (rect 112 744 194 767)(font "Intel Clear" (font_size 6)))
+	(pt 192 760)
+	(pt 224 760)
+	(bus)
+)
+(connector
+	(text "bombTLX[10..0]" (rect 504 640 643 663)(font "Intel Clear" (font_size 6)))
+	(pt 504 664)
+	(pt 544 664)
+	(bus)
+)
+(connector
+	(text "bombTLY[10..0]" (rect 504 656 643 679)(font "Intel Clear" (font_size 6)))
+	(pt 504 680)
+	(pt 544 680)
+	(bus)
+)
+(connector
+	(text "Angle[8..0]" (rect 504 672 594 695)(font "Intel Clear" (font_size 6)))
+	(pt 504 696)
+	(pt 544 696)
+	(bus)
+)
+(connector
+	(text "ExplosionState[1..0]" (rect 504 688 673 711)(font "Intel Clear" (font_size 6)))
+	(pt 504 712)
+	(pt 544 712)
+	(bus)
+)
+(connector
+	(text "explosionFlag" (rect 504 704 620 727)(font "Intel Clear" (font_size 6)))
+	(pt 504 728)
+	(pt 544 728)
+)
+(connector
+	(text "aimingFlag" (rect 504 720 596 743)(font "Intel Clear" (font_size 6)))
+	(pt 504 744)
+	(pt 544 744)
+)
+(connector
+	(text "random_radius[7..0]" (rect 40 760 209 783)(font "Intel Clear" (font_size 6)))
+	(pt 224 776)
+	(pt 192 776)
+	(bus)
+)
+(connector
+	(text "explosionRadius[7..0]" (rect 512 736 692 759)(font "Intel Clear" (font_size 6)))
+	(pt 504 760)
+	(pt 544 760)
+	(bus)
+)
+(connector
+	(pt 184 800)
+	(pt 184 792)
+)
+(connector
 	(pt 176 800)
-	(pt 224 800)
+	(pt 184 800)
 )
 (connector
-	(pt 224 816)
-	(pt 80 816)
+	(pt 184 792)
+	(pt 224 792)
 )
 (connector
-	(pt 80 816)
+	(pt 80 808)
+	(pt 224 808)
+)
+(connector
 	(pt 80 832)
+	(pt 80 808)
 )
 (text "Bomb bitmap and move logic" (rect 512 312 841 342)(font "Intel Clear" (font_size 8)))
 (text "TO DO LIST:" (rect 696 792 835 822)(font "Intel Clear" (font_size 8)))

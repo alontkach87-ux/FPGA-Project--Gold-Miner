@@ -13,6 +13,7 @@ module MazeMatrixBitMap (
 	 input  logic        newLevel,
 	 input  logic [1:0]  level_input,      // 1, 2, 3
     input  logic [2:0]  map_randomizer,   // 0-5
+	 input  logic [1:0]  ExplosionState,
 	 
 
     output logic        drawingRequest, // output that the pixel should be displayed 
@@ -320,6 +321,7 @@ module MazeMatrixBitMap (
         if (!resetN) begin
             RGBout <= 8'h00;
             counter_Score <= 0;
+				Is_Rock <= 0;
             // Default Map (Empty)
             MazeBitMapMask <= '{default: 64'h0};
         end
@@ -495,15 +497,16 @@ module MazeMatrixBitMap (
         end
         else begin
             RGBout <= TRANSPARENT_ENCODING; 
-            Is_Rock <= 0;
             // -------------------------------------------------------------------------
             // COLLISION LOGIC 
             // -------------------------------------------------------------------------
             if (collision_bomb_object) begin
+					 Is_Rock <= 0;
                 case (MazeBitMapMask[offsetY_MSB][offsetX_MSB])
                     4'd1: begin // Gold
                             counter_Score <= counter_Score + GOLD_VALUE; 
                             MazeBitMapMask[offsetY_MSB][offsetX_MSB] <= 4'h0;
+									 
                           end
                     4'd2: begin // Stone
                             counter_Score <= counter_Score + STONE_VALUE; 
@@ -519,7 +522,8 @@ module MazeMatrixBitMap (
                           end
                     4'd5: begin // Strong Stone (5) -> Becomes Weak Stone (7)
                             counter_Score <= counter_Score + STONE_VALUE;
-                            MazeBitMapMask[offsetY_MSB][offsetX_MSB] <= 4'd9; 
+									 Is_Rock <= 1;
+                            MazeBitMapMask[offsetY_MSB][offsetX_MSB] <= 4'd9;
                           end
                     4'd6: begin // Black Hole
                             counter_Score <= counter_Score + BLACK_HOLE;
@@ -527,32 +531,36 @@ module MazeMatrixBitMap (
                           end
                     4'd7: begin // Weak Stone (7) -> Disappears
                             counter_Score <= counter_Score + STONE_VALUE;
+									 Is_Rock <= 1;
                             MazeBitMapMask[offsetY_MSB][offsetX_MSB] <= 4'h0;
 								  end 
 						  4'd9: begin
                           end
-                    default: counter_Score <= counter_Score;
-                endcase
+                   default: begin // Default case
+                        counter_Score <= counter_Score;
+                        Is_Rock <= 0; 
+                    end
+				   endcase
             end
                          
             // -------------------------------------------------------------------------
             // DRAWING LOGIC 
             // -------------------------------------------------------------------------
             if (InsideRectangle) begin 
-				    if ((MazeBitMapMask[offsetY_MSB][offsetX_MSB] == 4'd9) && !collision_bomb_object) begin
+				    if ((MazeBitMapMask[offsetY_MSB][offsetX_MSB] == 4'd9) && (ExplosionState == 2'b00)) begin
                      MazeBitMapMask[offsetY_MSB][offsetX_MSB] <= 4'd7;
 							end
                 case (MazeBitMapMask[offsetY_MSB][offsetX_MSB])
                     4'd0: begin RGBout <= TRANSPARENT_ENCODING; Is_Rock <= 0; end
-                    4'd1: begin RGBout <= object_colors[1][offsetY_LSB][offsetX_LSB]; Is_Rock <= 0;  end 
-                    4'd2: begin RGBout <= object_colors[2][offsetY_LSB][offsetX_LSB]; Is_Rock <= 0; end
-                    4'd3: begin RGBout <= object_colors[3][offsetY_LSB][offsetX_LSB]; Is_Rock <= 0; end
-                    4'd4: begin RGBout <= object_colors[4][offsetY_LSB][offsetX_LSB]; Is_Rock <= 0; end
-                    4'd5: begin RGBout <= object_colors[5][offsetY_LSB][offsetX_LSB]; Is_Rock <= 1; end
-                    4'd6: begin RGBout <= object_colors[6][offsetY_LSB][offsetX_LSB]; Is_Rock <= 0; end
-                    4'd7: begin RGBout <= object_colors[7][offsetY_LSB][offsetX_LSB]; Is_Rock <= 1;  end
-						  4'd9: begin RGBout <= object_colors[7][offsetY_LSB][offsetX_LSB]; Is_Rock <= 0;  end
-                    default: begin RGBout <= TRANSPARENT_ENCODING; Is_Rock <= 0; end
+                    4'd1: begin RGBout <= object_colors[1][offsetY_LSB][offsetX_LSB];end
+                    4'd2: begin RGBout <= object_colors[2][offsetY_LSB][offsetX_LSB];end
+                    4'd3: begin RGBout <= object_colors[3][offsetY_LSB][offsetX_LSB];end
+                    4'd4: begin RGBout <= object_colors[4][offsetY_LSB][offsetX_LSB];end
+                    4'd5: begin RGBout <= object_colors[5][offsetY_LSB][offsetX_LSB];end
+                    4'd6: begin RGBout <= object_colors[6][offsetY_LSB][offsetX_LSB]; end
+                    4'd7: begin RGBout <= object_colors[7][offsetY_LSB][offsetX_LSB]; end
+						  4'd9: begin RGBout <= object_colors[7][offsetY_LSB][offsetX_LSB]; end
+                    default: begin RGBout <= TRANSPARENT_ENCODING;end
                 endcase
             end 
         end 

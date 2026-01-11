@@ -1,0 +1,101 @@
+Quartus Prime Archive log --	C:/Users/alon8/Documents/GitHub/lab1project/ProjectGoldMiner.qarlog
+
+Archive:	C:/Users/alon8/Documents/GitHub/lab1project/ProjectGoldMiner.qar
+Date:		Sat Dec 20 23:33:27 2025
+Quartus Prime		17.0.0 Build 595 04/25/2017 SJ Lite Edition
+
+	=========== Files Selected: ===========
+C:/Users/alon8/Documents/GitHub/lab1project/CLK_31P5.cmp
+C:/Users/alon8/Documents/GitHub/lab1project/CLK_31P5.qip
+C:/Users/alon8/Documents/GitHub/lab1project/CLK_31P5.sip
+C:/Users/alon8/Documents/GitHub/lab1project/CLK_31P5.spd
+C:/Users/alon8/Documents/GitHub/lab1project/CLK_31P5.v
+C:/Users/alon8/Documents/GitHub/lab1project/CLK_31P5/CLK_31P5_0002.qip
+C:/Users/alon8/Documents/GitHub/lab1project/CLK_31P5/CLK_31P5_0002.v
+C:/Users/alon8/Documents/GitHub/lab1project/CLK_31P5_sim/CLK_31P5.vo
+C:/Users/alon8/Documents/GitHub/lab1project/DE10_Standard_Audio.sdc
+C:/Users/alon8/Documents/GitHub/lab1project/KBDINTF.qxp
+C:/Users/alon8/Documents/GitHub/lab1project/Lab1Demo.qpf
+C:/Users/alon8/Documents/GitHub/lab1project/Lab1Demo.qsf
+C:/Users/alon8/Documents/GitHub/lab1project/Lab1Demo_assignment_defaults.qdf
+C:/Users/alon8/Documents/GitHub/lab1project/RTL/AUDIO/AUDIO.bdf
+C:/Users/alon8/Documents/GitHub/lab1project/RTL/AUDIO/JukeBox1.sv
+C:/Users/alon8/Documents/GitHub/lab1project/RTL/AUDIO/Mili_sec_counter.sv
+C:/Users/alon8/Documents/GitHub/lab1project/RTL/AUDIO/SinTable.sv
+C:/Users/alon8/Documents/GitHub/lab1project/RTL/AUDIO/ToneDecoder.sv
+C:/Users/alon8/Documents/GitHub/lab1project/RTL/AUDIO/addr_counter.sv
+C:/Users/alon8/Documents/GitHub/lab1project/RTL/AUDIO/audio_codec_controller/DualSerial2parallel.sv
+C:/Users/alon8/Documents/GitHub/lab1project/RTL/AUDIO/audio_codec_controller/audio_codec_controller.sv
+C:/Users/alon8/Documents/GitHub/lab1project/RTL/AUDIO/audio_codec_controller/clock_500.sv
+C:/Users/alon8/Documents/GitHub/lab1project/RTL/AUDIO/audio_codec_controller/i2c.sv
+C:/Users/alon8/Documents/GitHub/lab1project/RTL/AUDIO/melody_player_1.sv
+C:/Users/alon8/Documents/GitHub/lab1project/RTL/AUDIO/prescaler.sv
+C:/Users/alon8/Documents/GitHub/lab1project/RTL/KEYBOARDX/TOP_KBD.bdf
+C:/Users/alon8/Documents/GitHub/lab1project/RTL/KEYBOARDX/keyPad_decoder.sv
+C:/Users/alon8/Documents/GitHub/lab1project/RTL/KEYBOARDX/random.sv
+C:/Users/alon8/Documents/GitHub/lab1project/RTL/KEYBOARDX/simple_up_counter.sv
+C:/Users/alon8/Documents/GitHub/lab1project/RTL/Seg7/SEG7.SV
+C:/Users/alon8/Documents/GitHub/lab1project/RTL/VGA/Bomb_Block.bdf
+C:/Users/alon8/Documents/GitHub/lab1project/RTL/VGA/CharacterBitMap.sv
+C:/Users/alon8/Documents/GitHub/lab1project/RTL/VGA/Character_Top.bdf
+C:/Users/alon8/Documents/GitHub/lab1project/RTL/VGA/HART_DISPLAY.bdf
+C:/Users/alon8/Documents/GitHub/lab1project/RTL/VGA/HartsMatrixBitMap.sv
+C:/Users/alon8/Documents/GitHub/lab1project/RTL/VGA/HartsMatrixBitMapO.sv
+C:/Users/alon8/Documents/GitHub/lab1project/RTL/VGA/MyConstant.sv
+C:/Users/alon8/Documents/GitHub/lab1project/RTL/VGA/NumbersBitMap.sv
+C:/Users/alon8/Documents/GitHub/lab1project/RTL/VGA/Smiley_Block_T.bdf
+C:/Users/alon8/Documents/GitHub/lab1project/RTL/VGA/TOP_PROJECT_KBD.bdf
+C:/Users/alon8/Documents/GitHub/lab1project/RTL/VGA/TOP_VGA_DEMO_KBD.bdf
+C:/Users/alon8/Documents/GitHub/lab1project/RTL/VGA/TOP_VGA_DEMO_KBDO1.bdf
+C:/Users/alon8/Documents/GitHub/lab1project/RTL/VGA/VGA_Controller.sv
+C:/Users/alon8/Documents/GitHub/lab1project/RTL/VGA/back_ground_draw.sv
+C:/Users/alon8/Documents/GitHub/lab1project/RTL/VGA/bomb_move.sv
+C:/Users/alon8/Documents/GitHub/lab1project/RTL/VGA/game_controller.sv
+C:/Users/alon8/Documents/GitHub/lab1project/RTL/VGA/objects_mux.sv
+C:/Users/alon8/Documents/GitHub/lab1project/RTL/VGA/objects_muxO.sv
+C:/Users/alon8/Documents/GitHub/lab1project/RTL/VGA/objects_muxO1.sv
+C:/Users/alon8/Documents/GitHub/lab1project/RTL/VGA/smallBombBitMap.sv
+C:/Users/alon8/Documents/GitHub/lab1project/RTL/VGA/smileyBitMap.sv
+C:/Users/alon8/Documents/GitHub/lab1project/RTL/VGA/smileyBitMapO.sv
+C:/Users/alon8/Documents/GitHub/lab1project/RTL/VGA/smiley_move.sv
+C:/Users/alon8/Documents/GitHub/lab1project/RTL/VGA/square_Hart_object.sv
+C:/Users/alon8/Documents/GitHub/lab1project/RTL/VGA/square_object.sv
+C:/Users/alon8/Documents/GitHub/lab1project/RTL/VGA/square_object1.sv
+C:/Users/alon8/Documents/GitHub/lab1project/RTL/VGA/square_object_bomb.sv
+C:/Users/alon8/Documents/GitHub/lab1project/RTL/VGA/valX.bsf
+C:/Users/alon8/Documents/GitHub/lab1project/RTL/VGA/valX.qip
+C:/Users/alon8/Documents/GitHub/lab1project/RTL/VGA/valX.v
+C:/Users/alon8/Documents/GitHub/lab1project/RTL/VGA/valX_bb.v
+C:/Users/alon8/Documents/GitHub/lab1project/RTL/VGA/valX_inst.v
+C:/Users/alon8/Documents/GitHub/lab1project/RTL/background.mif
+C:/Users/alon8/Documents/GitHub/lab1project/assignment_defaults.qdf
+C:/Users/alon8/Documents/GitHub/lab1project/constraints/DE10_Standard_Audio.sdc
+C:/Users/alon8/Documents/GitHub/lab1project/constraints/pin.tcl
+	======= Total: 66 files to archive =======
+
+	================ Status: ===============
+All files archived successfully.
+
+
+******* Archived project restoration attempt on Sun Dec 21 11:19:03 2025
+Source archive file:	C:/Users/alon8/Documents/GitHub/lab1project/ProjectGoldMiner.qar
+Archive was extracted into	C:/Users/alon8/Documents/GitHub/lab1project/ProjectGoldMiner_restored/
+		 - successfully.
+
+
+******* Archived project restoration attempt on Sun Dec 21 12:19:12 2025
+Source archive file:	C:/Users/alon8/Documents/GitHub/lab1project/ProjectGoldMiner.qar
+Archive was extracted into	C:/Users/alon8/Documents/GitHub/lab1project/ProjectGoldMiner_restored/
+		 - successfully.
+
+
+******* Archived project restoration attempt on Tue Dec 23 16:42:00 2025
+Source archive file:	C:/Users/alon8/Documents/GitHub/lab1project/ProjectGoldMiner.qar
+Archive was extracted into	C:/Users/alon8/Documents/GitHub/lab1project/ProjectGoldMiner_restored/
+		 - successfully.
+
+
+******* Archived project restoration attempt on Sat Dec 27 10:32:17 2025
+Source archive file:	C:/Users/alon8/Documents/GitHub/lab1project/ProjectGoldMiner.qar
+Archive was extracted into	C:/Users/alon8/Documents/GitHub/lab1project/ProjectGoldMiner_restored/
+		 - successfully.
