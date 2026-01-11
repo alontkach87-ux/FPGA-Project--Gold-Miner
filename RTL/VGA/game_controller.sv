@@ -29,7 +29,10 @@ module	game_controller	(
 			output logic genderSwap,
 			output logic [9:0] money,
 			output logic aimReset,
-			output logic collision_explosion_stone
+			output logic collision_explosion_stone,
+			output logic startAudio,
+			output logic gameOverAudio,
+			output logic victoryAudio
 			
 
 );
@@ -41,7 +44,7 @@ localparam int REQUIRED_SCORE_LEVEL_THREE = 180;
 
 
 logic flag ; // a semaphore to set the output only once per frame regardless of number of collisions 
-logic [6:0] frame_counter;
+logic [7:0] frame_counter;
 //logic	score,
 logic [9:0] timer;
 logic [1:0] level;
@@ -54,6 +57,9 @@ logic startFlag;
 logic genderSwapFlag;
 logic [9:0] currentMoney;
 logic aimResetFlag;
+logic startAudioFlag;
+logic gameOverAudioFlag;
+logic victoryAudioFlag;
 
 enum logic [2:0] {
 		  START_ST,
@@ -89,6 +95,10 @@ assign start = startFlag;
 assign genderSwap = genderSwapFlag;
 assign money = currentMoney;
 assign aimReset = aimResetFlag;
+assign startAudio = startAudioFlag;
+assign gameOverAudio = gameOverAudioFlag;
+assign victoryAudio = victoryAudioFlag;
+
 
 always_ff@(posedge clk or negedge resetN)
 begin
@@ -109,6 +119,9 @@ begin
 					timer <= 50;
 					gameOverFlag <= 0;
 					victoryFlag <= 0;
+					gameOverAudioFlag <= 0;
+					victoryAudioFlag <= 0;
+					startAudioFlag <= 0;
 					shopFlag <= 0;
 					currentMoney <= 0;
 					startFlag <= 1;
@@ -117,7 +130,7 @@ begin
 						SM_Game <= LEVEL_ONE_ST;
 						aimResetFlag <= 1;
 						newLevelFlag <= 1;
-						
+						startAudioFlag <= 1;
 					end
 					if(keys[5] == 1'b1)
 						genderSwapFlag <= 1;
@@ -131,6 +144,8 @@ begin
 						aimResetFlag <= 0;
 						flag <= 1'b0 ; // reset for next time 
 						frame_counter <= frame_counter + 1;
+						if(timer == 50 && frame_counter == 63)
+							startAudioFlag <= 0;
 						if(frame_counter >= 72) begin //if 72 frames passed, one second passed
 							frame_counter <= 0;
 							timer <= timer - 1;
@@ -146,6 +161,7 @@ begin
 									timer <= 0;
 									SM_Game <= GAME_OVER_ST;
 									gameOverFlag <= 1;
+									gameOverAudioFlag <= 1;
 								end
 							end
 						end
@@ -173,6 +189,7 @@ begin
 									timer <= 0;
 									SM_Game <= GAME_OVER_ST;
 									gameOverFlag <= 1;
+									gameOverAudioFlag <= 1;
 								end
 							end
 						end
@@ -193,11 +210,13 @@ begin
 									timer <= 0;
 									SM_Game <= VICTORY_ST;
 									victoryFlag <= 1;
+									victoryAudioFlag <= 1;
 								end
 								else begin
 									timer <= 0;
 									SM_Game <= GAME_OVER_ST;
 									gameOverFlag <= 1;
+									gameOverAudioFlag <= 1;
 								end
 							end
 						end
@@ -232,11 +251,21 @@ begin
 					end
 				end
 				VICTORY_ST: begin
+					if(startOfFrame) begin
+						frame_counter <= frame_counter + 1;
+						if(frame_counter == 130)
+							victoryAudioFlag <= 0;
+					end
 					if(keys[9] == 1'b1)
 						SM_Game <= START_ST;
 					victoryFlag <= 1;
 				end
 				GAME_OVER_ST: begin
+					if(startOfFrame) begin
+						frame_counter <= frame_counter + 1;
+						if(frame_counter == 156)
+							gameOverAudioFlag <= 0;
+					end
 					if(keys[9] == 1'b1)
 						SM_Game <= START_ST;
 					gameOverFlag <= 1;

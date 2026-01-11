@@ -60,8 +60,8 @@ always_ff@(posedge clk or negedge resetN) begin
 	else if(startDrawingRequest == 1'b1 || victoryDrawingRequest == 1'b1 || gameOverDrawingRequest == 1'b1)
 		RGBOut <= RGB_MIF;
 	else if(shopDrawingRequest == 1'b1) begin
-		if(scoreDrawingRequest == 1'b1)
-			RGBOut <= scoreRGB;
+		if(timeWordDrawingRequest == 1'b1)
+			RGBOut <= timeWordRGB;
 		else if(timerDrawingRequest == 1'b1)
 			RGBOut <= timerRGB;
 		else if(moneyWordDrawingRequest == 1'b1)

@@ -11,7 +11,7 @@ module melody_player_1
  input logic resetN ,
  input logic CLOCK_31p5 ,
  input logic startMelodyKey ,
- input logic [3:0] melodySelect ,     // selector of one melody  
+ input logic [2:0] melodySelect ,     // selector of one melody  
       // from Jukebox: silence signal
  
   output logic [3:0] tone,

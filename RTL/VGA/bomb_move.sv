@@ -28,7 +28,8 @@ module bomb_move #(
     output logic [1:0] ExplosionState,
 	 output logic explosionFlag,
 	 output logic aimingFlag,				//will be raised to display arrow instead of bomb
-	 output logic [7:0] explosionRadius
+	 output logic [7:0] explosionRadius,
+	 output logic launch
 );
 
     // =============================================================
@@ -85,6 +86,7 @@ module bomb_move #(
 	 logic [7:0] radius;
     int FuseCounter;    
     int AnimCounter;
+	 logic [6:0] frame_counter; //for audio
 	
 	 
 
@@ -104,6 +106,8 @@ module bomb_move #(
 				ExplosionState <= 2'b00;
 				explosionFlag <= 0;
 				aimingFlag <= 0;
+				launch <= 0;
+				frame_counter <= 0;
         end 
         else begin
             case(SM_Motion)
@@ -133,6 +137,7 @@ module bomb_move #(
 									FuseCounter <= {24'b0, random_fuse_time} + 5; 
 									radius <= random_radius;
 									SM_Motion <= MOVING_ST;
+									launch <= 1;
 							  end
 							  else begin
 									SM_Motion <= START_OF_FRAME_ST;
@@ -146,11 +151,18 @@ module bomb_move #(
                         SM_Motion <= IDLE_ST;
                     
                     if (startOfFrame) begin
+								frame_counter = frame_counter + 1;
+								if(frame_counter == 52) begin
+									launch <= 0;
+									frame_counter <= 0;
+								end
                         if ((FuseCounter == 0) || (collision_bomb_rock == 1'b1)) begin
                             SM_Motion <= EXPLOSION_FIRE_ST;
                             AnimCounter <= EXPLOSION_DURATION;
                             ExplosionState <= 2'b01;
                             explosionFlag <= 1;
+									 if(launch == 1)
+										launch <= 0;
                         end
                         
                         else begin
