@@ -13,7 +13,7 @@ module	game_controller	(
 			input logic [1:0] ExplosionState,
 			input logic [9:0] score,
 			input logic [9:0] keys,
-
+			input logic Is_Rock,
 			
 			output logic collision, // active in case of collision between two objects
 			
@@ -28,14 +28,15 @@ module	game_controller	(
 			output logic start,
 			output logic genderSwap,
 			output logic [9:0] money,
-			output logic aimReset
+			output logic aimReset,
+			output logic collision_explosion_stone
 			
 
 );
 
-localparam int REQUIRED_SCORE_LEVEL_ONE = 300;
-localparam int REQUIRED_SCORE_LEVEL_TWO = 350;
-localparam int REQUIRED_SCORE_LEVEL_THREE = 400;
+localparam int REQUIRED_SCORE_LEVEL_ONE = 100;
+localparam int REQUIRED_SCORE_LEVEL_TWO = 150;
+localparam int REQUIRED_SCORE_LEVEL_THREE = 180;
 
 
 
@@ -64,14 +65,14 @@ enum logic [2:0] {
 		  VICTORY_ST
     } SM_Game;
 
-
 always_comb begin
+	collision_explosion_maze = 1'b0;
+	collision_explosion_stone = 1'b0;
 	if(drawing_request_bomb && drawing_request_maze && (ExplosionState != 2'b00)) begin
-		collision_explosion_maze = 1'b1;
+	   collision_explosion_maze = 1'b1;
 	end	
-	else begin
-		collision_explosion_maze = 1'b0;
-	end
+	if(drawing_request_bomb &&  Is_Rock)
+      collision_explosion_stone = 1'b1;
 end
 
 
@@ -94,8 +95,11 @@ begin
 	if(!resetN)
 	begin 
 		SM_Game <= START_ST;
+		newLevelFlag <= 0;
 	end 
 	else begin 
+      newLevelFlag <= 0;
+      SingleHitPulse <= 0;
 		case (SM_Game)
 				START_ST: begin
 					flag	<= 1'b0;
@@ -106,13 +110,14 @@ begin
 					gameOverFlag <= 0;
 					victoryFlag <= 0;
 					shopFlag <= 0;
-					newLevelFlag <= 0;
 					currentMoney <= 0;
 					startFlag <= 1;
 					aimResetFlag <= 0;
 					if(keys[1] == 1'b1) begin
 						SM_Game <= LEVEL_ONE_ST;
 						aimResetFlag <= 1;
+						newLevelFlag <= 1;
+						
 					end
 					if(keys[5] == 1'b1)
 						genderSwapFlag <= 1;
@@ -136,7 +141,6 @@ begin
 									SM_Game <= SHOP_ST;
 									shopFlag <= 1;
 									level <= 2;
-									newLevelFlag <= 1;
 								end
 								else begin
 									timer <= 0;
@@ -164,7 +168,6 @@ begin
 									SM_Game <= SHOP_ST;
 									shopFlag <= 1;
 									level <= 3;
-									newLevelFlag <= 1;
 								end
 								else begin
 									timer <= 0;
@@ -207,7 +210,6 @@ begin
 						flag <= 1'b0 ; // reset for next time 
 						frame_counter <= frame_counter + 1;
 						if(frame_counter >= 72) begin //if 72 frames passed, one second passed
-							newLevelFlag <= 0;
 							frame_counter <= 0;
 							timer <= timer - 1;
 							if(timer == 0) begin
@@ -216,12 +218,14 @@ begin
 									SM_Game <= LEVEL_TWO_ST;
 									shopFlag <= 0;
 									aimResetFlag <= 1;
+									newLevelFlag <= 1;
 								end
 								else if(level == 3) begin
 									timer <= 40;
 									SM_Game <= LEVEL_THREE_ST;
 									shopFlag <= 0;
 									aimResetFlag <= 1;
+									newLevelFlag <= 1;
 								end
 							end
 						end

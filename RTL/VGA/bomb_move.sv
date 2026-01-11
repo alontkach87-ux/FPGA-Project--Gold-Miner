@@ -20,6 +20,7 @@ module bomb_move #(
     input  logic [7:0] random_fuse_time,
 	 input  logic [7:0] random_radius, 
 	 input  logic aimReset,
+	 input  logic collision_bomb_rock,
 	 
     output logic signed [10:0] topLeftX, 
     output logic signed [10:0] topLeftY, 
@@ -139,34 +140,32 @@ module bomb_move #(
 						  end
                 end
 
-                MOVING_ST: begin 
-						  aimingFlag <= 0;
-						  if(aimReset == 1'b1)
-								SM_Motion <= IDLE_ST;
-                    if (collision) 
-								hit_reg[HitEdgeCode] <= 1'b1;
+               MOVING_ST: begin 
+                    aimingFlag <= 0;
+                    if(aimReset == 1'b1)
+                        SM_Motion <= IDLE_ST;
+                    
                     if (startOfFrame) begin
-                        if (FuseCounter > 0) 
-									FuseCounter <= FuseCounter - 1;
-                        else begin
+                        if ((FuseCounter == 0) || (collision_bomb_rock == 1'b1)) begin
                             SM_Motion <= EXPLOSION_FIRE_ST;
                             AnimCounter <= EXPLOSION_DURATION;
                             ExplosionState <= 2'b01;
-									 explosionFlag <= 1;
+                            explosionFlag <= 1;
                         end
-                        if (FuseCounter > 0) begin
-									Xspeed <= AnglePosition / 20;  
-								  // 2. Y Speed: Pythagoras approximation (Diamond shape)
-								  //    We subtract the ABSOLUTE value of the angle contribution.
-								  if (AnglePosition < 0)
-										Yspeed <= 400 - (-AnglePosition / 20); // Negate negative angle to make it positive
-								  else
-										Yspeed <= 400 - (AnglePosition / 20);  // Subtract positive angle
-									SM_Motion <= START_OF_FRAME_ST; 
-								end
+                        
+                        else begin
+                            if (FuseCounter > 0) 
+                                FuseCounter <= FuseCounter - 1;
+                            Xspeed <= AnglePosition / 20;  
+                            if (AnglePosition < 0)
+                                Yspeed <= 400 - (-AnglePosition / 20); 
+                            else
+                                Yspeed <= 400 - (AnglePosition / 20);  
+                            SM_Motion <= START_OF_FRAME_ST; 
+                        end
                     end
-                end 
-
+                end
+					 
                 EXPLOSION_FIRE_ST: begin
                     Xspeed <= 0; 
 						  Yspeed <= 0;

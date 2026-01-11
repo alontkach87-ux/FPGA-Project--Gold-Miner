@@ -152,7 +152,7 @@ agreement for further details.
 	(input)
 	(rect -16 792 176 808)
 	(text "INPUT" (rect 149 0 208 18)(font "Arial" (font_size 6)))
-	(text "aimReset" (rect 5 0 102 22)(font "Arial" ))
+	(text "aimReset" (rect 5 0 101 22)(font "Arial" ))
 	(pt 192 8)
 	(drawing
 		(line (pt 108 12)(pt 133 12))
@@ -163,6 +163,22 @@ agreement for further details.
 		(line (pt 133 12)(pt 137 8))
 	)
 	(text "VCC" (rect 152 7 196 25)(font "Arial" (font_size 6)))
+)
+(pin
+	(input)
+	(rect -224 824 80 840)
+	(text "INPUT" (rect 261 0 320 18)(font "Arial" (font_size 6)))
+	(text "collision_bomb_rock" (rect 5 0 212 22)(font "Arial" ))
+	(pt 304 8)
+	(drawing
+		(line (pt 220 12)(pt 245 12))
+		(line (pt 220 4)(pt 245 4))
+		(line (pt 249 8)(pt 304 8))
+		(line (pt 220 12)(pt 220 4))
+		(line (pt 245 4)(pt 249 8))
+		(line (pt 245 12)(pt 249 8))
+	)
+	(text "VCC" (rect 264 7 308 25)(font "Arial" (font_size 6)))
 )
 (pin
 	(output)
@@ -625,6 +641,13 @@ agreement for further details.
 		(line (pt 0 160)(pt 16 160))
 	)
 	(port
+		(pt 0 176)
+		(input)
+		(text "collision_bomb_rock" (rect 0 0 206 22)(font "Arial" ))
+		(text "collision_bomb_rock" (rect 21 171 227 193)(font "Arial" ))
+		(line (pt 0 176)(pt 16 176))
+	)
+	(port
 		(pt 280 32)
 		(output)
 		(text "topLeftX[10..0]" (rect 0 0 151 22)(font "Arial" ))
@@ -1030,6 +1053,14 @@ agreement for further details.
 (connector
 	(pt 176 800)
 	(pt 224 800)
+)
+(connector
+	(pt 224 816)
+	(pt 80 816)
+)
+(connector
+	(pt 80 816)
+	(pt 80 832)
 )
 (text "Bomb bitmap and move logic" (rect 512 312 841 342)(font "Intel Clear" (font_size 8)))
 (text "TO DO LIST:" (rect 696 792 835 822)(font "Intel Clear" (font_size 8)))

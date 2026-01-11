@@ -1392,7 +1392,7 @@ agreement for further details.
 	(annotation_block (parameter)(rect -4528 720 -4273 796))
 )
 (symbol
-	(rect -4400 136 -4104 312)
+	(rect -4440 104 -4144 280)
 	(text "game_controller" (rect 5 0 166 22)(font "Arial" ))
 	(text "inst11" (rect 8 160 71 185)(font "Intel Clear" ))
 	(port
@@ -1758,31 +1758,6 @@ agreement for further details.
 	(bus)
 )
 (connector
-	(text "boardersDrawReq" (rect -4504 216 -4324 241)(font "Intel Clear" ))
-	(pt -4520 232)
-	(pt -4400 232)
-)
-(connector
-	(text "clk" (rect -4472 152 -4444 177)(font "Intel Clear" ))
-	(pt -4520 168)
-	(pt -4400 168)
-)
-(connector
-	(text "resetN" (rect -4480 168 -4413 190)(font "Arial" ))
-	(pt -4520 184)
-	(pt -4400 184)
-)
-(connector
-	(text "startOfFrame" (rect -4504 184 -4370 209)(font "Intel Clear" ))
-	(pt -4520 200)
-	(pt -4400 200)
-)
-(connector
-	(text "smileyDR" (rect -4502 200 -4407 225)(font "Intel Clear" ))
-	(pt -4520 216)
-	(pt -4400 216)
-)
-(connector
 	(pt -4160 1128)
 	(pt -4128 1128)
 )
@@ -2044,11 +2019,6 @@ agreement for further details.
 	(bus)
 )
 (connector
-	(text "numberDrawingRequest" (rect -4502 232 -4258 257)(font "Intel Clear" ))
-	(pt -4504 248)
-	(pt -4400 248)
-)
-(connector
 	(text "clk" (rect -5152 824 -5124 849)(font "Intel Clear" ))
 	(pt -5160 840)
 	(pt -5120 840)
@@ -2070,29 +2040,9 @@ agreement for further details.
 	(pt -5256 872)
 )
 (connector
-	(text "collision" (rect -4048 152 -3965 177)(font "Intel Clear" ))
-	(pt -4104 168)
-	(pt -3968 168)
-)
-(connector
-	(text "singleHit" (rect -4049 168 -3961 193)(font "Intel Clear" ))
-	(pt -4104 184)
-	(pt -3968 184)
-)
-(connector
-	(text "HartDrawingRequest" (rect -4494 248 -4286 273)(font "Intel Clear" ))
-	(pt -4504 264)
-	(pt -4400 264)
-)
-(connector
 	(text "collision_Smiley_Hart" (rect -4614 -24 -4395 1)(font "Intel Clear" ))
 	(pt -4632 -8)
 	(pt -4504 -8)
-)
-(connector
-	(text "collision_Smiley_Hart" (rect -4096 184 -3877 209)(font "Intel Clear" ))
-	(pt -3968 200)
-	(pt -4104 200)
 )
 (connector
 	(text "address[18..0]" (rect -5054 -512 -4913 -487)(font "Intel Clear" ))
@@ -2110,6 +2060,56 @@ agreement for further details.
 	(pt -4880 -472)
 	(pt -4776 -472)
 	(bus)
+)
+(connector
+	(text "boardersDrawReq" (rect -4544 184 -4364 209)(font "Intel Clear" ))
+	(pt -4560 200)
+	(pt -4440 200)
+)
+(connector
+	(text "clk" (rect -4512 120 -4484 145)(font "Intel Clear" ))
+	(pt -4560 136)
+	(pt -4440 136)
+)
+(connector
+	(text "resetN" (rect -4520 136 -4453 158)(font "Arial" ))
+	(pt -4560 152)
+	(pt -4440 152)
+)
+(connector
+	(text "startOfFrame" (rect -4544 152 -4410 177)(font "Intel Clear" ))
+	(pt -4560 168)
+	(pt -4440 168)
+)
+(connector
+	(text "smileyDR" (rect -4542 168 -4447 193)(font "Intel Clear" ))
+	(pt -4560 184)
+	(pt -4440 184)
+)
+(connector
+	(text "numberDrawingRequest" (rect -4542 200 -4298 225)(font "Intel Clear" ))
+	(pt -4544 216)
+	(pt -4440 216)
+)
+(connector
+	(text "collision" (rect -4088 120 -4005 145)(font "Intel Clear" ))
+	(pt -4144 136)
+	(pt -4008 136)
+)
+(connector
+	(text "singleHit" (rect -4089 136 -4001 161)(font "Intel Clear" ))
+	(pt -4144 152)
+	(pt -4008 152)
+)
+(connector
+	(text "HartDrawingRequest" (rect -4534 216 -4326 241)(font "Intel Clear" ))
+	(pt -4544 232)
+	(pt -4440 232)
+)
+(connector
+	(text "collision_Smiley_Hart" (rect -4136 152 -3917 177)(font "Intel Clear" ))
+	(pt -4144 168)
+	(pt -4008 168)
 )
 (junction (pt -5008 1136))
 (junction (pt -4160 1144))
