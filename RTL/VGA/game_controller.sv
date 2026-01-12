@@ -32,7 +32,11 @@ module	game_controller	(
 			output logic collision_explosion_stone,
 			output logic startAudio,
 			output logic gameOverAudio,
-			output logic victoryAudio
+			output logic victoryAudio,
+			output logic luckyCharm,
+			output logic gemDetector,
+			output logic delay,
+			output logic gemDetectorSignal
 			
 
 );
@@ -40,6 +44,9 @@ module	game_controller	(
 localparam int REQUIRED_SCORE_LEVEL_ONE = 100;
 localparam int REQUIRED_SCORE_LEVEL_TWO = 150;
 localparam int REQUIRED_SCORE_LEVEL_THREE = 180;
+localparam int REQUIRED_MONEY_LUCKY_CHARM = 150;
+localparam int REQUIRED_MONEY_GEM_DETECTOR = 100;
+localparam int REQUIRED_MONEY_DELAY = 50;
 
 
 
@@ -60,6 +67,12 @@ logic aimResetFlag;
 logic startAudioFlag;
 logic gameOverAudioFlag;
 logic victoryAudioFlag;
+logic luckyCharmFlag;
+logic gemDetectorFlag;
+logic delayFlag;
+logic timerGemDetectorEnable;
+logic timerGemDetector;
+logic gemDetectorSignalFlag;
 
 enum logic [2:0] {
 		  START_ST,
@@ -98,7 +111,10 @@ assign aimReset = aimResetFlag;
 assign startAudio = startAudioFlag;
 assign gameOverAudio = gameOverAudioFlag;
 assign victoryAudio = victoryAudioFlag;
-
+assign luckyCharm = luckyCharmFlag;
+assign gemDetector = gemDetectorFlag;
+assign delay = delayFlag;
+assign gemDetectorSignalFlag = gemDetectorSignal;
 
 always_ff@(posedge clk or negedge resetN)
 begin
@@ -123,6 +139,12 @@ begin
 					victoryAudioFlag <= 0;
 					startAudioFlag <= 0;
 					shopFlag <= 0;
+					luckyCharmFlag <= 0;
+					gemDetectorFlag <= 0;
+					timerGemDetectorEnable <= 0;
+					timerGemDetector <= 0;
+					gemDetectorSignalFlag <= 0;
+					delayFlag <= 0;
 					currentMoney <= 0;
 					startFlag <= 1;
 					aimResetFlag <= 0;
@@ -170,6 +192,15 @@ begin
 				LEVEL_TWO_ST: begin
 					if(keys[9] == 1'b1)
 						SM_Game <= START_ST;
+					if(keys[5] == 1'b1 && delayFlag == 1) begin
+						timer <= timer + 5;
+						delayFlag <= 0;
+					end
+					if(keys[6] == 1'b1 && gemDetectorFlag == 1) begin
+						timerGemDetectorEnable <= 1;
+						gemDetectorSignalFlag <= 1;
+						gemDetectorFlag <= 0;
+					end
 					if(startOfFrame) begin
 						aimResetFlag <= 0;
 						flag <= 1'b0 ; // reset for next time 
@@ -179,6 +210,13 @@ begin
 							timer <= timer - 1;
 							if(timer == 0) begin			
 								if(score >= REQUIRED_SCORE_LEVEL_TWO) begin
+									if(gemDetectorSignalFlag == 1) begin
+										timerGemDetectorEnable <= 0;
+										timerGemDetector <= 0;
+										gemDetectorSignalFlag <= 0;
+									end
+									if(luckyCharmFlag == 1'b1)
+										luckyCharmFlag <= 0;
 									timer <= 20;
 									currentMoney <= score - REQUIRED_SCORE_LEVEL_TWO;
 									SM_Game <= SHOP_ST;
@@ -186,10 +224,25 @@ begin
 									level <= 3;
 								end
 								else begin
+									if(gemDetectorSignalFlag == 1) begin
+										timerGemDetectorEnable <= 0;
+										timerGemDetector <= 0;
+										gemDetectorSignalFlag <= 0;
+									end
+									if(luckyCharmFlag == 1'b1)
+										luckyCharmFlag <= 0;
 									timer <= 0;
 									SM_Game <= GAME_OVER_ST;
 									gameOverFlag <= 1;
 									gameOverAudioFlag <= 1;
+								end
+							end
+							if(timerGemDetectorEnable == 1'b1) begin
+								timerGemDetector <= timerGemDetector + 1;
+								if(timerGemDetector == 10) begin
+									timerGemDetectorEnable <= 0;
+									timerGemDetector <= 0;
+									gemDetectorSignalFlag <= 0;
 								end
 							end
 						end
@@ -198,6 +251,15 @@ begin
 				LEVEL_THREE_ST: begin
 					if(keys[9] == 1'b1)
 						SM_Game <= START_ST;
+					if(keys[5] == 1'b1 && delayFlag == 1) begin
+						timer <= timer + 5;
+						delayFlag <= 0;
+					end
+					if(keys[6] == 1'b1 && gemDetectorFlag == 1) begin
+						timerGemDetectorEnable <= 1;
+						gemDetectorSignalFlag <= 1;
+						gemDetectorFlag <= 0;
+					end
 					if(startOfFrame) begin
 						aimResetFlag <= 0;
 						flag <= 1'b0 ; // reset for next time 
@@ -207,16 +269,38 @@ begin
 							timer <= timer - 1;
 							if(timer == 0) begin			
 								if(score >= REQUIRED_SCORE_LEVEL_THREE) begin
+									if(gemDetectorSignalFlag == 1) begin
+										timerGemDetectorEnable <= 0;
+										timerGemDetector <= 0;
+										gemDetectorSignalFlag <= 0;
+									end
+									if(luckyCharmFlag == 1'b1)
+										luckyCharmFlag <= 0;
 									timer <= 0;
 									SM_Game <= VICTORY_ST;
 									victoryFlag <= 1;
 									victoryAudioFlag <= 1;
 								end
 								else begin
+									if(gemDetectorSignalFlag == 1) begin
+										timerGemDetectorEnable <= 0;
+										timerGemDetector <= 0;
+										gemDetectorSignalFlag <= 0;
+									end
+									if(luckyCharmFlag == 1'b1)
+										luckyCharmFlag <= 0;
 									timer <= 0;
 									SM_Game <= GAME_OVER_ST;
 									gameOverFlag <= 1;
 									gameOverAudioFlag <= 1;
+								end
+							end
+							if(timerGemDetectorEnable == 1'b1) begin
+								timerGemDetector <= timerGemDetector + 1;
+								if(timerGemDetector == 10) begin
+									timerGemDetectorEnable <= 0;
+									timerGemDetector <= 0;
+									gemDetectorSignalFlag <= 0;
 								end
 							end
 						end
@@ -225,6 +309,18 @@ begin
 				SHOP_ST: begin
 					if(keys[9] == 1'b1)
 						SM_Game <= START_ST;
+					if(keys[5] == 1'b1 && currentMoney >= REQUIRED_MONEY_DELAY && delayFlag == 0) begin
+						delayFlag <= 1;
+						currentMoney <= currentMoney - REQUIRED_MONEY_DELAY;
+					end
+					if(keys[6] == 1'b1 && currentMoney >= REQUIRED_MONEY_GEM_DETECTOR && gemDetectorFlag == 0) begin
+						gemDetectorFlag <= 1;
+						currentMoney <= currentMoney - REQUIRED_MONEY_GEM_DETECTOR;
+					end
+					if(keys[7] == 1'b1 && currentMoney >= REQUIRED_MONEY_LUCKY_CHARM && luckyCharmFlag == 0) begin
+						luckyCharmFlag <= 1;
+						currentMoney <= currentMoney - REQUIRED_MONEY_LUCKY_CHARM;
+					end
 					if(startOfFrame) begin
 						flag <= 1'b0 ; // reset for next time 
 						frame_counter <= frame_counter + 1;

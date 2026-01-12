@@ -49,6 +49,12 @@ module	objects_mux	(
 					input    logic moneyWordDrawingRequest,
 					input    logic [7:0] moneyRGB,
 					input    logic moneyDrawingRequest,
+					input    logic [7:0] luckyCharmRGB,
+					input    logic luckyCharmDrawingRequest,
+					input    logic [7:0] gemDetectorRGB,
+					input    logic gemDetectorDrawingRequest,
+					input    logic [7:0] delayRGB,
+					input    logic delayDrawingRequest,
 			  
 				   output	logic	[7:0] RGBOut
 );
@@ -68,6 +74,12 @@ always_ff@(posedge clk or negedge resetN) begin
 			RGBOut <= moneyWordRGB;
 		else if(moneyDrawingRequest == 1'b1)
 			RGBOut <= moneyRGB;
+		else if(luckyCharmDrawingRequest == 1'b1)
+			RGBOut <= luckyCharmRGB;
+		else if(gemDetectorDrawingRequest == 1'b1)
+			RGBOut <= gemDetectorRGB;
+		else if(delayDrawingRequest == 1'b1)
+			RGBOut <= delayRGB;
 		else
 			RGBOut <= RGB_MIF;
 	end
@@ -94,6 +106,12 @@ always_ff@(posedge clk or negedge resetN) begin
 			RGBOut <= currLevelRGB;
 		else if(reqScoreDrawingRequest == 1'b1)
 			RGBOut <= reqScoreRGB;
+		else if(luckyCharmDrawingRequest == 1'b1)
+			RGBOut <= luckyCharmRGB;
+		else if(gemDetectorDrawingRequest == 1'b1)
+			RGBOut <= gemDetectorRGB;
+		else if(delayDrawingRequest == 1'b1)
+			RGBOut <= delayRGB;
 		else 
 			RGBOut <= RGB_MIF;
 		end ;	

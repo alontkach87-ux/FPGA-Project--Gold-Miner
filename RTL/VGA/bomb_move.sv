@@ -87,6 +87,7 @@ module bomb_move #(
     int FuseCounter;    
     int AnimCounter;
 	 logic [6:0] frame_counter; //for audio
+	 logic direction;
 	
 	 
 
@@ -108,14 +109,22 @@ module bomb_move #(
 				aimingFlag <= 0;
 				launch <= 0;
 				frame_counter <= 0;
+				direction <= 0;
         end 
         else begin
             case(SM_Motion)
                 IDLE_ST: begin
                     Xposition <= INITIAL_X * FIXED_POINT_MULTIPLIER;
                     Yposition <= INITIAL_Y * FIXED_POINT_MULTIPLIER; 
-                    AnglePosition <= ANGLE_START; 
-                    AngleSpeed <= SWING_SPEED;
+                    AnglePosition <= ANGLE_START;
+						  if(direction == 0) begin
+								AngleSpeed <= SWING_SPEED;
+								direction <= 1;
+						  end
+						  else if(direction == 1) begin
+								AngleSpeed <= -SWING_SPEED;
+								direction <= 0;
+						  end
 						  Xspeed <= 0;
 						  Yspeed <= 0;
                     ExplosionState <= 2'b00;

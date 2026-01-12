@@ -227,6 +227,9 @@ set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_RO
 set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
 set_global_assignment -name ENABLE_SIGNALTAP ON
 set_global_assignment -name USE_SIGNALTAP_FILE output_files/stp2.stp
+set_global_assignment -name SYSTEMVERILOG_FILE RTL/VGA/delayBitMap.SV
+set_global_assignment -name SYSTEMVERILOG_FILE RTL/VGA/luckyCharmBitMap.SV
+set_global_assignment -name SYSTEMVERILOG_FILE RTL/VGA/gemDetectorBitMap.SV
 set_global_assignment -name SYSTEMVERILOG_FILE RTL/AUDIO/melody_mux_1.sv
 set_global_assignment -name SYSTEMVERILOG_FILE RTL/VGA/TwotoTenconverter.sv
 set_global_assignment -name SYSTEMVERILOG_FILE RTL/VGA/SlashBitMap.SV
@@ -301,4 +304,5 @@ set_global_assignment -name SYSTEMVERILOG_FILE RTL/VGA/RequiredScoreMux.sv
 set_global_assignment -name SYSTEMVERILOG_FILE RTL/VGA/MaleFemaleMux.sv
 set_global_assignment -name SYSTEMVERILOG_FILE RTL/VGA/MoneyBitMap.SV
 set_global_assignment -name SIGNALTAP_FILE output_files/stp2.stp
+set_global_assignment -name BDF_FILE RTL/VGA/Purchase_Block.bdf
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
