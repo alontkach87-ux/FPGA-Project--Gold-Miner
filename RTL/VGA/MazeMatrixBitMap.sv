@@ -8,23 +8,22 @@ module MazeMatrixBitMap (
     input  logic [10:0] offsetX, // offset from top left position 
     input  logic [10:0] offsetY,
     input  logic        InsideRectangle, // input that the pixel is within a bracket 
-    input  logic        random_hart,     // for levle change
     input  logic        collision_bomb_object,
-	 input  logic        newLevel,
+	 input  logic        MazeReset,
 	 input  logic [1:0]  level_input,      // 1, 2, 3
     input  logic [2:0]  map_randomizer,   // 0-5
 	 input  logic [1:0]  ExplosionState,
 	 input  logic        gemDetectorSignal,
+	 input  logic        luckyCharm,
 	 
 
-    output logic        drawingRequest, // output that the pixel should be displayed 
-    output logic [7:0]  RGBout,          // rgb value from the bitmap 
+    output logic        drawingRequest,
+    output logic [7:0]  RGBout,        
 	 output logic [9:0]  counter_Score,
 	 output logic Is_Rock
 );
 
-    localparam logic [7:0] TRANSPARENT_ENCODING = 8'hFF; // RGB value representing transparency 
-
+    localparam logic [7:0] TRANSPARENT_ENCODING = 8'hFF; 
 
     localparam int TILE_NUMBER_OF_X_BITS = 5;  // 2^ 5= 32 pixels width
     localparam int TILE_NUMBER_OF_Y_BITS = 5;  // 2^5 = 32 pixels height
@@ -49,7 +48,7 @@ module MazeMatrixBitMap (
     localparam int NUM_OBJECTS = 8; 
 	 //1 gold
 	 //2 stone
-	 //3 reddiamond
+	 //3 pinkdiamond
 	 //4 bluediamond
 	 //5 strongstone
 	 //6 blackhole
@@ -71,72 +70,74 @@ module MazeMatrixBitMap (
 	 
     
     logic [0:NUM_OBJECTS-1][0:TILE_HEIGHT_Y-1][0:TILE_WIDTH_X-1][7:0] object_colors = {
-	{{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hfe,8'h8c,8'hb0,8'hfe,8'hfe,8'hfe,8'hfe,8'hf9,8'hfe,8'hd9,8'hfe,8'hfe,8'hfe,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
-	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hfe,8'hfe,8'h8c,8'hb0,8'hff,8'hfe,8'hd9,8'hb0,8'hd4,8'h8c,8'hd5,8'hf9,8'hfe,8'hfe,8'hfe,8'hfe,8'hfe,8'hfe,8'hfe,8'hfe,8'hff,8'hff,8'hff,8'hff,8'hff},
-	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hd4,8'hfe,8'hfd,8'hd4,8'hfe,8'hfe,8'hb0,8'hb0,8'hf9,8'hfa,8'hfe,8'hfe,8'hfe,8'hfe,8'hfe,8'hf9,8'hfe,8'hfe,8'hb4,8'hf9,8'hf9,8'hff,8'hff,8'hff,8'hff},
-	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hb0,8'hfe,8'hb0,8'hb0,8'hb0,8'hff,8'hd4,8'hf9,8'hd5,8'hfe,8'hfe,8'hb4,8'hfe,8'hfe,8'hfe,8'hfe,8'hf9,8'hfd,8'hfe,8'hd4,8'hd4,8'hfe,8'hff,8'hff,8'hff,8'hff},
-	{8'hff,8'hff,8'hff,8'hff,8'hfe,8'hfe,8'hfe,8'hfd,8'hfe,8'hfe,8'hb0,8'hfc,8'hfd,8'h8c,8'h90,8'hff,8'hb4,8'hf9,8'hfe,8'hfe,8'hfe,8'hfe,8'hf8,8'hfe,8'h6c,8'hfe,8'hfe,8'hd4,8'h90,8'hff,8'hff,8'hff},
-	{8'hff,8'hff,8'hff,8'hf9,8'hf9,8'hfd,8'hf9,8'hfd,8'hfd,8'hfe,8'hf9,8'hf8,8'hf9,8'hf9,8'hb0,8'h6c,8'hfe,8'hd9,8'h64,8'hb1,8'h64,8'hfe,8'hb0,8'hff,8'h64,8'h8c,8'hff,8'hd4,8'hd5,8'hff,8'hff,8'hff},
-	{8'hff,8'hff,8'hfa,8'hb0,8'hb0,8'hfe,8'hfe,8'hf9,8'hf9,8'hfd,8'hf9,8'hfe,8'hf9,8'hfe,8'h6c,8'h24,8'hb0,8'h64,8'h64,8'hf9,8'hfd,8'hfe,8'hd4,8'hfe,8'h6c,8'h8c,8'hfd,8'hff,8'h6c,8'hff,8'hff,8'hff},
-	{8'hff,8'hfe,8'hd5,8'hb0,8'hfe,8'hfe,8'hfe,8'hf9,8'hf9,8'hd9,8'hfe,8'hb4,8'hfc,8'hfe,8'h64,8'hb0,8'h6c,8'h8c,8'hd4,8'hf9,8'hf9,8'hfd,8'hb0,8'hfe,8'h24,8'h8c,8'hd4,8'hfd,8'h8c,8'hfe,8'hff,8'hff},
-	{8'hff,8'hb0,8'hb0,8'hff,8'hb0,8'hfd,8'hb4,8'hf9,8'hb0,8'hd4,8'hfe,8'hf9,8'hfd,8'hfd,8'hfe,8'h24,8'h6c,8'hf9,8'hd4,8'hac,8'hf4,8'hfd,8'h64,8'hfe,8'h64,8'h64,8'h8c,8'hd8,8'h8c,8'hfe,8'hff,8'hff},
-	{8'hfe,8'hd9,8'h8c,8'hfe,8'h24,8'h8c,8'h24,8'h8c,8'hfd,8'hd8,8'h90,8'hfe,8'hac,8'hfe,8'hfe,8'hf9,8'hf9,8'hfd,8'hfe,8'hb0,8'h24,8'hf9,8'hf9,8'hb0,8'h24,8'h8c,8'hd4,8'hfd,8'hfd,8'hfe,8'hff,8'hff},
-	{8'hff,8'h8c,8'hf9,8'hfe,8'h64,8'h8c,8'h24,8'h24,8'h6c,8'h64,8'hb0,8'hd8,8'hff,8'hfd,8'hfd,8'hf9,8'hf9,8'h8c,8'hff,8'h8c,8'hf8,8'hf4,8'hf9,8'hf9,8'hf9,8'hfd,8'hfd,8'hf9,8'hd4,8'hfe,8'hff,8'hff},
-	{8'h64,8'h64,8'hf9,8'hfd,8'hfd,8'hfd,8'hf9,8'h6c,8'h24,8'h8c,8'h6c,8'h6c,8'hd4,8'hfd,8'hfd,8'hf9,8'hf9,8'hf9,8'hf9,8'hf9,8'hb0,8'hf9,8'hf9,8'hf9,8'hfd,8'hfd,8'hf9,8'hd4,8'h8c,8'hfe,8'hd5,8'hff},
-	{8'h64,8'hd4,8'h8c,8'hf9,8'hfd,8'hfd,8'hf9,8'h24,8'hd5,8'h8c,8'h64,8'hfe,8'hfd,8'hfd,8'hf4,8'hfd,8'hfd,8'hfd,8'hf9,8'hf9,8'hfd,8'hb0,8'hfd,8'hf4,8'hf8,8'hf9,8'h8c,8'h64,8'hd4,8'hd4,8'h8c,8'hff},
-	{8'hfd,8'hf9,8'hd4,8'h8c,8'hf9,8'hfd,8'hf9,8'h64,8'hd5,8'h64,8'h8c,8'h64,8'hf9,8'hf8,8'hf9,8'hfd,8'hf9,8'hfd,8'hf9,8'hf9,8'hf8,8'hd0,8'hf9,8'hf9,8'h24,8'h8c,8'h64,8'h6c,8'hd4,8'hd9,8'hfa,8'hb0},
-	{8'hfd,8'hfd,8'h8c,8'h24,8'h6c,8'h8c,8'hb0,8'h8c,8'h8c,8'hfe,8'h90,8'h6c,8'hd0,8'hac,8'hb0,8'hfd,8'hfd,8'hf9,8'hf9,8'hf8,8'hf9,8'hb0,8'hac,8'h64,8'h6c,8'h6c,8'hfd,8'h64,8'h64,8'hb0,8'hd9,8'hd9},
-	{8'hfe,8'h8c,8'h6c,8'h64,8'h64,8'hfe,8'hfe,8'h8c,8'hd4,8'hff,8'h8c,8'h64,8'hff,8'hd5,8'h6c,8'hd4,8'hf9,8'hfd,8'hfd,8'hfd,8'hd9,8'hd5,8'h24,8'hac,8'hac,8'h64,8'hb5,8'h24,8'h6c,8'hfe,8'hff,8'hd5},
-	{8'hd4,8'hb0,8'hfd,8'h8c,8'hf9,8'hff,8'hd8,8'hb0,8'hfe,8'hfe,8'hfe,8'hb4,8'hfe,8'hff,8'hd4,8'h8c,8'h6c,8'h6c,8'h6c,8'hd4,8'h64,8'h24,8'h64,8'hfd,8'h64,8'hd5,8'h90,8'h24,8'h8c,8'hfd,8'hb0,8'hb0},
-	{8'h90,8'hf8,8'hd4,8'hfe,8'hfe,8'hff,8'hfe,8'hd4,8'hd0,8'hac,8'hfe,8'hfe,8'hfc,8'hfd,8'hff,8'hd8,8'hb0,8'hb0,8'hb0,8'h8c,8'h64,8'h24,8'h8c,8'hfe,8'h6c,8'h8c,8'h6c,8'h8c,8'hfd,8'hf9,8'hd5,8'hfd},
-	{8'h8c,8'h6c,8'h6c,8'hf9,8'hfe,8'hfd,8'hf8,8'hfc,8'hb0,8'hfe,8'hfe,8'hfe,8'hd8,8'hd8,8'hfe,8'hd4,8'hff,8'hf9,8'h90,8'hb4,8'h24,8'h8c,8'h6c,8'h64,8'h24,8'h8c,8'hb0,8'hf9,8'hfe,8'hf9,8'hf9,8'hf9},
-	{8'hd8,8'h64,8'hb0,8'hff,8'hfd,8'hd4,8'hfe,8'hff,8'h8c,8'h6c,8'h8c,8'hff,8'hff,8'hac,8'hfe,8'hfd,8'hfd,8'hb0,8'h8c,8'hb4,8'h24,8'hf8,8'h64,8'hf9,8'hf9,8'hd5,8'hf9,8'hfd,8'hf9,8'hfd,8'hf9,8'hfd},
-	{8'hfd,8'h6c,8'hfd,8'hfe,8'hff,8'h8c,8'h90,8'hd8,8'h64,8'hfd,8'h6c,8'hb0,8'hf9,8'hfe,8'hb0,8'hff,8'hfd,8'hfd,8'hfd,8'hf9,8'hf9,8'hf9,8'hf4,8'hf9,8'hf9,8'hf9,8'hf9,8'hfd,8'hfd,8'hfd,8'hac,8'hfd},
-	{8'hfd,8'hfd,8'hb0,8'hfd,8'h8c,8'h6c,8'hf9,8'hd9,8'hf9,8'hfd,8'hf9,8'hfd,8'hd4,8'hb0,8'hb0,8'hfd,8'hf9,8'hf9,8'hfd,8'hfd,8'hf8,8'hf9,8'hf9,8'hf9,8'hd4,8'hf9,8'hfd,8'hfd,8'hfd,8'hf9,8'hfd,8'hfd},
-	{8'hd5,8'hfa,8'hf9,8'h90,8'h64,8'hf9,8'hf9,8'hfd,8'hf9,8'hfd,8'hf9,8'hf9,8'h8c,8'hfe,8'hf9,8'hf9,8'hd4,8'hf9,8'hf9,8'hf9,8'hfd,8'hfd,8'hf9,8'hfd,8'hf9,8'hf9,8'hfd,8'hfd,8'hd4,8'hf8,8'hf8,8'hfd},
-	{8'hfd,8'hd9,8'hfe,8'hfe,8'hf9,8'hf9,8'hfd,8'hfd,8'hfd,8'hfd,8'hf9,8'h64,8'hf9,8'hfd,8'hf9,8'hd0,8'hd4,8'hf9,8'hf9,8'hf9,8'hf9,8'hf9,8'h64,8'h24,8'hf8,8'hfd,8'hfd,8'hfd,8'hfd,8'hf9,8'hf9,8'hfd},
-	{8'hff,8'hd5,8'hd5,8'hfa,8'hfd,8'hfd,8'hfd,8'hfd,8'hfd,8'hf9,8'h24,8'hf9,8'hfd,8'hfd,8'hf9,8'hb0,8'hf9,8'hf9,8'hf9,8'hf9,8'hf9,8'hf9,8'hf9,8'hfd,8'hd4,8'hb0,8'hfe,8'hf9,8'hb0,8'hfe,8'hfe,8'hfe},
-	{8'hff,8'hff,8'hd5,8'hf9,8'hd9,8'hf9,8'hfd,8'hfd,8'hfd,8'hfd,8'hfd,8'hf9,8'hf9,8'hf9,8'hd4,8'hd4,8'hfd,8'hfd,8'hf9,8'hf9,8'hf9,8'hf9,8'hf9,8'hf9,8'hf9,8'hfd,8'hfd,8'hf9,8'hb0,8'hf9,8'hfd,8'hff},
-	{8'hff,8'hff,8'hff,8'hd5,8'hf9,8'hd9,8'hd5,8'hfd,8'hf9,8'hfd,8'hfd,8'hd5,8'hf9,8'hd0,8'hd4,8'hb0,8'h64,8'hf9,8'hf9,8'hf9,8'hd4,8'hf9,8'hf9,8'hfd,8'hf9,8'hfd,8'hf9,8'hfe,8'hfd,8'hf9,8'hf9,8'hff},
-	{8'hff,8'hff,8'hff,8'hf9,8'hd5,8'hb1,8'hb0,8'hd4,8'hfd,8'hfd,8'hfd,8'hfd,8'hf9,8'hd0,8'hf8,8'hfd,8'h8c,8'hfd,8'hfd,8'hfd,8'hfd,8'hd4,8'hf9,8'hf9,8'hf9,8'hfd,8'hfd,8'hfd,8'hfd,8'hfe,8'hff,8'hff},
-	{8'hff,8'hff,8'hff,8'hd9,8'hf9,8'hb4,8'hf9,8'hf9,8'hd4,8'hb0,8'hd9,8'hf9,8'hd4,8'hfd,8'hf9,8'hfe,8'hf8,8'hf4,8'hf9,8'hf9,8'h6c,8'hf9,8'hd4,8'hf9,8'hf9,8'hfd,8'hf9,8'hfd,8'hfe,8'hfe,8'hff,8'hff},
-	{8'hff,8'hff,8'hff,8'hff,8'hd5,8'hfd,8'hf9,8'hf9,8'hd4,8'hd9,8'hb0,8'hd9,8'hf9,8'hf9,8'hfd,8'hfd,8'hd0,8'hb0,8'hb0,8'hf9,8'hf9,8'hf9,8'h8c,8'hf8,8'hf9,8'hfa,8'hfe,8'hfd,8'hfe,8'hff,8'hff,8'hff},
-	{8'hff,8'hff,8'hfe,8'hfe,8'hd5,8'hd5,8'hf9,8'hf9,8'hf9,8'hf9,8'hb0,8'hb5,8'hf9,8'hf9,8'hf9,8'hfd,8'hfd,8'hf9,8'hd4,8'h6c,8'h6c,8'hb0,8'hf8,8'hf9,8'hf9,8'hd9,8'hfe,8'hff,8'hff,8'hff,8'hff,8'hff},
-	{8'hfe,8'hfe,8'hfa,8'hfa,8'hfe,8'hb5,8'hd4,8'hd4,8'hf9,8'hf9,8'hd5,8'hd5,8'hf9,8'hf9,8'hf9,8'hf9,8'h8c,8'h8c,8'h8c,8'hd4,8'hfd,8'hf9,8'hd9,8'hf9,8'hf9,8'hf9,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff}
+	{{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hb0,8'hb0,8'hd0,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hb0,8'hf5,8'hf8,8'hf8,8'hd0,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hb0,8'hb0,8'hb0,8'hb0,8'hf4,8'hfd,8'hfd,8'hfd,8'hf5,8'hb0,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hb0,8'hb0,8'hb0,8'hb0,8'hfc,8'hfd,8'hff,8'hff,8'hfd,8'hfd,8'hfd,8'hfd,8'hfd,8'hfc,8'hd0,8'h8c,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hd0,8'hd0,8'hb0,8'hd0,8'hf8,8'hf8,8'hf8,8'hfd,8'hff,8'hff,8'hff,8'hfd,8'hfd,8'hfd,8'hfe,8'hfe,8'hff,8'hfd,8'hfd,8'hf5,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hf5,8'hf4,8'hf4,8'hfc,8'hfd,8'hff,8'hff,8'hff,8'hfe,8'hfe,8'hfd,8'hfd,8'hfd,8'hfd,8'hfe,8'hfd,8'hfe,8'hfd,8'hf8,8'hd0,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hac,8'hfe,8'hfc,8'hfe,8'hfe,8'hff,8'hfd,8'hfe,8'hfe,8'hfd,8'hfd,8'hfd,8'hfd,8'hfd,8'hfd,8'hfd,8'hfd,8'hf8,8'hf8,8'hf8,8'hf8,8'h8c,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hb0,8'hf4,8'hfd,8'hff,8'hfd,8'hfd,8'hfd,8'hfe,8'hfd,8'hfd,8'hfd,8'hfe,8'hfd,8'hfd,8'hfd,8'hfd,8'hfd,8'hfd,8'hff,8'hfe,8'hfd,8'hf8,8'hf5,8'h8c,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hb0,8'hf4,8'hfc,8'hfd,8'hff,8'hfd,8'hfd,8'hfd,8'hfd,8'hfd,8'hfd,8'hfd,8'hfd,8'hfd,8'hfe,8'hff,8'hfe,8'hfe,8'hfd,8'hd0,8'hf8,8'hf8,8'hd0,8'h8c,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hb0,8'hf5,8'hf8,8'hf8,8'hfd,8'hfe,8'hfd,8'hfd,8'hfd,8'hfd,8'hfd,8'hfd,8'hfd,8'hfe,8'hfe,8'hfd,8'hfd,8'hfd,8'hf8,8'hf8,8'hd0,8'hfd,8'hb0,8'h8c,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hb0,8'hf4,8'hfd,8'hf8,8'hf8,8'hfd,8'hfe,8'hfd,8'hfd,8'hfd,8'hfe,8'hfe,8'hfe,8'hfd,8'hf8,8'hfc,8'hd4,8'hd0,8'hd0,8'hf8,8'hf4,8'hf8,8'hd0,8'h8c,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hb0,8'hf8,8'hfd,8'hfd,8'hfc,8'hfc,8'hfe,8'hff,8'hff,8'hfd,8'hf8,8'hf8,8'hf8,8'hf8,8'hf5,8'hf8,8'hd5,8'hf8,8'hf8,8'hfd,8'hf8,8'hf4,8'hf4,8'h8c,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hb0,8'hf8,8'hfc,8'hfc,8'hfe,8'hfd,8'hfd,8'hfd,8'hfd,8'hf8,8'hf8,8'hd0,8'hd0,8'hd0,8'hf5,8'hfc,8'hf8,8'hf8,8'hf8,8'hf8,8'hf8,8'hd0,8'h8c,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hd0,8'hf5,8'hfc,8'hfd,8'hfd,8'hfd,8'hf5,8'hf8,8'hf8,8'hf8,8'hf8,8'hf8,8'hf4,8'hfd,8'hf4,8'hf4,8'hf8,8'hfc,8'hd0,8'hd0,8'hf4,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hac,8'hf8,8'hf5,8'hf8,8'hfd,8'hfd,8'hfd,8'hf8,8'hd0,8'hfd,8'hf8,8'hf4,8'hd0,8'hf8,8'hf4,8'hf8,8'hd0,8'hd0,8'hf4,8'h64,8'h64,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hac,8'hf5,8'hf8,8'hd0,8'hfc,8'hfd,8'hf8,8'hd0,8'hf8,8'hd0,8'hd0,8'hd0,8'hd0,8'h8c,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hb0,8'hf5,8'hf8,8'hfc,8'hfc,8'hf4,8'hd0,8'hd4,8'h8c,8'h64,8'h8c,8'h8c,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hb0,8'hb0,8'hf8,8'hf8,8'hd0,8'hd0,8'h8c,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hac,8'h8c,8'h8c,8'h8c,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff}
+
    },
 
-	{{8'h91,8'hd6,8'hda,8'h24,8'h91,8'hb6,8'h24,8'h24,8'h24,8'h8d,8'h91,8'h24,8'hb5,8'hd5,8'h8d,8'hb1,8'h91,8'hb1,8'hb6,8'h91,8'hb5,8'hb5,8'hd5,8'hb1,8'h6c,8'hda,8'h91,8'hd5,8'hb5,8'hfa,8'hfa,8'hb5},
-	{8'h91,8'hda,8'h91,8'h91,8'hb5,8'hda,8'hb5,8'hb5,8'hb1,8'hb1,8'h24,8'h24,8'hb5,8'h24,8'hb5,8'hb5,8'hd6,8'h91,8'hb5,8'hda,8'hb5,8'h6c,8'h91,8'hda,8'h91,8'h91,8'h6c,8'h6d,8'hda,8'h8c,8'hb5,8'hd5},
-	{8'h91,8'hb5,8'hb5,8'h8d,8'h6c,8'hb5,8'hb5,8'hda,8'hda,8'hda,8'hda,8'hb5,8'hda,8'h91,8'hda,8'hda,8'hb1,8'hda,8'hb5,8'h91,8'hda,8'hda,8'h91,8'hb5,8'h91,8'hb5,8'hda,8'hb5,8'hd6,8'h90,8'h8c,8'h91},
-	{8'hda,8'hfe,8'h64,8'h6c,8'h24,8'hb5,8'hb5,8'hda,8'hfa,8'hda,8'hb5,8'hb5,8'hda,8'h91,8'hda,8'hb5,8'hb5,8'hfe,8'h91,8'hb6,8'hb5,8'hb5,8'hb5,8'hb5,8'hfe,8'hb1,8'h6c,8'hb5,8'h8d,8'hda,8'hb5,8'hb5},
-	{8'hb5,8'h91,8'hb5,8'hb5,8'h24,8'hda,8'hb6,8'hb5,8'hb6,8'hda,8'hb5,8'hb6,8'h24,8'h91,8'h6c,8'h6c,8'h91,8'hb6,8'h91,8'h91,8'hb5,8'h6d,8'hb1,8'hb6,8'hfa,8'hb5,8'hb1,8'hd5,8'h8c,8'hb5,8'hd5,8'hb5},
-	{8'h91,8'h6c,8'hb5,8'h00,8'hb5,8'h6c,8'h6c,8'h6c,8'hb5,8'hb5,8'h91,8'hda,8'hd5,8'h91,8'h8d,8'hb5,8'hb6,8'hb5,8'h24,8'h6d,8'h91,8'h24,8'hb6,8'h91,8'hb6,8'hda,8'hb5,8'hd5,8'h6c,8'h91,8'hff,8'hfa},
-	{8'hb1,8'h91,8'hb1,8'hb5,8'h91,8'h91,8'h6c,8'hb6,8'hda,8'h91,8'hb5,8'hb5,8'hb5,8'hb1,8'hd6,8'hb5,8'hb6,8'h91,8'h6c,8'h6c,8'h91,8'h6d,8'hb5,8'hd6,8'h91,8'hb5,8'hd6,8'hd6,8'hb5,8'hb1,8'hb1,8'h6c},
-	{8'h6c,8'h24,8'h24,8'h00,8'h24,8'h6c,8'hb5,8'h91,8'hb5,8'h6c,8'hb5,8'hb5,8'h6c,8'h90,8'hd6,8'h6c,8'h24,8'h90,8'h70,8'hb5,8'hfe,8'hb5,8'h91,8'h91,8'h91,8'hd5,8'hda,8'hb5,8'hfe,8'hda,8'hfa,8'hda},
-	{8'h6c,8'h6c,8'h6c,8'h8c,8'h24,8'h6c,8'hb5,8'h91,8'hb5,8'hb5,8'hb5,8'hb1,8'hb5,8'h6c,8'h90,8'hb5,8'hfa,8'hb5,8'h6c,8'h91,8'hda,8'hfe,8'hd5,8'hd5,8'hb5,8'hb5,8'hd5,8'hb1,8'hb1,8'hb1,8'h91,8'hb1},
-	{8'h91,8'h6c,8'h91,8'h24,8'hb5,8'h24,8'h6c,8'h91,8'hb6,8'hb5,8'hb5,8'h6d,8'h91,8'hb1,8'h91,8'hb5,8'hb5,8'h91,8'h91,8'h91,8'hb5,8'h6d,8'hda,8'hd5,8'h91,8'hd6,8'hda,8'hda,8'hb5,8'h6c,8'hd5,8'hd5},
-	{8'h24,8'hda,8'h91,8'hb6,8'hb1,8'h24,8'h00,8'hb1,8'h6d,8'h6d,8'h6c,8'h91,8'hb5,8'hd6,8'hb5,8'h91,8'hb5,8'hb5,8'h6c,8'h91,8'h91,8'h8d,8'hda,8'hd5,8'hd9,8'hd5,8'hb1,8'hfe,8'hb1,8'hd9,8'hd5,8'hb5},
-	{8'h91,8'hb5,8'h24,8'hb5,8'hb5,8'h91,8'h90,8'h24,8'h24,8'h91,8'hd5,8'h91,8'h91,8'h91,8'h24,8'hb1,8'hd6,8'h91,8'h24,8'hb5,8'h6d,8'h91,8'hd5,8'hda,8'hd9,8'hd5,8'h91,8'hb1,8'hb1,8'h91,8'hd9,8'hd5},
-	{8'h24,8'h24,8'h6d,8'h6c,8'hb1,8'hb5,8'h90,8'h6c,8'hda,8'hb5,8'h91,8'h6c,8'hb5,8'hda,8'hb5,8'hb5,8'h91,8'h91,8'hb5,8'h00,8'h24,8'h91,8'hd5,8'hda,8'h90,8'hb5,8'hd9,8'h91,8'hfe,8'hd5,8'h91,8'hb5},
-	{8'h6c,8'h04,8'h24,8'h24,8'h91,8'h24,8'h24,8'hb5,8'h91,8'h6c,8'h04,8'hb5,8'hb5,8'h00,8'h24,8'hb1,8'hb5,8'hb5,8'h91,8'h91,8'hb1,8'h8c,8'h6d,8'hd5,8'hb5,8'hb5,8'hd5,8'hb1,8'h6c,8'hda,8'hb5,8'hfa},
-	{8'h24,8'h6c,8'h00,8'h24,8'h6d,8'h24,8'h24,8'h00,8'h24,8'h6c,8'h6c,8'h91,8'h6c,8'h90,8'h91,8'h91,8'h91,8'h91,8'hb6,8'hfe,8'hd6,8'hb1,8'hb5,8'h6c,8'hd5,8'hb1,8'hb5,8'hd5,8'h91,8'hda,8'hb1,8'hd9},
-	{8'h00,8'h24,8'h00,8'h24,8'h24,8'h6c,8'h24,8'h24,8'h24,8'h24,8'h6d,8'hb5,8'h24,8'hb5,8'h6c,8'hb1,8'hb5,8'hb1,8'hda,8'hda,8'h91,8'hb1,8'hda,8'h91,8'hb5,8'hd5,8'hd9,8'hb1,8'hd5,8'h91,8'hfa,8'hd9},
-	{8'h24,8'h6d,8'h00,8'h24,8'h24,8'h6c,8'h00,8'h24,8'h24,8'h24,8'h24,8'h91,8'hb1,8'h20,8'h91,8'h91,8'hb5,8'hda,8'h8c,8'hd5,8'hd5,8'hb1,8'hfe,8'h6c,8'h24,8'hda,8'hd5,8'h91,8'hd5,8'hb5,8'hd9,8'hda},
-	{8'h24,8'h24,8'h00,8'h24,8'h6c,8'h04,8'h24,8'h6c,8'h00,8'h24,8'h24,8'h6c,8'h24,8'hda,8'h91,8'hb1,8'hda,8'hb1,8'hb5,8'h91,8'hfe,8'hb5,8'hd5,8'hf9,8'h6c,8'hd5,8'hd5,8'h6c,8'hfa,8'hb1,8'h8c,8'hda},
-	{8'h6c,8'h00,8'h04,8'h24,8'h24,8'h24,8'h24,8'h24,8'h6c,8'h24,8'h2c,8'h24,8'h24,8'h24,8'hb6,8'hfa,8'hd5,8'hb1,8'hfa,8'hb5,8'hb5,8'h6c,8'hd5,8'hfa,8'hb1,8'h6c,8'h90,8'h04,8'h04,8'hb5,8'h00,8'hda},
-	{8'h6c,8'h6d,8'h04,8'h24,8'h00,8'h24,8'h6c,8'h24,8'h24,8'h24,8'h24,8'h6c,8'h24,8'h24,8'h24,8'hb1,8'hd5,8'hd5,8'hd5,8'hb5,8'hfa,8'hb5,8'h6d,8'hfe,8'hd5,8'h00,8'h6c,8'h6c,8'h91,8'h91,8'h00,8'hda},
-	{8'h24,8'hb5,8'h8d,8'h24,8'h00,8'h24,8'h04,8'h24,8'h2c,8'h00,8'h00,8'h6c,8'h24,8'h00,8'h24,8'h24,8'hd9,8'hd5,8'hd6,8'hb5,8'hf9,8'hb1,8'hb1,8'h64,8'h64,8'h91,8'h91,8'hff,8'h91,8'hfa,8'hb5,8'hb1},
-	{8'h24,8'h91,8'h24,8'h6c,8'h91,8'h24,8'h00,8'h04,8'h24,8'h04,8'h6c,8'h24,8'h04,8'h24,8'h6c,8'h24,8'h00,8'hda,8'hb5,8'h6c,8'hb5,8'h24,8'h8d,8'h64,8'h24,8'h91,8'h6c,8'hb1,8'hda,8'hd5,8'hda,8'hd5},
-	{8'h00,8'h6c,8'h24,8'h00,8'h00,8'hb5,8'h24,8'h24,8'h24,8'h00,8'h04,8'h24,8'h24,8'h00,8'h00,8'h20,8'h24,8'h00,8'hd5,8'hd5,8'hb5,8'h91,8'hda,8'hb5,8'hfa,8'hb1,8'h24,8'h91,8'hfa,8'h91,8'hb5,8'hb5},
-	{8'h24,8'h24,8'h24,8'h24,8'hda,8'h00,8'h6d,8'h91,8'h24,8'h00,8'h6d,8'h24,8'h24,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h64,8'h91,8'h24,8'hd5,8'hb5,8'hd5,8'hd5,8'h24,8'hb5,8'hb5,8'hb5,8'h6c,8'h91},
-	{8'h00,8'h6c,8'h24,8'h6d,8'h24,8'h24,8'h00,8'h24,8'h91,8'hb5,8'h91,8'h91,8'hb6,8'h24,8'h24,8'h6c,8'h24,8'h6c,8'h6c,8'h6c,8'hda,8'hb1,8'hda,8'hb5,8'hda,8'hd5,8'hb1,8'h24,8'hb5,8'hd5,8'hb5,8'h00},
-	{8'h00,8'h6c,8'h6c,8'h91,8'h91,8'h24,8'h24,8'h00,8'h24,8'h8d,8'hb5,8'hb5,8'h6d,8'hb5,8'h24,8'hb5,8'hb5,8'h91,8'hfa,8'hb5,8'hfa,8'h6c,8'h91,8'hd5,8'hda,8'hb5,8'h6c,8'h24,8'hd5,8'hb5,8'hd5,8'h24},
-	{8'h6c,8'h24,8'h24,8'h24,8'h24,8'h24,8'h24,8'h24,8'h24,8'h24,8'hda,8'h91,8'hb1,8'h91,8'h91,8'hb5,8'hb1,8'hfa,8'hb5,8'hb1,8'hfe,8'hb5,8'hd5,8'hb5,8'hb1,8'hb1,8'hd5,8'h24,8'hda,8'hd9,8'hd5,8'h6c},
-	{8'h00,8'h6d,8'h24,8'h6c,8'h24,8'h6d,8'h24,8'h24,8'h24,8'h24,8'h91,8'h91,8'h6d,8'hb5,8'hfe,8'hb1,8'hb5,8'hd5,8'h91,8'hb1,8'hb1,8'hb1,8'h24,8'hda,8'hb1,8'hb5,8'hd9,8'h24,8'h24,8'hfe,8'hd5,8'h6c},
-	{8'h2c,8'h24,8'h24,8'h00,8'h24,8'h6c,8'h24,8'h24,8'h24,8'h24,8'h24,8'h00,8'h6c,8'h91,8'hfa,8'hda,8'hda,8'h8c,8'hd5,8'hd5,8'h90,8'hb5,8'hb1,8'h91,8'hb5,8'hfa,8'hd5,8'hd5,8'h24,8'hb5,8'h8c,8'h24},
-	{8'h24,8'h24,8'h24,8'h6d,8'h6d,8'h24,8'h24,8'h24,8'h24,8'h24,8'h24,8'h00,8'h24,8'h24,8'h24,8'h64,8'h6c,8'hd9,8'hb1,8'hfa,8'hd5,8'hda,8'hd5,8'hb5,8'h24,8'hfa,8'hfa,8'hfa,8'h24,8'h24,8'h6c,8'h8d},
-	{8'h6c,8'h6d,8'h24,8'h24,8'h04,8'h6d,8'h00,8'h6d,8'h24,8'h6c,8'h04,8'h04,8'h00,8'h24,8'h24,8'hda,8'hb5,8'h91,8'hd5,8'h64,8'hda,8'hb5,8'hb5,8'h91,8'h91,8'hb5,8'hd5,8'h6c,8'h90,8'h91,8'hda,8'hb1},
-	{8'h91,8'h6d,8'h24,8'h00,8'h24,8'h24,8'h2c,8'h04,8'h24,8'h24,8'h00,8'h24,8'h24,8'h24,8'h00,8'h91,8'h6c,8'hb5,8'hb1,8'hb5,8'hd5,8'h64,8'hb1,8'h6c,8'h91,8'hb5,8'hfa,8'h6c,8'h91,8'hd5,8'h91,8'hd5}
+	{{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'h6c,8'h8c,8'h8c,8'h8c,8'h6c,8'h8c,8'h8c,8'h8c,8'h8c,8'h6c,8'h24,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'h6c,8'h8c,8'h8c,8'h6c,8'h8c,8'h8c,8'h8c,8'h8c,8'h8c,8'h24,8'h6c,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'h8c,8'h8c,8'hb1,8'hb1,8'h91,8'hd5,8'hb1,8'hb5,8'hd5,8'hb5,8'hb5,8'h90,8'h6c,8'h24,8'h24,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'h8c,8'h90,8'hb1,8'hb5,8'hd5,8'hd5,8'hd5,8'hb5,8'hd5,8'hd5,8'hb1,8'hb1,8'hd5,8'hb5,8'hb1,8'h6c,8'h8c,8'h24,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'h8c,8'hb1,8'hb1,8'hb5,8'hb1,8'hd5,8'hd5,8'hb5,8'h90,8'h8c,8'hd5,8'hb5,8'h91,8'hb1,8'hb5,8'h6c,8'h91,8'h8c,8'h8d,8'h24,8'h24,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'h8c,8'hb1,8'hb1,8'hb5,8'hb1,8'hd5,8'hd5,8'hb5,8'h8c,8'hb1,8'hb5,8'hb5,8'hb1,8'hb1,8'hb5,8'h6c,8'hb1,8'h91,8'h91,8'h24,8'h24,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'h8c,8'h8c,8'hd5,8'hd5,8'hb1,8'hb5,8'h64,8'h6c,8'h90,8'hd5,8'hb5,8'hb5,8'h91,8'h91,8'h91,8'h91,8'hb1,8'h91,8'h91,8'h91,8'h8d,8'h8c,8'h24,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'h8c,8'h8c,8'hb5,8'h90,8'h8c,8'h64,8'h64,8'hb1,8'h91,8'h91,8'h91,8'hb1,8'h91,8'hb1,8'hb1,8'hb1,8'hb1,8'h8c,8'h91,8'hd5,8'hb5,8'h91,8'h8d,8'h8c,8'h24,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'h8c,8'h8c,8'hb1,8'hb1,8'h8c,8'h6c,8'h91,8'h6c,8'h91,8'hb1,8'h90,8'hb1,8'hb1,8'h91,8'hb1,8'h91,8'hb0,8'hb5,8'h6c,8'h91,8'h90,8'h64,8'h8c,8'h91,8'h6c,8'h24,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'h8c,8'h8c,8'h91,8'hb5,8'h8c,8'h6c,8'h91,8'h64,8'h91,8'h91,8'hb1,8'hb1,8'hb5,8'h91,8'h90,8'h90,8'hb1,8'hb1,8'h64,8'h91,8'h91,8'h64,8'h8c,8'h8c,8'h6c,8'h24,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'h64,8'h64,8'h90,8'h90,8'hb1,8'hb5,8'h6c,8'hb1,8'h64,8'h8c,8'h90,8'hb1,8'h91,8'hb1,8'hb1,8'hb1,8'hb1,8'h8c,8'hb1,8'h6c,8'h6c,8'h64,8'h8c,8'h8c,8'h8c,8'h24,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'h6c,8'h8c,8'h90,8'h90,8'h90,8'hb1,8'hb1,8'h6c,8'hb1,8'h91,8'hb1,8'h91,8'hb1,8'h8c,8'hb1,8'hb1,8'hb1,8'hb1,8'h64,8'h6c,8'h6c,8'h8c,8'h6c,8'h6c,8'h8c,8'h24,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'h24,8'h24,8'h6c,8'h24,8'h91,8'hb1,8'hb1,8'h91,8'h64,8'h8c,8'h6c,8'hb1,8'h91,8'h91,8'h64,8'hb1,8'h91,8'h64,8'h6c,8'h8c,8'h6c,8'h8c,8'h8c,8'h90,8'h64,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'h6d,8'h6d,8'h6c,8'h64,8'h6c,8'h8c,8'h91,8'h91,8'h8c,8'h8c,8'h8c,8'h91,8'h91,8'h8c,8'h6c,8'h91,8'h8c,8'h64,8'h6c,8'h8c,8'h64,8'h8c,8'h8c,8'h8d,8'h91,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'h64,8'h6c,8'h64,8'h64,8'h90,8'h6c,8'hb1,8'h90,8'h8c,8'h8c,8'h6c,8'h90,8'h8c,8'h24,8'h64,8'h64,8'h6c,8'h8c,8'h8c,8'h6c,8'h24,8'h64,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'h64,8'h24,8'h24,8'h64,8'h8c,8'h64,8'h6c,8'h24,8'h6c,8'h64,8'h6c,8'h8c,8'h6c,8'h64,8'h6c,8'h8c,8'h24,8'h24,8'h24,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'h24,8'h24,8'h24,8'h24,8'h24,8'h64,8'h24,8'h24,8'h24,8'h24,8'h24,8'h24,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff}
+
 
         },
 
@@ -147,25 +148,25 @@ module MazeMatrixBitMap (
 	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
 	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
 	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
-	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
-	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
-	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
-	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hc0,8'h80,8'h00,8'hd6,8'h00,8'he5,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
-	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'had,8'h60,8'h20,8'hda,8'hda,8'hff,8'h60,8'hed,8'hfa,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
-	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'h64,8'hff,8'hff,8'h60,8'ha0,8'hc0,8'h60,8'hff,8'hff,8'ha0,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
-	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hf6,8'h64,8'hff,8'h60,8'h20,8'ha0,8'ha0,8'h20,8'h60,8'hff,8'h24,8'h80,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
-	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'h64,8'h64,8'h60,8'he1,8'h60,8'h20,8'h20,8'h60,8'h60,8'h20,8'h64,8'h64,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
-	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hf1,8'hda,8'ha0,8'h00,8'h20,8'h20,8'h60,8'h60,8'h00,8'hc0,8'hb6,8'hf1,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
-	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'h64,8'h20,8'h60,8'h00,8'h20,8'hc0,8'hed,8'hc0,8'h00,8'h60,8'h60,8'h84,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
-	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'h00,8'h20,8'h00,8'h00,8'ha0,8'hc0,8'hc0,8'h60,8'h00,8'h00,8'h00,8'h00,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
-	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'h20,8'h80,8'hc0,8'he5,8'h20,8'h20,8'h20,8'h20,8'h80,8'h20,8'ha0,8'h60,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
-	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hc0,8'h8d,8'h20,8'ha0,8'h20,8'h20,8'h20,8'h00,8'h20,8'hed,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
-	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'h8d,8'h20,8'h20,8'hed,8'hc0,8'h20,8'h00,8'h60,8'hda,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
-	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hda,8'h00,8'h00,8'h60,8'he0,8'h20,8'h60,8'hda,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
-	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
-	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
-	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
-	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'ha1,8'h81,8'h81,8'h81,8'h81,8'h81,8'h81,8'h81,8'h81,8'h81,8'h81,8'h81,8'h81,8'h81,8'h81,8'ha1,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'ha1,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'h81,8'hff,8'hff,8'h80,8'hfb,8'hff,8'hff,8'hff,8'hff,8'hf2,8'ha1,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'h85,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hfa,8'hfa,8'hff,8'hfb,8'hf6,8'hf7,8'hf7,8'hf7,8'hf6,8'hf2,8'h81,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'h81,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'h81,8'hff,8'hfa,8'hfa,8'hfa,8'hfa,8'hff,8'ha1,8'hf7,8'hf7,8'hf7,8'hf7,8'hfb,8'hf6,8'h81,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'h81,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'h81,8'hff,8'hfa,8'hfa,8'hfa,8'hfa,8'hfa,8'hfa,8'hff,8'h81,8'hf6,8'hf7,8'hf7,8'hf7,8'hf7,8'hf2,8'h81,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'ha1,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'h81,8'hff,8'hfa,8'hfa,8'hfa,8'hfa,8'hfa,8'hfa,8'hfa,8'h81,8'hf6,8'hf6,8'hf6,8'hf6,8'hf6,8'hf2,8'h81,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'h81,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'h81,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'h81,8'hf2,8'hf2,8'hf2,8'hf2,8'hf2,8'hf2,8'h81,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'h81,8'hfb,8'hf2,8'hf2,8'hf2,8'hf2,8'h81,8'hf2,8'hee,8'hee,8'hee,8'hee,8'hee,8'hee,8'hee,8'hee,8'hee,8'ha1,8'hc5,8'hc5,8'hc5,8'hc5,8'hf2,8'h81,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'ha1,8'hf2,8'hf2,8'hf2,8'hf2,8'hf2,8'h81,8'hf6,8'hee,8'hee,8'hee,8'hee,8'hee,8'hee,8'hed,8'h81,8'hc5,8'hc5,8'hc5,8'hc5,8'hc5,8'ha1,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hfb,8'hf2,8'hf2,8'hf2,8'hf2,8'h81,8'hf6,8'hee,8'hee,8'hee,8'hee,8'hee,8'hee,8'hed,8'h81,8'hc5,8'hc5,8'hc5,8'hed,8'hee,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'h81,8'hfb,8'hf2,8'hf2,8'hf2,8'hf2,8'h81,8'hee,8'hee,8'hee,8'hee,8'hf2,8'hf2,8'h81,8'hc5,8'hc5,8'hc5,8'hc5,8'hee,8'h60,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'ha5,8'hf7,8'hf2,8'hf2,8'hf2,8'ha1,8'hf2,8'hf2,8'hee,8'hf2,8'h81,8'hcd,8'hc5,8'hc5,8'hee,8'ha1,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'h81,8'hf2,8'hf2,8'hf2,8'h81,8'hf2,8'hf2,8'hf2,8'hee,8'ha1,8'hc5,8'hc5,8'hc5,8'ha1,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hf6,8'hf2,8'hf2,8'hf2,8'hee,8'hf2,8'hee,8'hf2,8'hc5,8'hc5,8'hc5,8'hed,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'h81,8'hfb,8'hf2,8'hf2,8'hf6,8'hf2,8'hf2,8'hed,8'hc5,8'hc5,8'hee,8'h60,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'ha1,8'hf6,8'ha1,8'hf6,8'hee,8'h81,8'hee,8'ha1,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'ha1,8'h81,8'hf6,8'hee,8'h81,8'ha1,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hf6,8'h81,8'h81,8'hed,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'ha5,8'h81,8'h81,8'h80,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
 	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
 	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
 	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
@@ -182,66 +183,66 @@ module MazeMatrixBitMap (
 	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
 	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
 	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
-	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
-	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
-	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
-	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'h06,8'h05,8'h00,8'hdf,8'h00,8'hd3,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
-	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'h6e,8'h05,8'h05,8'hda,8'hda,8'hff,8'h05,8'h93,8'hba,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
-	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'h25,8'hff,8'hff,8'h01,8'h06,8'h0f,8'h01,8'hff,8'hff,8'h26,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
-	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hb7,8'h25,8'hff,8'h05,8'h00,8'h06,8'h0e,8'h00,8'h01,8'hff,8'h24,8'h05,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
-	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'h25,8'h2d,8'h01,8'haf,8'h01,8'h00,8'h00,8'h01,8'h01,8'h00,8'h05,8'h25,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
-	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hb7,8'hdb,8'h06,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h62,8'hba,8'hb7,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
-	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'h25,8'h00,8'h01,8'h00,8'h00,8'h26,8'h93,8'h0f,8'h00,8'h01,8'h25,8'h25,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
-	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'h00,8'h01,8'h00,8'h00,8'h06,8'h73,8'h26,8'h06,8'h00,8'h00,8'h00,8'h00,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
-	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'h05,8'h05,8'h6e,8'h8f,8'h00,8'h01,8'h00,8'h00,8'h05,8'h00,8'h06,8'h05,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
-	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'h66,8'h25,8'h00,8'h01,8'h00,8'h01,8'h00,8'h00,8'h00,8'h97,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
-	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hdf,8'h6d,8'h00,8'h00,8'h93,8'h2e,8'h01,8'h00,8'h01,8'hdb,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
-	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hda,8'h00,8'h00,8'h01,8'h2f,8'h00,8'h26,8'hdb,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
-	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
-	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
-	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
-	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h04,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'h00,8'hdf,8'hdf,8'hdf,8'hdf,8'hdf,8'hdf,8'h00,8'hdf,8'hdf,8'h00,8'hdf,8'hdf,8'hdf,8'hdf,8'hdf,8'h37,8'h24,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'h00,8'hdf,8'h9f,8'h9f,8'h9f,8'h9f,8'h9f,8'h9f,8'hff,8'h7f,8'h9f,8'hff,8'h7b,8'h3b,8'h3b,8'h3b,8'h3b,8'h3f,8'h37,8'h01,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'h00,8'h9f,8'h9f,8'h9f,8'h9f,8'h9f,8'h7f,8'h00,8'hff,8'h9f,8'h9f,8'h9f,8'h9f,8'hdf,8'h00,8'h3b,8'h3b,8'h3b,8'h3b,8'h3b,8'h3b,8'h00,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'h00,8'hdf,8'h9f,8'h9f,8'h9f,8'h7f,8'h9f,8'h00,8'hdf,8'h9f,8'h9f,8'h9f,8'h9f,8'h9f,8'h9f,8'hdf,8'h00,8'h3b,8'h3b,8'h7f,8'h3f,8'h3f,8'h37,8'h00,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'h00,8'hdf,8'h9f,8'h7f,8'h7f,8'h9f,8'h9f,8'h00,8'hdf,8'h7f,8'h9f,8'h9f,8'h9f,8'h9f,8'h9f,8'h9f,8'h20,8'h3b,8'h3b,8'h3b,8'h3b,8'h3b,8'h37,8'h00,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'h00,8'hdf,8'hdf,8'hdf,8'hdf,8'hdf,8'hdf,8'h00,8'hdf,8'hdf,8'hdf,8'hdf,8'hdf,8'hdf,8'hdf,8'hdf,8'hdf,8'hdf,8'h00,8'h37,8'h37,8'h37,8'h37,8'h37,8'h33,8'h24,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'h00,8'h9f,8'h3b,8'h3b,8'h3b,8'h3b,8'h00,8'h7f,8'h3b,8'h3b,8'h3b,8'h3b,8'h3b,8'h3b,8'h3b,8'h3b,8'h37,8'h00,8'h37,8'h37,8'h37,8'h33,8'h37,8'h00,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'h00,8'h3b,8'h3b,8'h3b,8'h3b,8'h3b,8'h00,8'h7f,8'h3b,8'h3b,8'h3b,8'h3b,8'h3b,8'h3b,8'h37,8'h00,8'h37,8'h37,8'h37,8'h37,8'h37,8'h00,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'h9f,8'h3b,8'h3b,8'h3b,8'h3b,8'h00,8'h7f,8'h3b,8'h3b,8'h3b,8'h3b,8'h3b,8'h3b,8'h37,8'h00,8'h37,8'h37,8'h37,8'h37,8'h37,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'h00,8'h7f,8'h3b,8'h3b,8'h3b,8'h3b,8'h00,8'h3b,8'h3b,8'h3b,8'h3b,8'h3b,8'h3b,8'h00,8'h37,8'h37,8'h37,8'h37,8'h37,8'h00,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'h04,8'h7f,8'h3b,8'h3b,8'h3b,8'h00,8'h3b,8'h3b,8'h3b,8'h3b,8'h05,8'h32,8'h37,8'h37,8'h37,8'h04,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'h00,8'h3b,8'h3b,8'h3b,8'h00,8'h3b,8'h3b,8'h3b,8'h3b,8'h00,8'h37,8'h37,8'h37,8'h05,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'h9f,8'h3b,8'h3b,8'h3b,8'h3b,8'h3b,8'h3b,8'h3b,8'h37,8'h37,8'h37,8'h37,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'h00,8'h7f,8'h37,8'h3b,8'h7f,8'h3b,8'h3b,8'h32,8'h37,8'h37,8'h37,8'h00,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'h00,8'h7f,8'h00,8'h7f,8'h3b,8'h00,8'h37,8'h04,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'h00,8'h00,8'h7f,8'h37,8'h00,8'h05,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'h9f,8'h00,8'h24,8'h37,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'h00,8'h00,8'h00,8'h00,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
 	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
 	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
 	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
 	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
 	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
 	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff}
+
    },
 	
-	{
-	{8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00},
-	{8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00},
-	{8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00},
-	{8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00},
-	{8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00},
-	{8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00},
-	{8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00},
-	{8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00},
-	{8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00},
-	{8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00},
-	{8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00},
-	{8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00},
-	{8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00},
-	{8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00},
-	{8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00},
-	{8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00},
-	{8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00},
-	{8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00},
-	{8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00},
-	{8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00},
-	{8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00},
-	{8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00},
-	{8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00},
-	{8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00},
-	{8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00},
-	{8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00},
-	{8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00},
-	{8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00},
-	{8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00},
-	{8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00},
-	{8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00},
-	{8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00}
+	{{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'h00,8'h04,8'h24,8'h6d,8'h25,8'h00,8'h00,8'h00,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'h00,8'h00,8'h24,8'h25,8'h6d,8'h24,8'h24,8'h24,8'h24,8'h00,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'h00,8'h00,8'h00,8'h24,8'h6d,8'h24,8'h00,8'h24,8'h24,8'h24,8'h65,8'h6d,8'h00,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'h00,8'h00,8'h24,8'h6d,8'h24,8'h24,8'h24,8'h6d,8'h24,8'h24,8'h24,8'h6d,8'h24,8'h24,8'h00,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'h00,8'h00,8'h6d,8'h24,8'h24,8'h6d,8'h25,8'h6d,8'h6d,8'h25,8'h24,8'h24,8'h24,8'h24,8'h6d,8'h00,8'h00,8'h00,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'h00,8'h24,8'h6d,8'h6d,8'h6d,8'h6d,8'h24,8'h24,8'h25,8'h25,8'h6d,8'h6d,8'h6d,8'h24,8'h24,8'h00,8'h00,8'h00,8'h00,8'h00,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'h00,8'h24,8'h6d,8'h6d,8'h25,8'h25,8'h24,8'h6d,8'h65,8'h25,8'h25,8'h6d,8'h00,8'h6d,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'h24,8'h6d,8'h24,8'h24,8'h20,8'h24,8'h6d,8'h6d,8'h6d,8'h6d,8'h6d,8'h24,8'h24,8'h24,8'h00,8'h00,8'h24,8'h24,8'h00,8'h00,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'h00,8'h24,8'h25,8'h24,8'h20,8'h24,8'h6d,8'h24,8'h6d,8'h24,8'h24,8'h24,8'h24,8'h24,8'h6d,8'h24,8'h6d,8'h24,8'h24,8'h00,8'h24,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'h00,8'h24,8'h24,8'h24,8'h24,8'h24,8'h24,8'h24,8'h24,8'h24,8'h25,8'h24,8'h24,8'h6d,8'h25,8'h65,8'h24,8'h24,8'h00,8'h04,8'h00,8'h00,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'h00,8'h24,8'h24,8'h20,8'h24,8'h24,8'h24,8'h24,8'h2d,8'h24,8'h20,8'h24,8'h6d,8'h24,8'h6d,8'h24,8'h24,8'h24,8'h24,8'h00,8'h24,8'h00,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'h00,8'h00,8'h25,8'h24,8'h00,8'h6d,8'h24,8'h24,8'h00,8'h24,8'h24,8'h6d,8'h24,8'h24,8'h24,8'h24,8'h00,8'h6d,8'h00,8'h00,8'h00,8'h00,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'h00,8'h00,8'h24,8'h00,8'h24,8'h24,8'h6d,8'h24,8'h24,8'h24,8'h24,8'h24,8'h04,8'h00,8'h6d,8'h6d,8'h00,8'h00,8'h24,8'h24,8'h00,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'h00,8'h24,8'h00,8'h20,8'h24,8'h65,8'h24,8'h24,8'h24,8'h24,8'h24,8'h00,8'h24,8'h24,8'h24,8'h24,8'h00,8'h24,8'h24,8'h00,8'h00,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'h00,8'h24,8'h00,8'h24,8'h24,8'h00,8'h24,8'h24,8'h00,8'h00,8'h24,8'h24,8'h24,8'h24,8'h24,8'h00,8'h24,8'h04,8'h00,8'h00,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'h00,8'h24,8'h24,8'h24,8'h00,8'h24,8'h00,8'h24,8'h20,8'h6d,8'h24,8'h24,8'h6d,8'h00,8'h00,8'h24,8'h24,8'h00,8'h00,8'h04,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'h00,8'h00,8'h00,8'h00,8'h00,8'h24,8'h24,8'h24,8'h00,8'h24,8'h00,8'h00,8'h24,8'h24,8'h00,8'h24,8'h00,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'h00,8'h00,8'h00,8'h24,8'h00,8'h24,8'h00,8'h24,8'h00,8'h00,8'h00,8'h00,8'h00,8'h24,8'h00,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'h00,8'h00,8'h00,8'h24,8'h00,8'h20,8'h00,8'h00,8'h00,8'h00,8'h24,8'h00,8'h00,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'h00,8'h00,8'h00,8'h00,8'h24,8'h00,8'h00,8'h00,8'h00,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff}
 
 	},
 	
@@ -281,38 +282,39 @@ module MazeMatrixBitMap (
 		},
 		
 		
-	{{8'hb5,8'hb5,8'hb6,8'hb5,8'hb5,8'h91,8'hb5,8'hb1,8'hb5,8'h91,8'h91,8'h24,8'hb1,8'hb5,8'hb1,8'hb5,8'hb5,8'hb5,8'h00,8'h24,8'hb5,8'hb6,8'hb6,8'hb6,8'hb1,8'hb5,8'hd6,8'hb5,8'hb5,8'hb5,8'hb5,8'hb6},
-	{8'hb5,8'hb5,8'hb5,8'hb1,8'h91,8'hb1,8'hb5,8'hb1,8'hb5,8'hb1,8'hb5,8'h00,8'hb5,8'h91,8'h91,8'hb5,8'hb5,8'hb5,8'h24,8'h64,8'hb5,8'h91,8'hb5,8'hb1,8'hb5,8'hb1,8'hda,8'hb5,8'hb5,8'h8d,8'hb1,8'hb5},
-	{8'hb5,8'hb5,8'hb1,8'h91,8'hb1,8'hb1,8'hb5,8'hb5,8'hb5,8'h91,8'hb1,8'hb5,8'hb5,8'h91,8'hb1,8'hb5,8'hb5,8'hb5,8'h00,8'h00,8'hb5,8'h91,8'h91,8'h91,8'hb5,8'hb5,8'h91,8'h91,8'hb1,8'h6d,8'hb1,8'hb1},
-	{8'hb5,8'hb5,8'h91,8'hb1,8'hb1,8'hb5,8'hb1,8'hb5,8'h6c,8'h00,8'hb1,8'hb5,8'hb5,8'h91,8'h91,8'hb1,8'hb5,8'h91,8'hb5,8'h00,8'hb5,8'h91,8'hb1,8'hb1,8'hb5,8'hb5,8'h91,8'hb5,8'h91,8'hb1,8'hb5,8'hb5},
-	{8'hb5,8'hb5,8'hb5,8'hb1,8'hb5,8'hb5,8'h91,8'hb5,8'h00,8'hb5,8'hb5,8'hb1,8'hb1,8'hb1,8'hb5,8'hb5,8'hb5,8'hb1,8'h24,8'h91,8'h91,8'h91,8'hb1,8'hb5,8'hb1,8'hb5,8'h91,8'h91,8'h91,8'hb1,8'h91,8'hb1},
-	{8'hb5,8'hb5,8'h91,8'hb5,8'hb5,8'h91,8'h91,8'hb5,8'h00,8'h91,8'h91,8'h91,8'hb1,8'hb5,8'hb5,8'hb5,8'hb1,8'h91,8'h24,8'hb5,8'h91,8'h91,8'hb1,8'hb1,8'hb1,8'hb5,8'hb5,8'hb1,8'hb1,8'h91,8'hb1,8'h6c},
-	{8'hb5,8'hb5,8'hb1,8'h91,8'h91,8'h91,8'h91,8'h6c,8'h00,8'h91,8'hb1,8'hb1,8'h91,8'hb1,8'hb1,8'hb5,8'h24,8'h24,8'h24,8'hb5,8'h91,8'h91,8'h91,8'hb5,8'hb5,8'hb5,8'hb5,8'h24,8'h91,8'hb5,8'hb1,8'hb5},
-	{8'hb6,8'hb1,8'h91,8'h91,8'h91,8'h24,8'h6c,8'h00,8'hb5,8'hb1,8'hb1,8'hb5,8'h91,8'hb1,8'h24,8'h00,8'hd6,8'h24,8'h00,8'h91,8'h91,8'hb1,8'hb5,8'hb5,8'hb5,8'h00,8'h24,8'hb1,8'hb1,8'h24,8'hb1,8'hb5},
-	{8'hb5,8'hb1,8'hb5,8'h91,8'h91,8'h24,8'h91,8'h91,8'hb1,8'hb1,8'hb5,8'hb1,8'h91,8'hb1,8'h24,8'hb5,8'hb5,8'hb6,8'h00,8'hb5,8'h91,8'hb1,8'hb5,8'hb5,8'hb5,8'hb5,8'h91,8'hb5,8'hb5,8'hb1,8'h91,8'hb5},
-	{8'hb5,8'hb1,8'hd6,8'hb5,8'h24,8'h91,8'h91,8'hb1,8'h91,8'hb1,8'hb5,8'hb5,8'hb1,8'hb5,8'h91,8'hb5,8'hb5,8'hb5,8'h24,8'hb5,8'hb5,8'hb1,8'hb5,8'hb5,8'hb5,8'hb5,8'h00,8'hb5,8'h91,8'h91,8'h91,8'hb5},
-	{8'h00,8'h6d,8'h24,8'h24,8'h6c,8'h24,8'h91,8'hb1,8'hb5,8'hb5,8'hb5,8'hb1,8'hb5,8'hb5,8'hb1,8'hb5,8'hb5,8'hb5,8'h24,8'hb5,8'hb5,8'hb1,8'hb5,8'hb5,8'hb5,8'hb5,8'h91,8'hb1,8'h91,8'h91,8'hb5,8'hb5},
-	{8'hb5,8'h91,8'h91,8'h91,8'h91,8'h91,8'hb1,8'h91,8'hb5,8'hb5,8'hb1,8'hb5,8'hb5,8'hb1,8'hb5,8'hb5,8'hb5,8'hb5,8'h24,8'hda,8'hb5,8'hb5,8'hb5,8'hb5,8'hb5,8'h24,8'hb5,8'hb5,8'hb1,8'h91,8'hb1,8'hb6},
-	{8'hb5,8'h91,8'h91,8'h91,8'h91,8'h91,8'hb1,8'hb1,8'h24,8'h24,8'hb5,8'h91,8'hb5,8'hb5,8'hb5,8'hb5,8'hb5,8'hb5,8'h24,8'h20,8'h6d,8'h6d,8'hd6,8'hb5,8'hd6,8'h00,8'hb1,8'hb5,8'hb1,8'h91,8'hb1,8'hb5},
-	{8'hb5,8'hb5,8'h91,8'hb5,8'hb5,8'hb5,8'hb5,8'hb1,8'hb5,8'hb5,8'hb5,8'hb5,8'hb5,8'hb5,8'hb5,8'h24,8'hb5,8'h24,8'hda,8'hb5,8'hb1,8'hb5,8'hb5,8'h24,8'h64,8'h00,8'h24,8'h24,8'h24,8'hb5,8'hb5,8'hb5},
-	{8'hb5,8'hb5,8'hb5,8'hb5,8'hb5,8'hb5,8'hb5,8'h91,8'hb5,8'hb5,8'hb5,8'hb5,8'hb5,8'hb5,8'hb5,8'h24,8'h6c,8'h00,8'hb5,8'hb5,8'hb5,8'hb5,8'hb5,8'hb5,8'h6d,8'h91,8'h91,8'h91,8'h24,8'h00,8'h20,8'h00},
-	{8'hb1,8'h91,8'hb5,8'hb5,8'hb5,8'hb5,8'hb1,8'hb5,8'hb5,8'hb5,8'hb6,8'hb5,8'hb5,8'hb1,8'hd6,8'hb5,8'hd6,8'hb5,8'hb5,8'hb1,8'hb5,8'hb5,8'hb5,8'hb5,8'hb5,8'h91,8'h91,8'h91,8'h91,8'h91,8'h91,8'hb5},
-	{8'hb5,8'hb5,8'hb5,8'hb5,8'hb5,8'hb5,8'hb1,8'hb5,8'hb1,8'hb5,8'hd6,8'hb5,8'hb5,8'hb1,8'h00,8'hb5,8'h6d,8'hd5,8'hb5,8'hb5,8'hb5,8'hb5,8'hb1,8'hb5,8'hd6,8'hb5,8'h91,8'h6d,8'h8d,8'h91,8'h91,8'hb5},
-	{8'hb5,8'hb1,8'hb5,8'hb5,8'hb5,8'hb5,8'hb5,8'hb5,8'hb1,8'hb5,8'hda,8'hb5,8'hb5,8'hb5,8'hb5,8'h24,8'h20,8'hb5,8'hb5,8'hb5,8'hb1,8'hb1,8'h91,8'hb1,8'h24,8'hb1,8'hb1,8'hb1,8'hb1,8'h91,8'h91,8'hb5},
-	{8'hb5,8'h91,8'h91,8'hb5,8'hb5,8'hb5,8'h24,8'hb5,8'hb5,8'hb1,8'h00,8'hb5,8'hb5,8'h24,8'h24,8'hd6,8'hd5,8'h00,8'hb5,8'hb5,8'hb1,8'hb5,8'hb1,8'hb5,8'hb5,8'hb5,8'hb1,8'h91,8'h91,8'hb1,8'h91,8'hb5},
-	{8'hd6,8'hb1,8'h91,8'hb5,8'h64,8'h24,8'hb5,8'hb5,8'hb5,8'hb5,8'hb1,8'h24,8'h24,8'hd6,8'hb5,8'hb5,8'hb5,8'h00,8'hb5,8'hb5,8'hb1,8'hb5,8'hb1,8'hb5,8'hb5,8'hb6,8'h91,8'hb5,8'h91,8'hb5,8'hb5,8'hb1},
-	{8'h24,8'h6c,8'h6c,8'h24,8'h00,8'h00,8'hb5,8'hb5,8'hb5,8'h91,8'hb5,8'h00,8'hb5,8'h91,8'hb1,8'hb5,8'hb5,8'h24,8'hb5,8'hb5,8'hb5,8'hb5,8'hb5,8'hb5,8'h6c,8'h00,8'h24,8'h24,8'hb5,8'hb5,8'hb1,8'hb1},
-	{8'hb5,8'hd6,8'hb5,8'h24,8'h91,8'hb1,8'h24,8'hb5,8'hb5,8'hb5,8'h6c,8'h24,8'hb5,8'hb5,8'hb5,8'hb5,8'hb5,8'hb5,8'h24,8'h6c,8'h6c,8'hb5,8'hb5,8'h64,8'hb5,8'hb5,8'hb5,8'hb5,8'hd6,8'hb5,8'hb5,8'hb5},
-	{8'hb6,8'hb5,8'hb5,8'hb1,8'hb1,8'h91,8'hb1,8'h24,8'hb1,8'h24,8'h24,8'h00,8'hb5,8'hb5,8'hb1,8'hb5,8'hb5,8'hb5,8'hb5,8'hb5,8'hb5,8'hb5,8'h6c,8'h00,8'h91,8'hb5,8'hb5,8'hb5,8'hb5,8'h00,8'hb5,8'hb5},
-	{8'hb5,8'hb1,8'h91,8'h91,8'hb5,8'hb1,8'hb5,8'hb5,8'h24,8'hb5,8'h64,8'hb6,8'hb5,8'hb1,8'h91,8'hb1,8'h91,8'hb5,8'hb5,8'hb5,8'hb5,8'h24,8'hb5,8'hb5,8'hb5,8'hb5,8'hb5,8'hb5,8'hb5,8'hb5,8'hb1,8'hb5},
-	{8'hb1,8'hb1,8'hb5,8'h24,8'hb1,8'h91,8'hb5,8'hb5,8'hb5,8'h24,8'h6c,8'hb1,8'h91,8'h91,8'h91,8'h91,8'hb1,8'hb5,8'h24,8'hb5,8'hb5,8'hb5,8'h91,8'hb5,8'hb1,8'hb5,8'hb5,8'hb5,8'h24,8'hb5,8'hb5,8'hb1},
-	{8'hb5,8'hb1,8'h91,8'h91,8'h91,8'h91,8'h6d,8'hb5,8'h91,8'hb5,8'h20,8'hb1,8'h91,8'h91,8'h91,8'h91,8'hb1,8'hb5,8'h00,8'hb5,8'hb5,8'hb5,8'h91,8'hb5,8'hb5,8'h91,8'h91,8'hb5,8'hb5,8'h91,8'hb1,8'h91},
-	{8'hb1,8'h91,8'h91,8'h91,8'h91,8'h91,8'h91,8'hb1,8'hb1,8'hb5,8'h64,8'hb1,8'h91,8'h91,8'h91,8'h91,8'h91,8'hb1,8'hb5,8'h91,8'hb1,8'h91,8'h00,8'hb1,8'hb1,8'hb5,8'hb1,8'hb5,8'hb1,8'h91,8'h91,8'h91},
-	{8'hd6,8'hb5,8'hb5,8'hb1,8'h91,8'h91,8'hb5,8'h91,8'h91,8'hb1,8'h64,8'hb1,8'h91,8'h91,8'h91,8'h91,8'h91,8'hb1,8'hb1,8'hb5,8'hb5,8'hb5,8'h00,8'h91,8'h91,8'hb5,8'hb5,8'hb5,8'hb5,8'h91,8'h8d,8'hb1},
-	{8'hb6,8'hb5,8'hb1,8'hb5,8'h91,8'hb5,8'hb5,8'hb1,8'hb5,8'hb5,8'h24,8'hd6,8'h91,8'h91,8'hd6,8'hb5,8'h91,8'hb1,8'hb5,8'hb5,8'hb5,8'h6c,8'h91,8'h91,8'h91,8'hb5,8'hb5,8'hb5,8'hb5,8'h91,8'h91,8'h91},
-	{8'hd6,8'hb5,8'hb5,8'h91,8'h91,8'hb5,8'h91,8'hb5,8'h91,8'hb1,8'h24,8'hb5,8'h91,8'h91,8'h91,8'hb5,8'hb1,8'hb1,8'hb6,8'hb5,8'hb1,8'h24,8'hd6,8'h91,8'h91,8'hb5,8'hb5,8'h91,8'hb5,8'hb1,8'h6d,8'hb5},
-	{8'hb5,8'h91,8'hb5,8'h91,8'hb5,8'h91,8'hb5,8'hb5,8'hb5,8'hb5,8'h24,8'hb5,8'h91,8'h91,8'hb5,8'h91,8'hb1,8'hb5,8'hb6,8'hd6,8'hb5,8'h24,8'hd6,8'h91,8'h91,8'hb1,8'hb5,8'h24,8'hb5,8'hb1,8'hfa,8'hd6},
-	{8'hb5,8'hb1,8'hb1,8'hb1,8'hb5,8'h00,8'hb5,8'hb5,8'hb5,8'h91,8'h24,8'hb5,8'hb5,8'hb6,8'h6d,8'h6d,8'h91,8'hb5,8'h24,8'hb5,8'h91,8'h24,8'h00,8'hb5,8'hb5,8'hb5,8'hb5,8'hb5,8'hb5,8'hb5,8'hb5,8'h91}},
+
+	{{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'h6d,8'h91,8'hb6,8'hfe,8'hb6,8'h91,8'h6d,8'h6d,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'h6d,8'h6c,8'hb6,8'hfa,8'h00,8'hda,8'hb6,8'hda,8'hd6,8'h91,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'h6d,8'h6d,8'h91,8'hb6,8'hda,8'hb6,8'h91,8'hb6,8'hb6,8'hb5,8'hda,8'hd6,8'h6d,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'h6d,8'h6d,8'hb6,8'hda,8'h91,8'hb5,8'hda,8'h00,8'hb6,8'h91,8'hb6,8'hda,8'hb6,8'h91,8'h6d,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'h6d,8'hb1,8'hff,8'hda,8'h00,8'h00,8'h00,8'hfa,8'h00,8'hda,8'hda,8'hb6,8'h91,8'hb1,8'hda,8'h00,8'h91,8'h6d,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'h6d,8'hb5,8'hff,8'hff,8'hda,8'hff,8'h00,8'h00,8'hda,8'hda,8'hfe,8'hfe,8'hfe,8'hb1,8'h91,8'h00,8'h00,8'h91,8'h6d,8'h6c,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'h6d,8'hd6,8'hff,8'hda,8'hda,8'hda,8'hda,8'h00,8'hda,8'hda,8'hda,8'hfe,8'h91,8'hda,8'h00,8'h00,8'h91,8'h91,8'h91,8'h6c,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'h00,8'hfe,8'hda,8'hb6,8'h91,8'hb5,8'hff,8'hff,8'hda,8'hff,8'hff,8'hda,8'hb6,8'h00,8'h00,8'h00,8'h91,8'hd6,8'h91,8'h91,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'h24,8'hb6,8'hda,8'hb5,8'h91,8'h00,8'hff,8'hb6,8'hda,8'h00,8'hb6,8'hb6,8'h00,8'h00,8'hfa,8'hb6,8'hda,8'h91,8'hb6,8'h91,8'hb6,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'h24,8'hb6,8'hb1,8'hb6,8'hb5,8'hb6,8'h00,8'hb6,8'hd6,8'hb6,8'h00,8'h00,8'h00,8'hda,8'hda,8'hd6,8'hb6,8'hb5,8'h91,8'h91,8'h91,8'h24,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'h24,8'hb6,8'h91,8'h91,8'hb1,8'hb1,8'hb5,8'hb6,8'hda,8'hb6,8'h00,8'h00,8'hfe,8'hb5,8'hda,8'hb6,8'hb6,8'hb6,8'hb6,8'h91,8'h91,8'h6d,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'h64,8'h91,8'hda,8'hb6,8'h91,8'hda,8'hb1,8'h91,8'h91,8'h00,8'h00,8'h00,8'hd6,8'hb6,8'hb6,8'hb6,8'h8d,8'hd6,8'h91,8'h91,8'h91,8'h2c,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'h91,8'h91,8'hb6,8'h6d,8'hb6,8'hb6,8'hda,8'h00,8'hb5,8'h91,8'h91,8'h00,8'h91,8'h91,8'hd6,8'hb6,8'h6d,8'h00,8'hb1,8'hb5,8'h6c,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'h91,8'hb6,8'h91,8'h91,8'hb6,8'hda,8'h00,8'h00,8'h91,8'h91,8'h91,8'h00,8'hb1,8'hb6,8'h91,8'h91,8'h91,8'h91,8'h00,8'h00,8'h24,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'h6d,8'hb6,8'h91,8'hb6,8'hb6,8'hb1,8'h00,8'h91,8'h8d,8'h91,8'h00,8'hb6,8'h00,8'h00,8'h91,8'h6d,8'h91,8'h91,8'h6d,8'h91,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'h6d,8'hb1,8'hb6,8'hb5,8'h91,8'h00,8'h00,8'hb1,8'h91,8'hb6,8'hb6,8'hb5,8'hb6,8'h6d,8'h00,8'h91,8'h91,8'h6d,8'h71,8'h91,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'h6d,8'h91,8'h00,8'h6d,8'h00,8'hb1,8'h91,8'hb6,8'h8d,8'hb5,8'h6d,8'h6d,8'h91,8'h91,8'h6d,8'h91,8'h6d,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'h6d,8'h91,8'h91,8'h91,8'h6d,8'h91,8'h91,8'h91,8'h6d,8'h6d,8'h6d,8'h6d,8'h8d,8'h91,8'h24,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'h6d,8'h6d,8'h8d,8'h91,8'h91,8'h91,8'h91,8'h8d,8'h8d,8'h6d,8'h91,8'h6c,8'h6c,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'h24,8'h24,8'h6d,8'h91,8'h91,8'h6d,8'h24,8'h6c,8'h24,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff},
+	{8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff,8'hff}},
 };
     
     // LOGIC & MAP GENERATION
@@ -327,101 +329,125 @@ module MazeMatrixBitMap (
             MazeBitMapMask <= '{default: 64'h0};
         end
         
-        else if(newLevel) begin
+        else if(MazeReset) begin
             counter_Score <= 0; 
             
             // ========================= LEVEL 1 =========================
             // Objects 1-4 only. No 5, 6, 7.
             if (level_input == 1) begin
                  case (map_randomizer)
-                  3'd0: MazeBitMapMask <= '{ // Map 1: The Jackpot (Rows of pure value)
+                  3'd0: MazeBitMapMask <= '{ 
                         {64'h0000000000000000}, 
-                        {64'h4444444444444444}, // Row of BLUE DIAMONDS (320 pts total!)
-                        {64'h0000000000000000}, 
-                        {64'h3333333333333333}, // Row of RED DIAMONDS
-                        {64'h0000000000000000}, 
-                        {64'h1111111111111111}, // Row of GOLD
-                        {64'h4444444444444444}, // Another Row of BLUE
+                        {64'h4444444444444444},
+                        {64'h0200200200200020}, 
+                        {64'h3333333333333333}, 
+                        {64'h2002002002002020}, 
+                        {64'h1111111111111111},
+                        {64'h4424244244242424}, 
                         {64'h0000000000000000},
-                        {64'h0000000000000000}, {64'h0000000000000000}, 
-                        {64'h0000000000000000}, {64'h0000000000000000},
-                        {64'h0000000000000000}, {64'h0000000000000000}, 
-                        {64'h0000000000000000}, {64'h0000000000000000}};
+                        {64'h0000000000000000},
+								{64'h0000000000000000}, 
+                        {64'h0000000000000000},
+								{64'h0000000000000000},
+                        {64'h0000000000000000},
+								{64'h0000000000000000}, 
+                        {64'h0000000000000000},
+								{64'h0000000000000000}};
 
-                    3'd1: MazeBitMapMask <= '{ // Map 2: Vertical Stripes (Easy aiming)
+                    3'd1: MazeBitMapMask <= '{ 
                         {64'h0000000000000000}, 
-                        {64'h4040404040404040}, // Blue columns
-                        {64'h3030303030303030}, // Red columns
-                        {64'h4040404040404040}, 
+                        {64'h4240424242424040},
+                        {64'h3230303030303030},
+                        {64'h4242404240404040}, 
                         {64'h3030303030303030}, 
-                        {64'h1111111111111111}, // Floor of Gold
-                        {64'h4444444444444444}, // Floor of Blue
+                        {64'h1111111111111111},
+                        {64'h4444444444444444}, 
                         {64'h0000000000000000},
-                        {64'h0000000000000000}, {64'h0000000000000000}, 
-                        {64'h0000000000000000}, {64'h0000000000000000},
-                        {64'h0000000000000000}, {64'h0000000000000000}, 
-                        {64'h0000000000000000}, {64'h0000000000000000}};
-
-                    3'd2: MazeBitMapMask <= '{ // Map 3: The Big Block (Easy Hit)
                         {64'h0000000000000000}, 
-                        {64'h0000444444000000}, // Center block of Blue
-                        {64'h0000444444000000}, 
-                        {64'h0000333333000000}, // Surrounded by Red
+								{64'h0000000000000000}, 
+                        {64'h0000000000000000},
+								{64'h0000000000000000},
+                        {64'h0000000000000000},
+								{64'h0000000000000000}, 
+                        {64'h0000000000000000},
+								{64'h0000000000000000}};
+
+                    3'd2: MazeBitMapMask <= '{ 
+                        {64'h0000000000000000}, 
+                        {64'h0200444444002000}, 
+                        {64'h0022444444022000}, 
+                        {64'h0000333333000000}, 
                         {64'h1111333333111111}, 
                         {64'h1111111111111111}, 
-                        {64'h2000000000000002}, // Only 2 stones on edges
+                        {64'h2000000000000002}, 
                         {64'h0000000000000000},
-                        {64'h0000000000000000}, {64'h0000000000000000}, 
-                        {64'h0000000000000000}, {64'h0000000000000000},
-                        {64'h0000000000000000}, {64'h0000000000000000}, 
-                        {64'h0000000000000000}, {64'h0000000000000000}};
+                        {64'h0000000000000000},
+								{64'h0000000000000000}, 
+                        {64'h0000000000000000},
+								{64'h0000000000000000},
+                        {64'h0000000000000000},
+								{64'h0000000000000000}, 
+                        {64'h0000000000000000},
+								{64'h0000000000000000}};
 
-                    3'd3: MazeBitMapMask <= '{ // Map 4: Checkerboard of Wealth
+                    3'd3: MazeBitMapMask <= '{ 
                         {64'h0000000000000000}, 
-                        {64'h4343434343434343}, // Blue/Red alternating
+                        {64'h4343434343434343}, 
                         {64'h3434343434343434}, 
                         {64'h4343434343434343}, 
                         {64'h1111111111111111}, 
                         {64'h4444444444444444}, 
                         {64'h0000000000000000}, 
                         {64'h0000000000000000},
-                        {64'h0000000000000000}, {64'h0000000000000000}, 
-                        {64'h0000000000000000}, {64'h0000000000000000},
-                        {64'h0000000000000000}, {64'h0000000000000000}, 
-                        {64'h0000000000000000}, {64'h0000000000000000}};
-
-                    3'd4: MazeBitMapMask <= '{ // Map 5: The Pyramid
                         {64'h0000000000000000}, 
-                        {64'h0000004400000000}, // Top: Blue
-                        {64'h0000044440000000}, 
-                        {64'h0000333333000000}, 
-                        {64'h0004444444400000}, // More Blue
-                        {64'h1111111111111111}, // Base: Gold
-                        {64'h4444444444444444}, // Bonus Base
+								{64'h0000000000000000}, 
                         {64'h0000000000000000},
-                        {64'h0000000000000000}, {64'h0000000000000000}, 
-                        {64'h0000000000000000}, {64'h0000000000000000},
-                        {64'h0000000000000000}, {64'h0000000000000000}, 
-                        {64'h0000000000000000}, {64'h0000000000000000}};
+								{64'h0000000000000000},
+                        {64'h0000000000000000},
+								{64'h0000000000000000}, 
+                        {64'h0000000000000000},
+								{64'h0000000000000000}};
 
-                    default: MazeBitMapMask <= '{ // Map 6: Chaos (But good chaos)
+                    3'd4: MazeBitMapMask <= '{
                         {64'h0000000000000000}, 
-                        {64'h4143414341434143}, // Mix of everything good
+                        {64'h0002222222000000},
+                        {64'h0000044440000000}, 
+                        {64'h0002333333200000}, 
+                        {64'h0024444444420000},
+                        {64'h1111111111111111}, 
+								{64'h4444444444444444},
+                        {64'h2222200022222222},
+                        {64'h0000000000000000}, 
+								{64'h0000000000000000}, 
+                        {64'h0000000000000000}, 
+								{64'h0000000000000000},
+                        {64'h0000000000000000}, 
+								{64'h0000000000000000}, 
+                        {64'h0000000000000000}, 
+								{64'h0000000000000000}};
+
+                    default: MazeBitMapMask <= '{ 
+                        {64'h0000000000000000}, 
+                        {64'h4143414341434143}, 
                         {64'h3414341434143414}, 
-                        {64'h0000000000000000}, 
-                        {64'h4444444444444444}, // Easy row
-                        {64'h3333333333333333}, 
+                        {64'h2002002000200202}, 
+                        {64'h4141414141414141}, 
+                        {64'h3033033033033033}, 
                         {64'h1111111111111111}, 
                         {64'h0000000000000000},
-                        {64'h0000000000000000}, {64'h0000000000000000}, 
-                        {64'h0000000000000000}, {64'h0000000000000000},
-                        {64'h0000000000000000}, {64'h0000000000000000}, 
-                        {64'h0000000000000000}, {64'h0000000000000000}};
+                        {64'h0000000000000000},
+								{64'h0000000000000000}, 
+                        {64'h0000000000000000},
+								{64'h0000000000000000},
+                        {64'h0000000000000000}, 
+								{64'h0000000000000000}, 
+                        {64'h0000000000000000}, 
+								{64'h0000000000000000}};
                  endcase
             end
 
             // =============================================================
-            // LEVEL 2: Shields (7) appearing
+            // LEVEL 2: all objects except for strong stone
             // =============================================================
             else if (level_input == 2) begin
                  case (map_randomizer)
@@ -459,7 +485,7 @@ module MazeMatrixBitMap (
             end
 
             // =============================================================
-            // LEVEL 3: All Objects. 5 (Strong) HIGH up.
+            // LEVEL 3: All Objects
             // =============================================================
             else begin 
                  case (map_randomizer)
@@ -502,57 +528,89 @@ module MazeMatrixBitMap (
             // -------------------------------------------------------------------------
             // COLLISION LOGIC 
             // -------------------------------------------------------------------------
+           
+            // -------------------------------------------------------------------------
             if (collision_bomb_object) begin
                 case (MazeBitMapMask[offsetY_MSB][offsetX_MSB])
-                    4'd1: begin // Gold
-					       	  if (gemDetectorSignal == 1'b1) begin
-								  counter_Score <= counter_Score + BLUEDIAMOND_VALUE; 
-								  end
-										else begin
-										counter_Score <= counter_Score + GOLD_VALUE; 
-										end
-                          MazeBitMapMask[offsetY_MSB][offsetX_MSB] <= 4'h0;
-                          end
-                    4'd2: begin // Stone
-                            counter_Score <= counter_Score + STONE_VALUE; 
-                            MazeBitMapMask[offsetY_MSB][offsetX_MSB] <= 4'h0;
-                          end
-                    4'd3: begin // Red Diamond
-                            counter_Score <= counter_Score + REDDIAMOND_VALUE; 
-                            MazeBitMapMask[offsetY_MSB][offsetX_MSB] <= 4'h0;
-                          end
-                    4'd4: begin // Blue Diamond
-                            counter_Score <= counter_Score + BLUEDIAMOND_VALUE;
-                            MazeBitMapMask[offsetY_MSB][offsetX_MSB] <= 4'h0;
-                          end
-                    4'd5: begin // Strong Stone (5) -> Becomes Weak Stone (7)
-                            counter_Score <= counter_Score + STONE_VALUE;
-                            MazeBitMapMask[offsetY_MSB][offsetX_MSB] <= 4'd9;
-                          end
-                    4'd6: begin // Black Hole
-										if (counter_Score >= 10) begin
-												  counter_Score <= counter_Score + BLACK_HOLE; 
-											 end
-											 else begin
-												  counter_Score <= 0;
-											 end
-											 MazeBitMapMask[offsetY_MSB][offsetX_MSB] <= 4'h0; 
-								  end
-                    4'd7: begin // Weak Stone (7) -> Disappears
-                            counter_Score <= counter_Score + STONE_VALUE;
-                            MazeBitMapMask[offsetY_MSB][offsetX_MSB] <= 4'h0;
-								  end 
-						  4'd9: begin
-                          end
-                   default: begin // Default case
+                    
+                    // --- CASE 1: GOLD ---
+                    4'd1: begin 
+                        if (gemDetectorSignal == 1'b1) begin
+                            if (luckyCharm) 
+                                counter_Score <= counter_Score + BLUEDIAMOND_VALUE + (BLUEDIAMOND_VALUE / 5); // 20 + 4 = 24
+                            else 
+                                counter_Score <= counter_Score + BLUEDIAMOND_VALUE; // 20
+                        end
+                        else begin
+                            if (luckyCharm) 
+                                counter_Score <= counter_Score + GOLD_VALUE + (GOLD_VALUE / 5); // 5 + 1 = 6
+                            else 
+                                counter_Score <= counter_Score + GOLD_VALUE; // 5
+                        end
+                        MazeBitMapMask[offsetY_MSB][offsetX_MSB] <= 4'h0;
+                    end
+
+                    // --- CASE 2: STONE ---
+                    4'd2: begin 
+                        counter_Score <= counter_Score + STONE_VALUE; 
+                        MazeBitMapMask[offsetY_MSB][offsetX_MSB] <= 4'h0;
+                    end
+
+                    // --- CASE 3: RED DIAMOND ---
+                    4'd3: begin 
+                        if (luckyCharm) 
+                            counter_Score <= counter_Score + REDDIAMOND_VALUE + (REDDIAMOND_VALUE / 5); // 10 + 2 = 12
+                        else 
+                            counter_Score <= counter_Score + REDDIAMOND_VALUE; // 10
+                        MazeBitMapMask[offsetY_MSB][offsetX_MSB] <= 4'h0;
+                    end
+
+                    // --- CASE 4: BLUE DIAMOND ---
+                    4'd4: begin 
+                        if (luckyCharm) 
+                            counter_Score <= counter_Score + BLUEDIAMOND_VALUE + (BLUEDIAMOND_VALUE / 5); // 20 + 4 = 24
+                        else 
+                            counter_Score <= counter_Score + BLUEDIAMOND_VALUE; // 20
+                        MazeBitMapMask[offsetY_MSB][offsetX_MSB] <= 4'h0;
+                    end
+
+                    // --- CASE 5: STRONG STONE ---
+                    4'd5: begin 
+                        counter_Score <= counter_Score + STONE_VALUE;
+                        MazeBitMapMask[offsetY_MSB][offsetX_MSB] <= 4'd9;
+                    end
+
+                    // --- CASE 6: BLACK HOLE ---
+                    4'd6: begin 
+                        if (counter_Score >= 10) begin
+                             counter_Score <= counter_Score + BLACK_HOLE; 
+                        end
+                        else begin
+                             counter_Score <= 0;
+                        end
+                        MazeBitMapMask[offsetY_MSB][offsetX_MSB] <= 4'h0; 
+                    end
+
+                    // --- CASE 7: WEAK STONE ---
+                    4'd7: begin 
+                        counter_Score <= counter_Score + STONE_VALUE;
+                        MazeBitMapMask[offsetY_MSB][offsetX_MSB] <= 4'h0;
+                    end 
+						  //--- CASE 9: immune stone- midstate---
+                    4'd9: begin
+                    end
+
+                    default: begin 
                         counter_Score <= counter_Score;
                     end
-				   endcase
-            end
-                         
+               endcase
+            end 
+  
+
             // -------------------------------------------------------------------------
-            // DRAWING LOGIC 
-            // -------------------------------------------------------------------------
+            // DRAWING OBJECTS LOGIC 
+            // -------------------------------------------------------------------------  
+				
             if (InsideRectangle) begin 
 				    if ((MazeBitMapMask[offsetY_MSB][offsetX_MSB] == 4'd9) && (ExplosionState == 2'b00)) begin
                      MazeBitMapMask[offsetY_MSB][offsetX_MSB] <= 4'd7;
