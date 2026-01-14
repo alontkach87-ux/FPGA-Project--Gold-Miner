@@ -106,7 +106,7 @@ assign victoryAudio = victoryAudioFlag;
 assign luckyCharm = luckyCharmFlag;
 assign gemDetector = gemDetectorFlag;
 assign delay = delayFlag;
-assign gemDetectorSignalFlag = gemDetectorSignal;
+assign gemDetectorSignal=gemDetectorSignalFlag;
 
 always_ff@(posedge clk or negedge resetN)
 begin
