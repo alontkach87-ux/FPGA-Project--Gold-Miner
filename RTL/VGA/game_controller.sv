@@ -70,7 +70,7 @@ logic luckyCharmFlag;
 logic gemDetectorFlag;
 logic delayFlag;
 logic timerGemDetectorEnable;
-logic timerGemDetector;
+logic [3:0] timerGemDetector;
 logic gemDetectorSignalFlag;
 
 enum logic [2:0] {
