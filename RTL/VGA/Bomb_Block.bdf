@@ -166,19 +166,19 @@ agreement for further details.
 )
 (pin
 	(input)
-	(rect -224 824 80 840)
-	(text "INPUT" (rect 261 0 320 18)(font "Arial" (font_size 6)))
-	(text "collision_bomb_rock" (rect 5 0 211 22)(font "Arial" ))
-	(pt 304 8)
+	(rect -112 824 80 840)
+	(text "INPUT" (rect 149 0 208 18)(font "Arial" (font_size 6)))
+	(text "Is_Rock" (rect 5 0 92 22)(font "Arial" ))
+	(pt 192 8)
 	(drawing
-		(line (pt 220 12)(pt 245 12))
-		(line (pt 220 4)(pt 245 4))
-		(line (pt 249 8)(pt 304 8))
-		(line (pt 220 12)(pt 220 4))
-		(line (pt 245 4)(pt 249 8))
-		(line (pt 245 12)(pt 249 8))
+		(line (pt 108 12)(pt 133 12))
+		(line (pt 108 4)(pt 133 4))
+		(line (pt 137 8)(pt 192 8))
+		(line (pt 108 12)(pt 108 4))
+		(line (pt 133 4)(pt 137 8))
+		(line (pt 133 12)(pt 137 8))
 	)
-	(text "VCC" (rect 264 7 308 25)(font "Arial" (font_size 6)))
+	(text "VCC" (rect 152 7 196 25)(font "Arial" (font_size 6)))
 )
 (pin
 	(output)
@@ -590,9 +590,9 @@ agreement for further details.
 	(annotation_block (parameter)(rect 360 264 532 356))
 )
 (symbol
-	(rect 224 640 504 848)
+	(rect 224 640 504 880)
 	(text "bomb_move" (rect 5 0 131 22)(font "Arial" ))
-	(text "inst2" (rect 8 192 55 214)(font "Arial" ))
+	(text "inst2" (rect 8 224 55 246)(font "Arial" ))
 	(port
 		(pt 0 32)
 		(input)
@@ -659,9 +659,16 @@ agreement for further details.
 	(port
 		(pt 0 176)
 		(input)
-		(text "collision_bomb_rock" (rect 0 0 206 22)(font "Arial" ))
-		(text "collision_bomb_rock" (rect 21 171 227 193)(font "Arial" ))
+		(text "IsRock" (rect 0 0 73 22)(font "Arial" ))
+		(text "IsRock" (rect 21 171 94 193)(font "Arial" ))
 		(line (pt 0 176)(pt 16 176))
+	)
+	(port
+		(pt 0 192)
+		(input)
+		(text "DRbomb" (rect 0 0 93 22)(font "Arial" ))
+		(text "DRbomb" (rect 21 187 114 209)(font "Arial" ))
+		(line (pt 0 192)(pt 16 192))
 	)
 	(port
 		(pt 280 32)
@@ -730,7 +737,7 @@ agreement for further details.
 		""
 		(type "PARAMETER_SIGNED_DEC")	)
 	(drawing
-		(rectangle (rect 16 16 264 192))
+		(rectangle (rect 16 16 264 224))
 	)
 	(annotation_block (parameter)(rect 496 568 898 655))
 )
@@ -1088,6 +1095,19 @@ agreement for further details.
 (connector
 	(pt 504 784)
 	(pt 528 784)
+)
+(connector
+	(pt 224 832)
+	(pt 104 832)
+)
+(connector
+	(pt 104 832)
+	(pt 104 896)
+)
+(connector
+	(text "bombRecDR" (rect -80 872 45 897)(font "Intel Clear" ))
+	(pt 104 896)
+	(pt -88 896)
 )
 (text "Bomb bitmap and move logic" (rect 512 312 841 342)(font "Intel Clear" (font_size 8)))
 (text "TO DO LIST:" (rect 696 792 835 822)(font "Intel Clear" (font_size 8)))

@@ -13,7 +13,7 @@ module	game_controller	(
 			input logic [1:0] ExplosionState,
 			input logic [9:0] score,
 			input logic [9:0] keys,
-			input logic Is_Rock,
+
 			
 			output logic collision, // active in case of collision between two objects
 			
@@ -29,7 +29,6 @@ module	game_controller	(
 			output logic genderSwap,
 			output logic [9:0] money,
 			output logic aimReset,
-			output logic collision_explosion_stone,
 			output logic startAudio,
 			output logic gameOverAudio,
 			output logic victoryAudio,
@@ -86,17 +85,10 @@ enum logic [2:0] {
 
 always_comb begin
 	collision_explosion_maze = 1'b0;
-	collision_explosion_stone = 1'b0;
 	if(drawing_request_bomb && drawing_request_maze && (ExplosionState != 2'b00)) begin
 	   collision_explosion_maze = 1'b1;
-	end	
-	if(drawing_request_bomb &&  Is_Rock)
-      collision_explosion_stone = 1'b1;
+		end
 end
-
-
-
-
 
 assign timePassed = timer;
 assign currentLevel = level;
