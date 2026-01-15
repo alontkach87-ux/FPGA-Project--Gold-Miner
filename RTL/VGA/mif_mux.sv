@@ -1,4 +1,7 @@
+//mux module to determine mif background to display
+
 module mif_mux(
+	//inputs: mif vga values and drawing requests
 	input logic clk,
 	input logic resetN,
 	input logic shopDR,
@@ -18,7 +21,7 @@ always_ff@(posedge clk or negedge resetN) begin
 	if(!resetN) begin
 			MIF_VGA	<= MIF1_VGA;
 	end
-	else begin
+	else begin //selection
 		if(shopDR == 1'b1)
 			MIF_VGA <= MIFshop_VGA;
 		else if(victoryDR == 1'b1)
