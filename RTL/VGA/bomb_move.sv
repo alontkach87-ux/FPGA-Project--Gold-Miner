@@ -132,7 +132,7 @@ module bomb_move #(
         end 
         else begin
             case(SM_Motion)
-                IDLE_ST: begin
+                IDLE_ST: begin //idle state - for resetting logic - only one frame
                     Xposition <= INITIAL_X * FIXED_POINT_MULTIPLIER;
                     Yposition <= INITIAL_Y * FIXED_POINT_MULTIPLIER; 
                     AnglePosition <= ANGLE_START;
@@ -159,7 +159,7 @@ module bomb_move #(
                         SM_Motion <= IDLE_ST;
                     aimingFlag <= 1;                
                     if (startOfFrame) begin
-                        if (Y_direction_key) begin
+                        if (Y_direction_key) begin //if launch signal detected - set speed, fuse, radius
                             Yspeed <= 200;
                             AngleSpeed <= 0;
                             FuseCounter <= {24'b0, random_fuse_time} + 5; 
@@ -184,7 +184,7 @@ module bomb_move #(
                             launch <= 0;
                             frame_counter <= 0;
                         end
-                        if ((FuseCounter == 0) || (collision_flag == 1'b1)) begin
+                        if ((FuseCounter == 0) || (collision_flag == 1'b1)) begin //if fuse reaches 0 or collision - bomb explosdes
                             SM_Motion <= EXPLOSION_FIRE_ST;
                             AnimCounter <= EXPLOSION_DURATION;
                             ExplosionState <= 2'b01;
@@ -193,7 +193,7 @@ module bomb_move #(
                                 launch <= 0;
                         end
                         
-                        else begin
+                        else begin //otherwise, continue moving and calculate speed
                             if (FuseCounter > 0) 
                                 FuseCounter <= FuseCounter - 1;
                             Xspeed <= AnglePosition / 20;  
@@ -206,14 +206,14 @@ module bomb_move #(
                     end
                 end
                     
-                EXPLOSION_FIRE_ST: begin
+                EXPLOSION_FIRE_ST: begin //explosion fire state
                     Xspeed <= 0; 
                     Yspeed <= 0;
                     explosionFlag <= 0;
                     if (startOfFrame) begin
-                        if (AnimCounter > 0) 
+                        if (AnimCounter > 0) //decrement animation timer
                             AnimCounter <= AnimCounter - 1;
-                        else begin
+                        else begin //go to smoke state
                             SM_Motion <= EXPLOSION_SMOKE_ST;
                             AnimCounter <= EXPLOSION_DURATION;
                             ExplosionState <= 2'b10; 
@@ -221,7 +221,7 @@ module bomb_move #(
                     end
                 end
 
-                EXPLOSION_SMOKE_ST: begin
+                EXPLOSION_SMOKE_ST: begin //smoke state
                      if (startOfFrame) begin
                         if (AnimCounter > 0) 
                             AnimCounter <= AnimCounter - 1;
@@ -237,7 +237,7 @@ module bomb_move #(
                     SM_Motion <= POSITION_CHANGE_ST;
                 end 
 
-                POSITION_CHANGE_ST: begin 
+                POSITION_CHANGE_ST: begin //calculate new position
                     AnglePosition <= AnglePosition + AngleSpeed;
                     Xposition <= Xposition + Xspeed; 
                     Yposition <= Yposition + Yspeed;
@@ -246,7 +246,7 @@ module bomb_move #(
                     SM_Motion <= POSITION_LIMITS_ST;
                 end
 
-                POSITION_LIMITS_ST: begin 
+                POSITION_LIMITS_ST: begin //position limit cases
                     if (AnglePosition >= ANGLE_MAX) begin 
                         AnglePosition <= ANGLE_MAX;
                         AngleSpeed <= -SWING_SPEED; 

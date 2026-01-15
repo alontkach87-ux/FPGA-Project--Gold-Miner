@@ -12,12 +12,7 @@ module	objects_mux	(
 					input		logic	clk,
 					input		logic	resetN,
 					     
-		  // add the box for numbers here 
-			
-			  
-			  
-		  ////////////////////////
-		  // background 
+					//drawing requests and RGB values
 					input    logic bombDrawingRequest, 
 					input		logic	[7:0] bombRGB,	
 					input		logic	[7:0] RGB_MIF, 
@@ -60,12 +55,12 @@ module	objects_mux	(
 );
 
 always_ff@(posedge clk or negedge resetN) begin
-	if(!resetN) begin
+	if(!resetN) begin //resets
 			RGBOut	<= 8'b0;
 	end
-	else if(startDrawingRequest == 1'b1 || victoryDrawingRequest == 1'b1 || gameOverDrawingRequest == 1'b1)
+	else if(startDrawingRequest == 1'b1 || victoryDrawingRequest == 1'b1 || gameOverDrawingRequest == 1'b1) //first priority - constant states
 		RGBOut <= RGB_MIF;
-	else if(shopDrawingRequest == 1'b1) begin
+	else if(shopDrawingRequest == 1'b1) begin //second priority - shop state
 		if(timeWordDrawingRequest == 1'b1)
 			RGBOut <= timeWordRGB;
 		else if(timerDrawingRequest == 1'b1)
@@ -83,7 +78,7 @@ always_ff@(posedge clk or negedge resetN) begin
 		else
 			RGBOut <= RGB_MIF;
 	end
-	else begin
+	else begin //last priority - level state
 		if (bombDrawingRequest == 1'b1 )   
 			RGBOut <= bombRGB;   
 		else if(characterDrawingRequest == 1'b1)
