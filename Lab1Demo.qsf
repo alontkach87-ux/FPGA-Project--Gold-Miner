@@ -222,9 +222,6 @@ set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to PS2_DAT
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to redLight
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to resetN_pin
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to yellowLight
-set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
-set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
-set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
 set_global_assignment -name ENABLE_SIGNALTAP ON
 set_global_assignment -name USE_SIGNALTAP_FILE output_files/stp2.stp
 set_global_assignment -name SYSTEMVERILOG_FILE RTL/VGA/delayBitMap.SV
@@ -241,16 +238,9 @@ set_global_assignment -name BDF_FILE RTL/VGA/DigitsBlock.bdf
 set_global_assignment -name SYSTEMVERILOG_FILE RTL/VGA/DigitsBitMap.sv
 set_global_assignment -name SYSTEMVERILOG_FILE RTL/VGA/MazeMatrixBitMap.sv
 set_global_assignment -name MIF_FILE RTL/background.mif
-set_global_assignment -name SYSTEMVERILOG_FILE RTL/VGA/bigBombBitMap.SV
-set_global_assignment -name BDF_FILE RTL/VGA/TOP_VGA_DEMO_KBD.bdf
 set_global_assignment -name SYSTEMVERILOG_FILE RTL/VGA/game_controller.sv
-set_global_assignment -name SYSTEMVERILOG_FILE RTL/VGA/smiley_move.sv
-set_global_assignment -name BDF_FILE RTL/VGA/Smiley_Block_T.bdf
-set_global_assignment -name SYSTEMVERILOG_FILE RTL/VGA/smileyBitMap.sv
 set_global_assignment -name SYSTEMVERILOG_FILE RTL/VGA/square_object.sv
-set_global_assignment -name SYSTEMVERILOG_FILE RTL/VGA/back_ground_draw.sv
 set_global_assignment -name SYSTEMVERILOG_FILE RTL/VGA/square_Hart_object.sv
-set_global_assignment -name BDF_FILE RTL/VGA/HART_DISPLAY.bdf
 set_global_assignment -name SYSTEMVERILOG_FILE RTL/VGA/objects_mux.sv
 set_global_assignment -name SYSTEMVERILOG_FILE RTL/VGA/VGA_Controller.sv
 set_global_assignment -name SYSTEMVERILOG_FILE RTL/VGA/NumbersBitMap.sv
@@ -280,25 +270,18 @@ set_global_assignment -name QIP_FILE CLK_31P5.qip
 set_global_assignment -name SIP_FILE CLK_31P5.sip
 set_global_assignment -name SYSTEMVERILOG_FILE RTL/VGA/MyConstant.sv
 set_global_assignment -name CDF_FILE output_files/Chain2.cdf
-set_global_assignment -name SYSTEMVERILOG_FILE RTL/VGA/smileyBitMapO.sv
-set_global_assignment -name SYSTEMVERILOG_FILE RTL/VGA/objects_muxO.sv
 set_global_assignment -name SIGNALTAP_FILE output_files/stp1.stp
 set_global_assignment -name BDF_FILE RTL/VGA/TOP_VGA_DEMO_KBDO1.bdf
 set_global_assignment -name SYSTEMVERILOG_FILE RTL/VGA/bomb_move.sv
 set_global_assignment -name SYSTEMVERILOG_FILE RTL/VGA/smallBombBitMap.sv
 set_global_assignment -name BDF_FILE RTL/VGA/TOP_PROJECT_KBD.bdf
-set_global_assignment -name SYSTEMVERILOG_FILE RTL/VGA/objects_muxO1.sv
 set_global_assignment -name BDF_FILE RTL/VGA/Bomb_Block.bdf
-set_global_assignment -name SYSTEMVERILOG_FILE RTL/VGA/HartsMatrixBitMapO.sv
-set_global_assignment -name SYSTEMVERILOG_FILE arrowBitMap.sv
 set_global_assignment -name BDF_FILE RTL/VGA/Character_Top.bdf
-set_global_assignment -name SYSTEMVERILOG_FILE CharacterBitMap.sv
 set_global_assignment -name SYSTEMVERILOG_FILE RTL/VGA/CharacterBitMap.sv
 set_global_assignment -name SYSTEMVERILOG_FILE RTL/VGA/square_object1.sv
 set_global_assignment -name SYSTEMVERILOG_FILE RTL/VGA/square_object_bomb.sv
 set_global_assignment -name BDF_FILE RTL/VGA/OBJECT_DISPLAY.bdf
 set_global_assignment -name SYSTEMVERILOG_FILE RTL/VGA/ColorExpander.sv
-set_global_assignment -name SYSTEMVERILOG_FILE RTL/AUDIO/SoundEffects_Controller.sv
 set_global_assignment -name BDF_FILE RTL/VGA/Display_Block.bdf
 set_global_assignment -name SYSTEMVERILOG_FILE RTL/VGA/RequiredScoreMux.sv
 set_global_assignment -name SYSTEMVERILOG_FILE RTL/VGA/MaleFemaleMux.sv
@@ -306,4 +289,11 @@ set_global_assignment -name SYSTEMVERILOG_FILE RTL/VGA/MoneyBitMap.SV
 set_global_assignment -name SIGNALTAP_FILE output_files/stp2.stp
 set_global_assignment -name BDF_FILE RTL/VGA/Purchase_Block.bdf
 set_global_assignment -name SYSTEMVERILOG_FILE RTL/AUDIO/Audio_Priority.sv
+set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
+set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
+set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
+set_global_assignment -name BDF_FILE RTL/VGA/Display_Top.bdf
+set_global_assignment -name BDF_FILE RTL/VGA/Purchase_Top.bdf
+set_global_assignment -name BDF_FILE RTL/VGA/Digits_Top.bdf
+set_global_assignment -name BDF_FILE RTL/VGA/Mif_Mux_Top.bdf
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
