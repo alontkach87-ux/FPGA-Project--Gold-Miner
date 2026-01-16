@@ -7,8 +7,8 @@ module melody_mux_1 (
 	input logic gameStart,
 	input logic gameOver,
 	input logic victory,
-	output logic [2:0] select,
-	output logic enable
+	output logic enable,
+	output logic [2:0] select
 );
 
 	always_comb begin
@@ -28,7 +28,7 @@ module melody_mux_1 (
 			select = 2;
 			enable = 1;
 		end
-		else if(treasureAdded == 1'b1 || (treasureAdded == 1'b1 && explosion == 1'b1)) begin //if bomb explodes on treasure, different sound than if bomb explodes without treasure
+		else if(treasureAdded == 1'b1) begin //if bomb explodes on treasure, different sound than if bomb explodes without treasure
 			select = 1;
 			enable = 1;
 		end

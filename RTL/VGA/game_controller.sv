@@ -42,9 +42,9 @@ module	game_controller	(
 
 //constants - required scores for passing each level, and required money for upgrades
 
-localparam int REQUIRED_SCORE_LEVEL_ONE = 100;
-localparam int REQUIRED_SCORE_LEVEL_TWO = 150;
-localparam int REQUIRED_SCORE_LEVEL_THREE = 180;
+localparam int REQUIRED_SCORE_LEVEL_ONE = 200;
+localparam int REQUIRED_SCORE_LEVEL_TWO = 250;
+localparam int REQUIRED_SCORE_LEVEL_THREE = 300;
 localparam int REQUIRED_MONEY_LUCKY_CHARM = 150;
 localparam int REQUIRED_MONEY_GEM_DETECTOR = 100;
 localparam int REQUIRED_MONEY_DELAY = 50;
