@@ -230,8 +230,8 @@ agreement for further details.
 )
 (symbol
 	(rect 312 296 536 440)
-	(text "square_object1" (rect 5 0 160 22)(font "Arial" ))
-	(text "inst4" (rect 8 128 58 153)(font "Intel Clear" ))
+	(text "square_object" (rect 5 0 147 22)(font "Arial" ))
+	(text "inst1" (rect 8 128 50 151)(font "Intel Clear" (font_size 6)))
 	(port
 		(pt 0 32)
 		(input)
@@ -320,7 +320,7 @@ agreement for further details.
 	(drawing
 		(rectangle (rect 16 16 208 128))
 	)
-	(annotation_block (parameter)(rect 536 176 994 292))
+	(annotation_block (parameter)(rect 576 136 938 228))
 )
 (connector
 	(text "resetN" (rect 202 328 268 353)(font "Intel Clear" ))
