@@ -20,7 +20,8 @@ module MazeMatrixBitMap (
     output logic        drawingRequest,
     output logic [7:0]  RGBout,        
 	 output logic [9:0]  counter_Score,
-	 output logic Is_Rock
+	 output logic Is_Rock,
+	 output logic is_treasure
 );
 
     localparam logic [7:0] TRANSPARENT_ENCODING = 8'hFF; 
@@ -525,6 +526,7 @@ module MazeMatrixBitMap (
         else begin
             RGBout <= TRANSPARENT_ENCODING; 
 				Is_Rock <= 1'b0;
+				is_treasure <= 1'b0;
             // -------------------------------------------------------------------------
             // COLLISION LOGIC 
             // -------------------------------------------------------------------------
@@ -616,23 +618,47 @@ module MazeMatrixBitMap (
                      MazeBitMapMask[offsetY_MSB][offsetX_MSB] <= 4'd7;
 							end
                 case (MazeBitMapMask[offsetY_MSB][offsetX_MSB])
-                    4'd0: begin RGBout <= TRANSPARENT_ENCODING; end
+                    4'd0: begin 
+								RGBout <= TRANSPARENT_ENCODING; 
+						  end
                     4'd1: begin 
 						        if (gemDetectorSignal == 1'b1) begin
 									   RGBout <= object_colors[4][offsetY_LSB][offsetX_LSB]; 
-								  end
+									end
 								  else begin
 								      RGBout <= object_colors[1][offsetY_LSB][offsetX_LSB]; 
-										end
+									end
+								  is_treasure <= 1'b1;
 								  end
-                    4'd2: begin RGBout <= object_colors[2][offsetY_LSB][offsetX_LSB];end
-                    4'd3: begin RGBout <= object_colors[3][offsetY_LSB][offsetX_LSB];end
-                    4'd4: begin RGBout <= object_colors[4][offsetY_LSB][offsetX_LSB];end
-                    4'd5: begin RGBout <= object_colors[5][offsetY_LSB][offsetX_LSB];Is_Rock <= 1'b1; end
-                    4'd6: begin RGBout <= object_colors[6][offsetY_LSB][offsetX_LSB]; end
-                    4'd7: begin RGBout <= object_colors[7][offsetY_LSB][offsetX_LSB];Is_Rock <= 1'b1; end
-						  4'd9: begin RGBout <= object_colors[7][offsetY_LSB][offsetX_LSB];Is_Rock <= 1'b1; end
-                    default: begin RGBout <= TRANSPARENT_ENCODING;end
+                    4'd2: begin 
+								RGBout <= object_colors[2][offsetY_LSB][offsetX_LSB];
+						  end
+                    4'd3: begin 
+								RGBout <= object_colors[3][offsetY_LSB][offsetX_LSB];
+								is_treasure <= 1'b1;
+						  end
+                    4'd4: begin 
+								RGBout <= object_colors[4][offsetY_LSB][offsetX_LSB];
+								is_treasure <= 1'b1;
+						  end
+                    4'd5: begin 
+								RGBout <= object_colors[5][offsetY_LSB][offsetX_LSB];
+								Is_Rock <= 1'b1; 
+						  end
+                    4'd6: begin 
+								RGBout <= object_colors[6][offsetY_LSB][offsetX_LSB]; 
+						  end
+                    4'd7: begin 
+								RGBout <= object_colors[7][offsetY_LSB][offsetX_LSB];
+								Is_Rock <= 1'b1; 
+						  end
+						  4'd9: begin 
+								RGBout <= object_colors[7][offsetY_LSB][offsetX_LSB];
+								Is_Rock <= 1'b1; 
+						  end
+                    default: begin 
+								RGBout <= TRANSPARENT_ENCODING;
+						  end
                 endcase
             end
 			end	

@@ -136,6 +136,13 @@ agreement for further details.
 		(text "Is_Rock" (rect 216 75 251 87)(font "Arial" ))
 		(line (pt 272 80)(pt 256 80)(line_width 1))
 	)
+	(port
+		(pt 272 96)
+		(output)
+		(text "is_treasure" (rect 0 0 44 12)(font "Arial" ))
+		(text "is_treasure" (rect 207 91 251 103)(font "Arial" ))
+		(line (pt 272 96)(pt 256 96)(line_width 1))
+	)
 	(drawing
 		(rectangle (rect 16 16 256 224)(line_width 1))
 	)

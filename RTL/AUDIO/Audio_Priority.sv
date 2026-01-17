@@ -5,7 +5,7 @@ module Audio_Priority (
     
     // Inputs
     input  logic ExplosionState,  
-    input  logic collision_bomb_maze,  
+    input  logic treasureHit,  
     
     // Outputs to Melody Mux
     output logic ExplosionAudio,
@@ -14,7 +14,7 @@ module Audio_Priority (
 
     // 1. PULSE STRETCHER (For the Treasure)
     // ----------------------------------------------------------------
-    // We need to catch the tiny 'collision_bomb_maze' pulse and hold it
+    // We need to catch the tiny 'treasureHit' pulse and hold it
     // high long enough for the audio to play (e.g., 60 frames = 1 sec).
     logic [5:0] priority_timer; 
 
@@ -24,7 +24,7 @@ module Audio_Priority (
         end 
 		  else begin
             // Asynchronously catch the pulse during the frame scan
-            if (collision_bomb_maze) begin
+            if (treasureHit) begin
                 priority_timer <= 60; 
             end 
             // Count down at the start of every frame
