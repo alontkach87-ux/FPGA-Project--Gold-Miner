@@ -168,7 +168,7 @@ agreement for further details.
 	(input)
 	(rect -112 824 80 840)
 	(text "INPUT" (rect 149 0 208 18)(font "Arial" (font_size 6)))
-	(text "Is_Rock" (rect 5 0 92 22)(font "Arial" ))
+	(text "Is_Rock" (rect 5 0 91 22)(font "Arial" ))
 	(pt 192 8)
 	(drawing
 		(line (pt 108 12)(pt 133 12))
@@ -486,110 +486,6 @@ agreement for further details.
 	)
 )
 (symbol
-	(rect 552 120 768 232)
-	(text "random" (rect 5 0 80 22)(font "Arial" ))
-	(text "inst1" (rect 8 96 50 119)(font "Intel Clear" (font_size 6)))
-	(port
-		(pt 0 32)
-		(input)
-		(text "clk" (rect 0 0 27 22)(font "Arial" ))
-		(text "clk" (rect 21 27 48 49)(font "Arial" ))
-		(line (pt 0 32)(pt 16 32))
-	)
-	(port
-		(pt 0 48)
-		(input)
-		(text "resetN" (rect 0 0 67 22)(font "Arial" ))
-		(text "resetN" (rect 21 43 88 65)(font "Arial" ))
-		(line (pt 0 48)(pt 16 48))
-	)
-	(port
-		(pt 0 64)
-		(input)
-		(text "rise" (rect 0 0 36 22)(font "Arial" ))
-		(text "rise" (rect 21 59 57 81)(font "Arial" ))
-		(line (pt 0 64)(pt 16 64))
-	)
-	(port
-		(pt 216 32)
-		(output)
-		(text "dout[SIZE_BITS-1..0]" (rect 0 0 226 22)(font "Arial" ))
-		(text "dout[SIZE_BITS-1..0]" (rect 4 27 230 49)(font "Arial" ))
-		(line (pt 216 32)(pt 200 32)(line_width 3))
-	)
-	(parameter
-		"SIZE_BITS"
-		"8"
-		""
-		(type "PARAMETER_UNKNOWN")	)
-	(parameter
-		"MIN_VAL"
-		"0"
-		""
-		(type "PARAMETER_UNKNOWN")	)
-	(parameter
-		"MAX_VAL"
-		"255"
-		""
-		(type "PARAMETER_UNKNOWN")	)
-	(drawing
-		(rectangle (rect 16 16 200 96))
-	)
-	(annotation_block (parameter)(rect 408 8 627 124))
-)
-(symbol
-	(rect 552 360 768 472)
-	(text "random" (rect 5 0 80 22)(font "Arial" ))
-	(text "inst6" (rect 8 96 50 119)(font "Intel Clear" (font_size 6)))
-	(port
-		(pt 0 32)
-		(input)
-		(text "clk" (rect 0 0 27 22)(font "Arial" ))
-		(text "clk" (rect 21 27 48 49)(font "Arial" ))
-		(line (pt 0 32)(pt 16 32))
-	)
-	(port
-		(pt 0 48)
-		(input)
-		(text "resetN" (rect 0 0 67 22)(font "Arial" ))
-		(text "resetN" (rect 21 43 88 65)(font "Arial" ))
-		(line (pt 0 48)(pt 16 48))
-	)
-	(port
-		(pt 0 64)
-		(input)
-		(text "rise" (rect 0 0 36 22)(font "Arial" ))
-		(text "rise" (rect 21 59 57 81)(font "Arial" ))
-		(line (pt 0 64)(pt 16 64))
-	)
-	(port
-		(pt 216 32)
-		(output)
-		(text "dout[SIZE_BITS-1..0]" (rect 0 0 226 22)(font "Arial" ))
-		(text "dout[SIZE_BITS-1..0]" (rect 4 27 230 49)(font "Arial" ))
-		(line (pt 216 32)(pt 200 32)(line_width 3))
-	)
-	(parameter
-		"SIZE_BITS"
-		"8"
-		""
-		(type "PARAMETER_UNKNOWN")	)
-	(parameter
-		"MIN_VAL"
-		"10"
-		""
-		(type "PARAMETER_UNKNOWN")	)
-	(parameter
-		"MAX_VAL"
-		"100"
-		""
-		(type "PARAMETER_UNKNOWN")	)
-	(drawing
-		(rectangle (rect 16 16 200 96))
-	)
-	(annotation_block (parameter)(rect 360 264 532 356))
-)
-(symbol
 	(rect 224 640 504 880)
 	(text "bomb_move" (rect 5 0 131 22)(font "Arial" ))
 	(text "inst2" (rect 8 224 55 246)(font "Arial" ))
@@ -674,56 +570,56 @@ agreement for further details.
 		(pt 280 32)
 		(output)
 		(text "topLeftX[10..0]" (rect 0 0 151 22)(font "Arial" ))
-		(text "topLeftX[10..0]" (rect 132 27 259 49)(font "Arial" ))
+		(text "topLeftX[10..0]" (rect 132 27 283 49)(font "Arial" ))
 		(line (pt 280 32)(pt 264 32)(line_width 3))
 	)
 	(port
 		(pt 280 48)
 		(output)
 		(text "topLeftY[10..0]" (rect 0 0 149 22)(font "Arial" ))
-		(text "topLeftY[10..0]" (rect 133 43 259 65)(font "Arial" ))
+		(text "topLeftY[10..0]" (rect 133 43 282 65)(font "Arial" ))
 		(line (pt 280 48)(pt 264 48)(line_width 3))
 	)
 	(port
 		(pt 280 64)
 		(output)
 		(text "Angle[8..0]" (rect 0 0 108 22)(font "Arial" ))
-		(text "Angle[8..0]" (rect 168 59 259 81)(font "Arial" ))
+		(text "Angle[8..0]" (rect 168 59 276 81)(font "Arial" ))
 		(line (pt 280 64)(pt 264 64)(line_width 3))
 	)
 	(port
 		(pt 280 80)
 		(output)
 		(text "ExplosionState[1..0]" (rect 0 0 201 22)(font "Arial" ))
-		(text "ExplosionState[1..0]" (rect 89 75 259 97)(font "Arial" ))
+		(text "ExplosionState[1..0]" (rect 89 75 290 97)(font "Arial" ))
 		(line (pt 280 80)(pt 264 80)(line_width 3))
 	)
 	(port
 		(pt 280 96)
 		(output)
 		(text "explosionFlag" (rect 0 0 140 22)(font "Arial" ))
-		(text "explosionFlag" (rect 141 91 259 113)(font "Arial" ))
+		(text "explosionFlag" (rect 141 91 281 113)(font "Arial" ))
 		(line (pt 280 96)(pt 264 96))
 	)
 	(port
 		(pt 280 112)
 		(output)
 		(text "aimingFlag" (rect 0 0 109 22)(font "Arial" ))
-		(text "aimingFlag" (rect 167 107 259 129)(font "Arial" ))
+		(text "aimingFlag" (rect 167 107 276 129)(font "Arial" ))
 		(line (pt 280 112)(pt 264 112))
 	)
 	(port
 		(pt 280 128)
 		(output)
 		(text "explosionRadius[7..0]" (rect 0 0 215 22)(font "Arial" ))
-		(text "explosionRadius[7..0]" (rect 77 123 259 145)(font "Arial" ))
+		(text "explosionRadius[7..0]" (rect 77 123 292 145)(font "Arial" ))
 		(line (pt 280 128)(pt 264 128)(line_width 3))
 	)
 	(port
 		(pt 280 144)
 		(output)
 		(text "launch" (rect 0 0 63 22)(font "Arial" ))
-		(text "launch" (rect 206 139 259 161)(font "Arial" ))
+		(text "launch" (rect 206 139 269 161)(font "Arial" ))
 		(line (pt 280 144)(pt 264 144))
 	)
 	(parameter
@@ -740,6 +636,110 @@ agreement for further details.
 		(rectangle (rect 16 16 264 224))
 	)
 	(annotation_block (parameter)(rect 496 568 898 655))
+)
+(symbol
+	(rect 552 360 768 472)
+	(text "random" (rect 5 0 80 22)(font "Arial" ))
+	(text "inst6" (rect 8 96 50 119)(font "Intel Clear" (font_size 6)))
+	(port
+		(pt 0 32)
+		(input)
+		(text "clk" (rect 0 0 27 22)(font "Arial" ))
+		(text "clk" (rect 21 27 48 49)(font "Arial" ))
+		(line (pt 0 32)(pt 16 32))
+	)
+	(port
+		(pt 0 48)
+		(input)
+		(text "resetN" (rect 0 0 67 22)(font "Arial" ))
+		(text "resetN" (rect 21 43 88 65)(font "Arial" ))
+		(line (pt 0 48)(pt 16 48))
+	)
+	(port
+		(pt 0 64)
+		(input)
+		(text "rise" (rect 0 0 36 22)(font "Arial" ))
+		(text "rise" (rect 21 59 57 81)(font "Arial" ))
+		(line (pt 0 64)(pt 16 64))
+	)
+	(port
+		(pt 216 32)
+		(output)
+		(text "dout[SIZE_BITS-1..0]" (rect 0 0 226 22)(font "Arial" ))
+		(text "dout[SIZE_BITS-1..0]" (rect 4 27 230 49)(font "Arial" ))
+		(line (pt 216 32)(pt 200 32)(line_width 3))
+	)
+	(parameter
+		"SIZE_BITS"
+		"8"
+		""
+		(type "PARAMETER_UNKNOWN")	)
+	(parameter
+		"MIN_VAL"
+		"10"
+		""
+		(type "PARAMETER_UNKNOWN")	)
+	(parameter
+		"MAX_VAL"
+		"100"
+		""
+		(type "PARAMETER_UNKNOWN")	)
+	(drawing
+		(rectangle (rect 16 16 200 96))
+	)
+	(annotation_block (parameter)(rect 360 264 532 356))
+)
+(symbol
+	(rect 552 120 768 232)
+	(text "random" (rect 5 0 80 22)(font "Arial" ))
+	(text "inst1" (rect 8 96 50 119)(font "Intel Clear" (font_size 6)))
+	(port
+		(pt 0 32)
+		(input)
+		(text "clk" (rect 0 0 27 22)(font "Arial" ))
+		(text "clk" (rect 21 27 48 49)(font "Arial" ))
+		(line (pt 0 32)(pt 16 32))
+	)
+	(port
+		(pt 0 48)
+		(input)
+		(text "resetN" (rect 0 0 67 22)(font "Arial" ))
+		(text "resetN" (rect 21 43 88 65)(font "Arial" ))
+		(line (pt 0 48)(pt 16 48))
+	)
+	(port
+		(pt 0 64)
+		(input)
+		(text "rise" (rect 0 0 36 22)(font "Arial" ))
+		(text "rise" (rect 21 59 57 81)(font "Arial" ))
+		(line (pt 0 64)(pt 16 64))
+	)
+	(port
+		(pt 216 32)
+		(output)
+		(text "dout[SIZE_BITS-1..0]" (rect 0 0 226 22)(font "Arial" ))
+		(text "dout[SIZE_BITS-1..0]" (rect 4 27 230 49)(font "Arial" ))
+		(line (pt 216 32)(pt 200 32)(line_width 3))
+	)
+	(parameter
+		"SIZE_BITS"
+		"8"
+		""
+		(type "PARAMETER_UNKNOWN")	)
+	(parameter
+		"MIN_VAL"
+		"40"
+		""
+		(type "PARAMETER_UNKNOWN")	)
+	(parameter
+		"MAX_VAL"
+		"255"
+		""
+		(type "PARAMETER_UNKNOWN")	)
+	(drawing
+		(rectangle (rect 16 16 200 96))
+	)
+	(annotation_block (parameter)(rect 408 8 580 100))
 )
 (connector
 	(text "resetN" (rect 464 392 520 415)(font "Intel Clear" (font_size 6)))
@@ -1110,5 +1110,3 @@ agreement for further details.
 	(pt -88 896)
 )
 (text "Bomb bitmap and move logic" (rect 512 312 841 342)(font "Intel Clear" (font_size 8)))
-(text "TO DO LIST:" (rect 696 792 835 822)(font "Intel Clear" (font_size 8)))
-(text "Figure out random.sv instances connectivity" (rect 704 840 1190 870)(font "Intel Clear" (font_size 8)))
