@@ -5,9 +5,9 @@ module RequiredScoreMux(
 
 );
 	
-	localparam int REQUIRED_SCORE_LEVEL_ONE = 200;
-	localparam int REQUIRED_SCORE_LEVEL_TWO = 250;
-	localparam int REQUIRED_SCORE_LEVEL_THREE = 300;
+	localparam int REQUIRED_SCORE_LEVEL_ONE = 150;
+	localparam int REQUIRED_SCORE_LEVEL_TWO = 200;
+	localparam int REQUIRED_SCORE_LEVEL_THREE = 250;
 
 	
 	always_comb begin

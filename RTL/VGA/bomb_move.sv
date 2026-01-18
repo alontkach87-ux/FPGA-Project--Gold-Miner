@@ -71,7 +71,6 @@ module bomb_move #(
         IDLE_ST, 
         AIMING_ST, 
         MOVING_ST, 
-        START_OF_FRAME_ST, 
         POSITION_CHANGE_ST, 
         POSITION_LIMITS_ST,
         EXPLOSION_FIRE_ST, 
@@ -168,7 +167,7 @@ module bomb_move #(
                             launch <= 1;
                         end
                         else begin
-                            SM_Motion <= START_OF_FRAME_ST;
+                            SM_Motion <= POSITION_CHANGE_ST;
                         end
                     end
                 end
@@ -201,7 +200,7 @@ module bomb_move #(
                                 Yspeed <= 400 - (-AnglePosition / 20); 
                             else
                                 Yspeed <= 400 - (AnglePosition / 20);  
-                            SM_Motion <= START_OF_FRAME_ST; 
+                            SM_Motion <= POSITION_CHANGE_ST; 
                         end
                     end
                 end
@@ -230,14 +229,10 @@ module bomb_move #(
                     end
                 end
 
-                START_OF_FRAME_ST: begin 
-                    if (hit_reg != 0) 
-                        Yspeed <= -Yspeed;
-                    hit_reg <= 0;                        
-                    SM_Motion <= POSITION_CHANGE_ST;
-                end 
-
                 POSITION_CHANGE_ST: begin //calculate new position
+						  if (hit_reg != 0) 
+                        Yspeed <= -Yspeed;
+                    hit_reg <= 0;
                     AnglePosition <= AnglePosition + AngleSpeed;
                     Xposition <= Xposition + Xspeed; 
                     Yposition <= Yposition + Yspeed;

@@ -42,9 +42,9 @@ module	game_controller	(
 
 //constants - required scores for passing each level, and required money for upgrades
 
-localparam int REQUIRED_SCORE_LEVEL_ONE = 50;
-localparam int REQUIRED_SCORE_LEVEL_TWO = 100;
-localparam int REQUIRED_SCORE_LEVEL_THREE = 150;
+localparam int REQUIRED_SCORE_LEVEL_ONE = 150;
+localparam int REQUIRED_SCORE_LEVEL_TWO = 200;
+localparam int REQUIRED_SCORE_LEVEL_THREE = 250;
 localparam int REQUIRED_MONEY_LUCKY_CHARM = 150;
 localparam int REQUIRED_MONEY_GEM_DETECTOR = 100;
 localparam int REQUIRED_MONEY_DELAY = 50;
@@ -74,7 +74,7 @@ logic delayFlag;
 logic timerGemDetectorEnable;
 logic [3:0] timerGemDetector;
 logic gemDetectorSignalFlag;
-
+logic key2_delayed; //for demo cheats
 //game state machine states
 
 enum logic [2:0] {
@@ -113,6 +113,13 @@ assign delay = delayFlag;
 assign gemDetectorSignal=gemDetectorSignalFlag;
 
 //state machine logic
+
+always_ff @(posedge clk or negedge resetN) begin //rising edge detector for demo cheats
+    if (!resetN) 
+        key2_delayed <= 1'b0;
+    else 
+        key2_delayed <= keys[2]; 
+end
 
 always_ff@(posedge clk or negedge resetN)
 begin
@@ -156,6 +163,15 @@ begin
 						genderSwapFlag <= 1;
 				end
 				LEVEL_ONE_ST: begin //level one
+					//cheat for demo only - begin
+					if (keys[2] == 1'b1 && key2_delayed == 1'b0) begin
+						timer <= 20;
+						currentMoney <= 300;
+						SM_Game <= SHOP_ST;
+						shopFlag <= 1;
+						level <= 2;
+					end
+					//cheat for demo only - end
 					startFlag <= 0;
 					genderSwapFlag <= 0;
 					if(keys[9] == 1'b1) //game restart
@@ -188,6 +204,21 @@ begin
 					end
 				end 
 				LEVEL_TWO_ST: begin  //level two
+					if (keys[2] == 1'b1 && key2_delayed == 1'b0) begin //cheat for demo only - begin
+						if(gemDetectorSignalFlag == 1) begin //deactivate gem detector upgrade in the end of the level
+							timerGemDetectorEnable <= 0;
+							timerGemDetector <= 0;
+							gemDetectorSignalFlag <= 0;
+						end
+						if(luckyCharmFlag == 1'b1)	//deactivate lucky charm upgrade in the end of the level
+							luckyCharmFlag <= 0;
+						timer <= 20;
+						currentMoney <= 300;
+						SM_Game <= SHOP_ST;
+						shopFlag <= 1;
+						level <= 3;
+					end
+					//cheat for demo only - end
 					if(keys[9] == 1'b1) //game restart
 						SM_Game <= START_ST; 
 					//upgrade conditions - only from level 2 the user has access to upgrades
@@ -248,6 +279,22 @@ begin
 					end
 				end
 				LEVEL_THREE_ST: begin //level three - final level
+					if (keys[2] == 1'b1 && key2_delayed == 1'b0) begin //cheat for demo only - begin
+						if(gemDetectorSignalFlag == 1) begin //deactivate gem detector upgrade in the end of the level
+							timerGemDetectorEnable <= 0;
+							timerGemDetector <= 0;
+							gemDetectorSignalFlag <= 0;
+						end
+						if(luckyCharmFlag == 1'b1)	//deactivate lucky charm upgrade in the end of the level
+							luckyCharmFlag <= 0;
+						timer <= 0;
+						currentMoney <= 0;
+						SM_Game <= VICTORY_ST;
+						timer <= 0;
+						victoryFlag <= 1;
+						victoryAudioFlag <= 1;	
+					end
+					//cheat for demo only - end
 					if(keys[9] == 1'b1) //game restart
 						SM_Game <= START_ST;
 					if(keys[5] == 1'b1 && delayFlag == 1) begin //user actives delay upgrade
@@ -306,6 +353,24 @@ begin
 					end
 				end
 				SHOP_ST: begin //shop state - between levels
+					//cheat for demo only - begin
+					if (keys[2] == 1'b1 && key2_delayed == 1'b0) begin
+						if(level == 2) begin //if level is 2, go to level two
+							timer <= 45;
+							SM_Game <= LEVEL_TWO_ST;
+							shopFlag <= 0;
+							aimResetFlag <= 1;
+							newLevelFlag <= 1;
+						end
+						else if(level == 3) begin //if level is 3, go to level three
+							timer <= 40;
+							SM_Game <= LEVEL_THREE_ST;
+							shopFlag <= 0;
+							aimResetFlag <= 1;
+							newLevelFlag <= 1;
+						end
+					end
+					//cheat for demo only - end
 					if(keys[9] == 1'b1) //game restart
 						SM_Game <= START_ST;
 					if(keys[5] == 1'b1 && currentMoney >= REQUIRED_MONEY_DELAY && delayFlag == 0) begin //user buys delay upgrade
@@ -346,14 +411,26 @@ begin
 					end
 				end
 				VICTORY_ST: begin //victory state - constant state
-					if(startOfFrame) begin
-						frame_counter <= frame_counter + 1;
-						if(frame_counter == 130) //flag for victory audio goes down after circa 1.8 seconds
-							victoryAudioFlag <= 0;
+					//cheat for demo only - begin
+					if (keys[2] == 1'b1 && key2_delayed == 1'b0) begin
+						frame_counter <= 0;
+						SM_Game <= GAME_OVER_ST;
+						victoryFlag <= 0;
+						victoryAudioFlag <= 0;
+						gameOverFlag <= 1;
+						gameOverAudioFlag <= 1;		
 					end
-					if(keys[9] == 1'b1) // game restart
-						SM_Game <= START_ST;
-					victoryFlag <= 1;
+					//cheat for demo only - end
+					else begin
+						if(startOfFrame) begin
+							frame_counter <= frame_counter + 1;
+							if(frame_counter == 130) //flag for victory audio goes down after circa 1.8 seconds
+								victoryAudioFlag <= 0;
+						end
+						if(keys[9] == 1'b1) // game restart
+							SM_Game <= START_ST;
+						victoryFlag <= 1;
+					end
 				end 
 				GAME_OVER_ST: begin //game over state - constant state
 					if(startOfFrame) begin
