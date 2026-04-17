@@ -1,23 +1,40 @@
 # FPGA Gold Miner - Enhanced Hardware Implementation
 
 ## Project Overview
-A complex real-time hardware system implementing an enhanced version of the "Gold Miner" game. This project was developed in **SystemVerilog** and deployed on an **Intel Cyclone V FPGA**. Unlike the classic game, this version introduces randomized mechanics and strategic progression, all managed via hardware logic.
+An advanced real-time hardware system developed in **SystemVerilog** for the **Intel Cyclone V FPGA**. This project features a unique version of the classic "Gold Miner" game, integrating complex logic, audio, and multiple hardware peripherals.
+
+## System Demonstration
+
+### 🎥 Video Demos (Click to Watch)
+| High-Quality Gameplay | Hardware & FPGA Setup |
+| :---: | :---: |
+| [![Gameplay Demo](https://img.youtube.com/vi/GWm8fjphKTI/0.jpg)](https://www.youtube.com/watch?v=GWm8fjphKTI) | [![Hardware Demo](https://img.youtube.com/vi/71o0hPUbj3Q/0.jpg)](https://www.youtube.com/watch?v=71o0hPUbj3Q) |
+
+### 🛠️ Collaboration & Hardware Lab
+<table style="width:100%">
+  <tr>
+    <th style="text-align:center">Team Work (Alon & Yanay)</th>
+    <th style="text-align:center">Alon Tkach - Hardware Setup</th>
+  </tr>
+  <tr>
+    <td><img src="./media/Team_FPGA_Setup.jpg" width="400"></td>
+    <td><img src="./media/AlonTkach_FPGA_Project.jpg" width="400"></td>
+  </tr>
+</table>
 
 ## Key Features & Hardware Integration
 * **Graphics & Display:** Custom-built **VGA Controller** (640x480 resolution).
+* **Peripheral Support:** Full integration of a **Numeric Keypad** and keyboard interface.
 * **Audio Module:** Integrated sound effects for immersive gameplay.
-* **Peripheral Support:** Full integration of a **Numeric Keypad** for game controls and a **PS/2 Keyboard**.
 * **Advanced Mechanics:**
-    * **Dynamic Bomb System:** Bombs are deployed at random time intervals with randomized explosion radii, implemented using hardware-based **PRNG** (Pseudo-Random Number Generation).
-    * **Scoring System:** Real-time point calculation where players gain or lose points based on performance and bomb interactions.
-    * **In-Game Shop:** A functional shop system allowing players to purchase upgrades and items to improve their success, managed via a dedicated **FSM** (Finite State Machine).
-    * **Level Progression:** Multiple game levels with increasing difficulty and state management.
+    * **Dynamic Bomb System:** Bombs deployed at random intervals with randomized explosion radii (Hardware-based **PRNG**).
+    * **In-Game Shop:** Functional shop system for upgrades, managed via a dedicated **FSM** (Finite State Machine).
+    * **Level Progression:** Multiple game levels with increasing difficulty.
 
-## Technical Skills Demonstrated
+## Technical Skills
 * RTL Design & Synthesis using **Quartus Prime**.
-* Complex State Machine (FSM) design for game logic and shop transitions.
-* Hardware-software synchronization for peripherals (Keypad, VGA, Audio).
-* Timing analysis and hardware debugging using **SignalTap** and **ModelSim**.
+* Complex State Machine (FSM) design and hardware-software synchronization.
+* Timing analysis and debugging using **SignalTap** and **ModelSim**.
 
 ## Project Collaboration
 This project was a joint effort by **Alon Tkach** and **Yanay Nazimov**. 
